@@ -11,21 +11,21 @@
 
 <script>
 import HomeBack from '@/components/HomeBack.vue'
-import { randomSort, addPropToArrElem, getLocalLang } from '@/libs/common.js'
-import {encrypt} from '@/libs/crypto.js'
+// import { randomSort, addPropToArrElem, getLocalLang } from '@/libs/common.js'
+// import {encrypt} from '@/libs/crypto.js'
 export default {
     components:{HomeBack},
     data(){
         return{
             seedString:'',
-            seedCharts:[],
+            // seedCharts:[],
         }
     },
     methods:{
         //生成助记词
         generateSeed(){
             this.seedString = this.newMnemonic(1);
-            console.log(this.seedString)
+            // console.log(this.seedString)
             this.$store.commit('Account/UPDATE_SEED',this.seedString)
         },
         // //创建钱包
@@ -48,9 +48,9 @@ export default {
 
     },
     watch:{
-        seedString(val){
-            this.seedCharts = val.split(' ');
-        },
+        // seedString(val){
+            // this.seedCharts = val.split(' ');
+        // },
         
     },
     mounted(){

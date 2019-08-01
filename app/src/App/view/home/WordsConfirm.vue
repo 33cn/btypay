@@ -12,24 +12,42 @@
 
 <script>
 import HomeBack from '@/components/HomeBack.vue'
-import { randomSort, addPropToArrElem, getLocalLang } from '@/libs/common.js'
+import { randomSort, addPropToArrElem } from '@/libs/common.js'
+import {encrypt} from '@/libs/crypto.js'
 export default {
     components:{HomeBack},
     data(){
         return{
-            
+            seedCharts:[],
             seedChartsRandom:[],
         }
     },
+    methods:{
+        //创建钱包
+        createWallet(){
+            // 省略各种判断
+            this.saveSeed(this.seedString, 'password');
+
+        },
+        //保存加密助记词并创建钱包
+        saveSeed(seedString,password){
+            const walletObj = this.createHDWallet(seedString);
+            // 加密助记词 
+            let ciphertext = encrypt(seedString, password);
+            // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
+            this.newAccount('创世地址');
+            return walletObj;
+        }
+    },
     computed:{
-        seedCharts(){
+        seedString(){
             return this.$store.state.Account.seed;
         }
     },
     mounted(){
-        console.log(this.seedCharts)
+        this.seedCharts = this.seedString.split(' ');
         this.seedChartsRandom = addPropToArrElem(randomSort(this.seedCharts), 'selected', false)
-        console.log(this.seedChartsRandom)
+        this.createWallet()
     }
 }
 </script>

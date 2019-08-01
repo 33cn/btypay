@@ -62,7 +62,8 @@ export default {
     },
     newAccount(name) {
       return this.getWallet().then(wallet => {
-        const account = wallet.newAccount(name)
+        const account = wallet.newAccount(name)//生成公私钥地址等
+        console.log(account)
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         this.setCurrentAccount(account)
         this.setChromeStorage('accountIndexList', wallet.accountIndexList)
