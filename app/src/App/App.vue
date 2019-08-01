@@ -1,0 +1,35 @@
+<template>
+  <div id="app">
+    <!-- <my-header></my-header> -->
+    <router-view/>
+  </div>
+</template>
+<script>
+// import MyHeader from './Header'
+import {eventBus} from '@/libs/eventBus'
+export default {
+  // components: {MyHeader},
+  mounted() {
+    eventBus.$on('node-change', (val) => {
+      this.$chain33Sdk.httpProvider.setUrl(val) 
+      eventBus.$emit('provider-changed')
+    })
+  }
+}
+</script>
+
+<style lang="scss">
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 400px;
+  height: 600px;
+}
+#app {
+  width: 400px;
+  height: 600px;
+  min-height: 600px;
+  background: #dfe7f3;
+}
+</style>

@@ -1,0 +1,151 @@
+/* Element Chalk Variables */
+/*
+ ** Our -- start
+ --------------------------*/
+// 字号
+$--font-size-base: 14px !default;
+$--font-size-small: 12px !default;
+$--font-size-large: 16px !default;
+$--font-size-x-large: 20px !default;
+$--font-size-xx-large: 24px !default;
+// 颜色
+$--color-text-primary: #575B72 !default; // 大部分文本色
+$--color-text-regular: #575B72 !default; // input 等文本色
+$--color-text-secondary: #888888 !default; // 菜单文本
+$--color-text-placeholder: #9DA4B6 !default;
+$--font-color-disabled-base: #E2E7EE !default;
+$--color-primary: #6CB4FC !default;
+$--color-success: #63b490 !default;
+$--color-error: #F06666 !default;
+$--color-disabled: #E2E7EE !default;
+$--color-white: #fff !default;
+// 背景
+$--background-color-base: rgba(255, 255, 255, 0.9) !default; // 基础背景
+$--background-color-hover: rgba(255, 255, 255, 1) !default; // 用于突出模块背景
+$--background-color-progress: rgba(255, 255, 255, 0.5) !default; // 用于滑条颜色/区块高度进度条背景
+$--background-color-progress-lighter: rgba(255, 255, 255, 0.3) !default; // 用于首页资产进度条背景
+$--background-color-dialog: #EEF1F6 !default; // 用于弹窗背景/下拉背景
+$--background-color-modal: rgba(255, 255, 255, 0.8); // 遮罩层背景颜色
+// 链接
+$--link-color: #4a7db4 !default; // 点击选中状态
+$--link-hover-color: #6CB4FC !default; // hover状态
+// 填充背景
+$--fill-base: #fff !default;
+$--fill-input: #f4f5f6 !default;
+$--fill-input-hover: #E2E7EE !default;
+$--fill-btn-primary: linear-gradient(32deg, #4983c8 0%, #6CB4FC 100%);
+$--fill-btn-primary-hover: linear-gradient(32deg, #5292E1 0%, #56B4FF 100%);
+$--fill-btn-primary-active: linear-gradient(32deg, #4177B9 0%, #3C9CE9 100%);
+$--fill-btn-primary-address: linear-gradient(32deg, #A6CEFF 0%, #BDE2FF 100%); // 复制地址 按钮
+$--fill-btn-primary-address-hover: linear-gradient(32deg, #C7E0FF 0%, #D4ECFF 100%); // 复制地址 按钮
+$--fill-btn-primary-address-active: linear-gradient(32deg, #89B5EC 0%, #9BCDF6 100%); // 复制地址 按钮
+$--fill-btn-primary-address-disabled: #77A7DE; // 复制地址 按钮
+$--fill-wallet-balance: linear-gradient(32deg, #425C86 0%, #57B3FF 100%);
+// box-shadow
+$--box-shadow-color: #cddbee !default;
+$--box-shadow-item-base: 0px 0px 16px 0px $--box-shadow-color;
+$--box-shadow-btn-primary: 0px 0px 12px 0px $--box-shadow-color;
+// border
+$--border-width-base: 1px !default;
+$--border-style-base: solid !default;
+$--border-color-base: #6CB4FC !default;
+$--border-color-hover: #E2E7EE !default;
+$--border-base: $--border-width-base $--border-style-base $--border-color-base !default;
+$--border-input-base: $--border-width-base $--border-style-base $--fill-input !default;
+$--border-input-hover: $--border-width-base $--border-style-base $--fill-input-hover !default;
+// 标准圆角
+$--border-radius-base: 8px !default;
+$--border-radius-input: 4px !default;
+$--border-radius-tag: 13px !default;
+$--border-radius-button: 15px !default;
+// z-index
+$--z-index-modal: 99;
+$--z-index-madal-top: 100;
+/*
+ ** Our -- end
+ --------------------------*/
+/* Transition
+-------------------------- */
+$--all-transition: all .3s cubic-bezier(.645, .045, .355, 1) !default;
+$--fade-transition: opacity 300ms cubic-bezier(0.23, 1, 0.32, 1) !default;
+$--fade-linear-transition: opacity 200ms linear !default;
+$--md-fade-transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1),
+opacity 300ms cubic-bezier(0.23, 1, 0.32, 1) !default;
+$--border-transition-base: border-color .2s cubic-bezier(.645, .045, .355, 1) !default;
+$--color-transition-base: color .2s cubic-bezier(.645, .045, .355, 1) !default;
+/* Colors
+-------------------------- */
+$--color-black: #000 !default;
+// 情景
+$--color-primary-light-1: mix($--color-white, $--color-primary, 10%) !default;
+/* 53a8ff */
+$--color-primary-light-2: mix($--color-white, $--color-primary, 20%) !default;
+/* 66b1ff */
+$--color-primary-light-3: mix($--color-white, $--color-primary, 30%) !default;
+/* 79bbff */
+$--color-primary-light-4: mix($--color-white, $--color-primary, 40%) !default;
+/* 8cc5ff */
+$--color-primary-light-5: mix($--color-white, $--color-primary, 50%) !default;
+/* a0cfff */
+$--color-primary-light-6: mix($--color-white, $--color-primary, 60%) !default;
+/* b3d8ff */
+$--color-primary-light-7: mix($--color-white, $--color-primary, 70%) !default;
+/* c6e2ff */
+$--color-primary-light-8: mix($--color-white, $--color-primary, 80%) !default;
+/* d9ecff */
+$--color-primary-light-9: mix($--color-white, $--color-primary, 90%) !default;
+/* ecf5ff */
+$--color-warning: #e6a23c !default;
+$--color-danger: #f56c6c !default;
+$--color-info: #909399 !default;
+$--color-success-light: mix($--color-white, $--color-success, 80%) !default;
+$--color-warning-light: mix($--color-white, $--color-warning, 80%) !default;
+$--color-danger-light: mix($--color-white, $--color-danger, 80%) !default;
+$--color-info-light: mix($--color-white, $--color-info, 80%) !default;
+$--color-success-lighter: mix($--color-white, $--color-success, 90%) !default;
+$--color-warning-lighter: mix($--color-white, $--color-warning, 90%) !default;
+$--color-danger-lighter: mix($--color-white, $--color-danger, 90%) !default;
+$--color-info-lighter: mix($--color-white, $--color-info, 90%) !default;
+// 文本相关
+/* Background
+-------------------------- */
+/* Border
+-------------------------- */
+$--border-color-light: #e4e7ed !default;
+$--border-color-lighter: #ebeef5 !default;
+$--border-color-extra-light: #f2f6fc !default;
+$--border-radius-small: 2px !default;
+$--border-radius-circle: 100% !default;
+/* Box-shadow
+-------------------------- */
+$--box-shadow-base: 0 2px 4px $--box-shadow-color,
+0 0 6px $--box-shadow-color !default;
+$--box-shadow-dark: 0 2px 4px $--box-shadow-color,
+0 0 6px $--box-shadow-color !default;
+$--box-shadow-light: 0 2px 12px 0 $--box-shadow-color !default;
+/* Fill
+-------------------------- */
+/* Font
+-------------------------- */
+$--font-path: 'fonts' !default;
+$--font-weight-primary: 500 !default;
+$--font-line-height-large: 30px !default;
+$--font-line-height-primary: 24px !default;
+$--font-line-height-small: 20px !default;
+/* Size
+-------------------------- */
+$--size-base: 14px !default;
+/* z-index
+-------------------------- */
+$--index-normal: 1 !default;
+$--index-top: 1000 !default;
+$--index-popper: 2000 !default;
+/* Disable base
+-------------------------- */
+$--disabled-fill-base: $--color-white !default;
+$--disabled-color-base: $--color-disabled !default;
+$--disabled-border-base: $--color-disabled !default;
+/* Icon
+-------------------------- */
+$--icon-color: #666 !default;
+$--icon-color-base: $--color-info !default;

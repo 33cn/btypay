@@ -1,0 +1,35 @@
+@import "./variables";
+
+.el-button {
+  border-radius: 9999px;
+}
+.el-input__inner {
+  background: #fff;
+}
+
+.el-notification {
+  min-height: 100px;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+
+  &.error-notification .el-notification__content {
+    color: $--color-error;
+  }
+
+  &.success-notification .el-notification__content {
+    color: $--color-primary;
+  }
+  
+}
+
+.el-dialog {
+  padding: 0 15px;
+  .el-dialog__title {
+    font-size: 14px;
+  }
+  .el-input__inner {
+    background: #F4F5F6;
+  }
+}
