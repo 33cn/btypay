@@ -14,6 +14,7 @@
                     <router-link :to="{ name: 'CreateWallet'}">创建钱包</router-link>
                 </p>
             </li>
+            <!-- <img src="../../../assets/images/tickets.png" alt=""> -->
         </ul>
     </div>
 </template>
@@ -24,6 +25,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
+.ImportOrCreate_container{
 
+}
 </style>
