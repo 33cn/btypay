@@ -82,7 +82,14 @@ a {
 }
 
 a:hover {
-  text-decoration: underline
+  text-decoration: none;
+  cursor: pointer;
+}
+a:visited{
+  color: #000;
+}
+a:active{
+  color: #000;
 }
 
 sup {
@@ -116,23 +123,6 @@ table {
 }
 li{
   color: black;
-}
-div.v-modal{
-  background-color: white;
-  opacity: 0;
-}
-div.el-table-filter{
-  height: 200px!important;
-  overflow: auto;
-}
-div.el-table-filter li{
-  text-align: center;
-}
-div.el-table-filter label{
-  /* text-align: center; */
-}
-div.el-table-filter>div.el-table-filter__bottom{
-  text-align: center;
 }
 input:focus{
   outline: none;

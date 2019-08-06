@@ -32,7 +32,7 @@ export default {
             width: 100px;
             text-align: center;
             position: absolute;
-            left: calc(50vw - 50px);
+            left: calc(50% - 50px);
             top: 10px;
         }
     }
