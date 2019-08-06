@@ -60,7 +60,7 @@ export default {
 
         parallelTrade2Coins(privateKey, to, amount, fee) {
             const execName = "user.p.fzmtest.trade"
-            isWithdraw = true
+            const isWithdraw = true
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
             }).then(signedTx => {
@@ -84,7 +84,7 @@ export default {
 
         parallelCoins2Dice(privateKey, to, amount, fee) {
             const execName = "user.p.fzmtest.user.wasm.dice"
-            isWithdraw = false
+            const isWithdraw = false
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
             }).then(signedTx => {
@@ -106,7 +106,23 @@ export default {
         },
         parallelCoins2Trade() {
         },
-        parallelDice2Coins() {
+        
+        transferGameCoin2BTY(privateKey, amount){
+            const fee = 0;
+            const to = this.currentAccount.address;
+            return this.parallelCoins2Trade().then(() => {
+                return this.parallelMarketBuy()
+            }).then(() => {
+                return this.parallelTrade2Paracross()
+            }).then(() => {
+                return this.parallel2Main()
+            }).then(() => {
+                return this.mainParacross2Coins()
+            })
+        },
+
+        parallelDice2Coins(privateKey, to, amount, fee) {
+
         }
 
 
