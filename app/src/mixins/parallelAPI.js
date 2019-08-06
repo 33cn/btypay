@@ -1,19 +1,19 @@
 import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
-import {createNamespacedHelpers} from 'vuex'
+import { createNamespacedHelpers } from 'vuex'
 
-const {mapState} = createNamespacedHelpers('Account')
+const { mapState } = createNamespacedHelpers('Account')
 let isDev = process.env.NODE_ENV === 'development'
 
 
 export default {
     mixins: [chain33API],
     computed: {
-      ...mapState(['accountMap', 'currentAccount'])
+        ...mapState(['accountMap', 'currentAccount'])
     },
     methods: {
 
-        mainCoins2Paracross({ privateKey, amount, fee }) {
+        mainCoins2Paracross(privateKey, amount, fee) {
             const to = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
             return this.createRawTransaction(to, amount, fee, note).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
@@ -22,7 +22,7 @@ export default {
             })
         },
 
-        main2Parallel({ privateKey, to, amount }) {
+        main2Parallel(privateKey, to, amount) {
             const execer = "user.p.fzmtest.paracross"
             const actionName = "ParacrossAssetTransfer"
             const payload = {
@@ -37,7 +37,7 @@ export default {
             })
         },
 
-        parallelParacross2Trade({ privateKey, to, amount }) {
+        parallelParacross2Trade(privateKey, to, amount) {
             const execer = "user.p.fzmtest.paracross"
             const actionName = "TransferToExec"
             const payload = {
@@ -58,7 +58,7 @@ export default {
             return this.createRawTradeSellMarketTx(buyID, boardlotCnt, fee);
         },
 
-        parallelTrade2Coins({ privateKey, to, amount, fee }) {
+        parallelTrade2Coins(privateKey, to, amount, fee) {
             const execName = "user.p.fzmtest.trade"
             isWithdraw = true
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
@@ -71,18 +71,18 @@ export default {
         transferBTY2GameCoin(privateKey, amount) {
             const fee = 0
             const to = this.currentAccount.address
-            return this.mainCoins2Paracross({ privateKey, amount, fee }).then(() => {
-                return this.main2Parallel({ privateKey, to, amount })
+            return this.mainCoins2Paracross(privateKey, amount, fee).then(() => {
+                return this.main2Parallel(privateKey, to, amount)
             }).then(() => {
-                return this.parallelParacross2Trade({ privateKey, to, amount })
+                return this.parallelParacross2Trade(privateKey, to, amount)
             }).then(() => {
                 return this.parallelMarketSell(amount, fee)
             }).then(() => {
-                return this.parallelTrade2Coins({ privateKey, to, amount, fee })
+                return this.parallelTrade2Coins(privateKey, to, amount, fee)
             })
         },
 
-        parallelCoins2Dice({ privateKey, to, amount, fee }) {
+        parallelCoins2Dice(privateKey, to, amount, fee) {
             const execName = "user.p.fzmtest.user.wasm.dice"
             isWithdraw = false
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
