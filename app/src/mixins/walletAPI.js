@@ -1,5 +1,5 @@
 import chain33API from '@/mixins/chain33API'
-import {seed, sign} from '@33cn/wallet-base'
+import { seed, sign } from '@33cn/wallet-base'
 
 let isDev = process.env.NODE_ENV === 'development'
 // console.log({isDev})
@@ -25,7 +25,7 @@ export default {
     },
     setChromeStorage(key, value) {
       return new Promise(resolve => {
-        window.chrome.storage.local.set({[key]: value}, () => {
+        window.chrome.storage.local.set({ [key]: value }, () => {
           resolve(value)
         })
       })
@@ -69,6 +69,7 @@ export default {
         this.setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
     },
+
     recoverAccount() {
       this.getWallet().then(wallet => {
         //  获取索引恢复账户
@@ -79,7 +80,7 @@ export default {
             this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
             this.getChromeStorage(['currentAccountIndex']).then(result => {
               let currentAccount = wallet.accountMap[result['currentAccountIndex']]
-              if(!currentAccount) {
+              if (!currentAccount) {
                 currentAccount = wallet.firstAccount
               }
               this.setCurrentAccount(currentAccount)
@@ -121,7 +122,7 @@ export default {
       return sign.signRawTransaction(tx, privateKey)
     },
 
-    sendToAddr({privateKey, to, amount, fee, note}) {
+    sendToAddr({ privateKey, to, amount, fee, note }) {
       // console.log(privateKey)
       return this.createRawTransaction(to, amount, fee, note)
         .then(tx => {
@@ -130,8 +131,9 @@ export default {
         }).then(signedTx => {
           return this.sendTransation(signedTx)
         })
-    }
+    },
 
     /* 交易相关 -- end */
+
   }
 }
