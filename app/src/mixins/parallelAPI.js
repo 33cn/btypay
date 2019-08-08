@@ -13,7 +13,7 @@ export default {
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
-        mainCoins2Paracross(privateKey, amount, fee, note='') {
+        mainCoins2Paracross(privateKey, amount, fee, note = '') {
             const to = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
             return this.createRawTransaction(to, amount, fee, note).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
@@ -62,12 +62,12 @@ export default {
             const execName = "user.p.fzmtest.trade"
             const isWithdraw = true
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
-                return sign.signRawTransaction(tx, privateKey)
+                return sign.signRawTransaction(tx, privateKey);
             }).then(signedTx => {
-                return this.sendTransation(signedTx)
+                return this.sendTransation(signedTx);
             })
         },
-        
+
         transferBTY2GameCoin(privateKey, amount) {
             const fee = 0
             const to = this.currentAccount.address
@@ -106,10 +106,10 @@ export default {
         },
         parallelCoins2Trade() {
         },
-        
-        transferGameCoin2BTY(privateKey, amount){
-            const fee = 0;
-            const to = this.currentAccount.address;
+
+        transferGameCoin2BTY(privateKey, amount) {
+            const fee = 0
+            const to = this.currentAccount.address
             return this.parallelCoins2Trade().then(() => {
                 return this.parallelMarketBuy()
             }).then(() => {
