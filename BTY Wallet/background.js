@@ -1,11 +1,11 @@
 chrome.runtime.onInstalled.addListener(()=>{
-  // alert('Hello, World!')
-  console.log('hello')
+  // // alert('Hello, World!')
+  // console.log('hello')
   chrome.storage.local.set({['key']: 'fanrui'}, () => {
-    console.log('value')
+    // console.log('value')
   })
   chrome.storage.local.get('key',(val)=>{
-    console.log(val)
+    // console.log(val)
   })
   // console.log(Pupop)
 });
