@@ -36,10 +36,10 @@ export default {
     components: { HomeHeader },
     methods:{
         toBty(){
-            this.$router.push({name:'bty'})
+            this.$router.push({path:'/coin?coin=bty'})
         },
         toGame(){
-            this.$router.push({name:'gameCoin'})
+            this.$router.push({path:'/coin?coin=game'})
         }
     }
 }

@@ -1,8 +1,8 @@
 <template>
     <div class="bty_container">
         <header>
-            <router-link :to="{ name: 'WalletIndex'}">fanhui</router-link>
-            <p><router-link :to="{ name: 'node'}">节点设置</router-link></p>
+            <router-link :to="{ name: 'WalletIndex'}"><img src="../../../assets/images/back.png" alt=""></router-link>
+            <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p>
         </header>
         <section class="balance">
             <img src="../../../assets/images/logo.png" alt="">
@@ -12,17 +12,18 @@
             </div>
             <div class="address">
                 <p>fdsfdsfdsfssfsfsdfsdffsfsfsffsfsfsfsdsf</p>
-                <span>复制</span>
+                <img src="../../../assets/images/copy.png" alt="">
             </div>
         </section>
-        <section class="btn">
+        <section :class="coin=='bty'?'btn bty':'btn game'">
             <p><router-link :to="{ name: 'transfer'}">转账</router-link></p>
             <p><router-link :to="{ name: 'receipt'}">收款</router-link></p>
-            <p><router-link :to="{ name: 'convert'}">兑换</router-link></p>
+            <p v-if="coin=='game'"><router-link :to="{ name: 'convert'}">兑换</router-link></p>
         </section>
         <section class="records" >
             <ul>
                 <li v-for="item in tab" :key="item.name" @click="view=item.com">{{item.name}}</li>
+                <li v-if="coin=='game'" @click="view='Convert'">兑换</li>
             </ul>
             <!-- <keep-alive>
                 <component :is=""></component>
@@ -44,11 +45,12 @@ export default {
     components:{All,Transfer,Receipt},
     data(){
         return{
-            tab:[{name:'全部',com:'All'},{name:'转账',com:'Transfer'},{name:'收款',com:'Receipt'},],
+            tab:[{name:'全部',com:'All'},{name:'转账',com:'Transfer'},{name:'收款',com:'Receipt'}],
             view:'All',
             pervScrollTop:0,
             nextIsLoading:false,
-            loadingData:[]
+            loadingData:[],
+            coin:'',
         }
     },
     methods:{
@@ -72,7 +74,9 @@ export default {
         }
     },
     mounted () {
+        this.coin = this.$route.query.coin;
         this.$refs['txListWrap'].addEventListener('scroll', this.onScroll)
+        // console.log(this.$route.query.coin)
     },
     beforeDestroy(){
         this.$refs['txListWrap'].removeEventListener('scroll', this.onScroll)
@@ -86,7 +90,7 @@ export default {
     height: 100vh;
     background-image: url('../../../assets/images/assetOperateBg.png');
     background-size: 100% 100%;
-    padding-top: 100px;
+    padding-top: 80px;
     position: relative;
     >header{
         margin: 0 29px 0 46px;
@@ -103,6 +107,9 @@ export default {
                 color:rgba(245,185,71,1);
             }
         }
+        img{
+            width: 30.5px;
+        }
     }
     >section.balance{
         // width: 100%;
@@ -115,9 +122,9 @@ export default {
         justify-content: center;
         align-items: center;
         >img{
-            width: 64px;
-            height: 64px;
-            margin-bottom: 29px;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
         }
         div{
             display: flex;
@@ -138,8 +145,8 @@ export default {
                 }
             }
             &.address{
-                width: 222px;
-                margin: 20px 0 0;
+                width: 230px;
+                margin: 18px 0 0;
                 justify-content: center;
                 align-items: center;
                 position: relative;
@@ -155,37 +162,52 @@ export default {
                     overflow: hidden;
                     text-overflow: ellipsis;
                 }
-                span{
+                img{
                     width: 25px;
                     height: 25px;
-                    display: inline-block;
                     position: absolute;
-                    left: 238px;
+                    left: 245px;
                 }
             }
         }
     }
     >section.btn{
-        margin: 0 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         p{
-            width: 85px;
+            width: 116px;
             height: 43.5px;
             text-align: center;
             background-size: 100% 100%;
             font-size:20px;
             font-family:MicrosoftYaHei;
             font-weight:400;
+            background-image: url('../../../assets/images/transferBtnBg.png');
+            background-size: 100% 100%;
+            padding-top: 3px;
             a{
                 color:rgba(255,255,255,1);
+            }
+        }
+        &.game{
+            margin: 0 28px;
+            p{
+                width: 86.5px;
+            }
+        }
+        &.bty{
+            margin: 0 40.5px;
+            p{
+                width: 116px;
             }
         }
     }
     >section.records{
         // width: 100%;
         // overflow-x: hidden;
+        // background-color: #fff;
+        margin-top: 30px;
         >ul{
             margin: 0 37px 0 31.5px;
             display: flex;
@@ -201,7 +223,8 @@ export default {
         }
         >div{
             overflow-y: auto;
-            max-height: 145px;
+            max-height: 320px;
+            margin-top: 8px;
             /* 设置滚动条的样式 */
             &::-webkit-scrollbar {
               width: 0px;

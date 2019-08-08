@@ -46,31 +46,31 @@ export default new Router({
       name:'node',
       component:() => import('./App/view/node/Node')
     },{
-      path:'/bty',
+      path:'/coin',
       name:'bty',
       component:() => import('./App/view/asset/Bty')
     },{
-      path:'/bty/receipt',
+      path:'/coin/receipt',
       name:'receipt',
       component:() => import('./App/view/receipt/Receipt')
     },{
-      path:'/bty/transfer',
+      path:'/coin/transfer',
       name:'transfer',
       component:() => import('./App/view/transfer/Transfer')
     },{
-      path:'/bty/convert',
+      path:'/coin/convert',
       name:'convert',
       component:() => import('./App/view/convert/Convert')
     },{
-      path:'/bty/address',
+      path:'/coin/address',
       name:'address',
       component:() => import('./App/view/transfer/Address')
     },{
-      path:'/bty/address/addAddress',
+      path:'/coin/address/addAddress',
       name:'addAddress',
       component:() => import('./App/view/transfer/AddAddress')
     },{
-      path:'/bty/detail/:id',
+      path:'/coin/detail/:id',
       name:'detail',
       component:() => import('./App/view/asset/record/Detail')
     },
