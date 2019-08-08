@@ -16,6 +16,9 @@ export default {
 
 <style lang='scss'>
 .transfer_container{
-
+    width: 100%;
+    height: 100vh;
+    background-image: url('../../../assets/images/anotherBg.png');
+    background-size: 100% 100%;
 }
 </style>
