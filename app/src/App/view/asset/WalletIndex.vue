@@ -1,26 +1,32 @@
 <template>
   <div class="walletIndex_container">
     <home-header></home-header>
-    <header>
-      <p></p>
-      <p>
-        <router-link :to="{ name: 'node'}">节点设置</router-link>
-      </p>
-    </header>
+    <p>
+      <router-link :to="{ name: 'node'}">节点设置</router-link>
+    </p>
     <section class="content">
       <p>我的资产</p>
       <ul>
         <li @click="toBty">
-          <div class="coin">
-            <span class="icon"></span>
-            <span class="name">BTY</span>
+          <div class="left">
+            <img src="../../../assets/images/logo.png" alt />
+            <p>BTY</p>
           </div>
-          <div class="price">
+          <div class="right">
             <p>0.00</p>
             <p>≈￥0.00</p>
           </div>
         </li>
-        <li @click="toGame">GAME</li>
+        <li @click="toGame">
+          <div class="left">
+            <img src="../../../assets/images/logo.png" alt />
+            <p>GAME</p>
+          </div>
+          <div class="right">
+            <p>0.00</p>
+            <p>≈￥0.00</p>
+          </div>
+        </li>
       </ul>
     </section>
   </div>
@@ -43,60 +49,68 @@ export default {
 
 <style lang='scss'>
 .walletIndex_container {
-  > header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 29.1px;
-    > p {
-      > a {
-        color: #f5b947;
-        font-size: 18.4px;
-        font-weight: bold;
-      }
+  > p {
+    font-size: 18px;
+    font-family: MicrosoftYaHei-Bold;
+    font-weight: bold;
+    position: absolute;
+    right: 38px;
+    top: 102px;
+    a {
+      color: rgba(245, 185, 71, 1);
     }
   }
   > section.content {
+    margin: 59px 29px 0px;
     > p {
-      padding: 55px 0 15.3px 28.4px;
-      color: #ffffff;
-      font-size: 21.5px;
+      font-size: 21px;
+      font-family: MicrosoftYaHei;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 1);
+      margin-bottom: 15px;
     }
     ul {
-      margin: 0 28.4px;
       li {
-        height: 66px;
-        background: #ffffff;
-        margin-bottom: 15px;
+        width: 100%;
+        padding: 15px 23px 15px 19px;
+        background: rgba(251, 251, 251, 1);
         border-radius: 10px;
+        margin-bottom: 25px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 19.1px !important;
-        .coin {
+        div {
           display: flex;
-          justify-content: space-between;
-          align-items: center;
-          .icon {
-            width: 36px;
-            height: 36px;
-            background: #f5b947;
-            margin-right: 23.8px;
-            border-radius: 36px;
-            display: inline-block;
+          &.left {
+            justify-content: flex-start;
+            align-items: center;
+            img {
+              width: 36px;
+              height: 36px;
+              margin-right: 23px;
+            }
+            p {
+              font-size: 20px;
+              font-family: MicrosoftYaHei;
+              font-weight: 400;
+              color: rgba(22, 42, 84, 1);
+            }
           }
-          .name {
-            font-size: 20px;
-            color: #162a54;
-          }
-        }
-        .price {
-          font-size: 20px;
-          color: #162a54;
-          text-align: right;
-          line-height: 24px;
-          > p:nth-of-type(2) {
-            color: #999999;
+          &.right {
+            flex-direction: column;
+            align-items: flex-end;
+            p {
+              font-size: 20px;
+              font-family: MicrosoftYaHei;
+              font-weight: 400;
+              line-height: 1;
+              &:nth-of-type(1) {
+                color: rgba(22, 42, 84, 1);
+              }
+              &:nth-of-type(2) {
+                color: rgba(153, 153, 153, 1);
+              }
+            }
           }
         }
       }
