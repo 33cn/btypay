@@ -13,7 +13,7 @@ export default {
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
-        mainCoins2Paracross(privateKey, amount, fee, note='') {
+        mainCoins2Paracross(privateKey, amount, fee, note = '') {
             const to = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
             return this.createRawTransaction(to, amount, fee, note).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
@@ -59,15 +59,15 @@ export default {
         },
         // 玩家获得的平行链主代币位于trade合约下，提币到coins合约
         parallelTrade2Coins(privateKey, to, amount, fee) {
-            const execName = "user.p.fzmtest.trade",
-            isWithdraw = true
+            const execName = "user.p.fzmtest.trade"
+            const isWithdraw = true
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
-                return sign.signRawTransaction(tx, privateKey)
+                return sign.signRawTransaction(tx, privateKey);
             }).then(signedTx => {
-                return this.sendTransation(signedTx)
+                return this.sendTransation(signedTx);
             })
         },
-        
+
         transferBTY2GameCoin(privateKey, amount) {
             const fee = 0
             const to = this.currentAccount.address
@@ -83,8 +83,8 @@ export default {
         },
         // 余额从coins执行器转到dice合约,游戏币充值完成
         parallelCoins2Dice(privateKey, to, amount, fee) {
-            const execName = "user.p.fzmtest.user.wasm.dice",
-            isWithdraw = false
+            const execName = "user.p.fzmtest.user.wasm.dice"
+            const isWithdraw = false
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
             }).then(signedTx => {
@@ -106,7 +106,23 @@ export default {
         },
         parallelCoins2Trade() {
         },
-        parallelDice2Coins() {
+
+        transferGameCoin2BTY(privateKey, amount) {
+            const fee = 0
+            const to = this.currentAccount.address
+            return this.parallelCoins2Trade().then(() => {
+                return this.parallelMarketBuy()
+            }).then(() => {
+                return this.parallelTrade2Paracross()
+            }).then(() => {
+                return this.parallel2Main()
+            }).then(() => {
+                return this.mainParacross2Coins()
+            })
+        },
+
+        parallelDice2Coins(privateKey, to, amount, fee) {
+
         }
 
 

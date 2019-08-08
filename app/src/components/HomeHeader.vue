@@ -13,7 +13,7 @@ export default {
 
 <style lang='scss'>
 .homeHeader_container{
-    padding: 21.5px 0 44.5px;
+    padding: 20.7px 0 26.8px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
