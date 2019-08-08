@@ -12,8 +12,8 @@ export default {
         ...mapState(['accountMap', 'currentAccount'])
     },
     methods: {
-
-        mainCoins2Paracross(privateKey, amount, fee) {
+        // 主链bty从coins执行器转移到paracross执行器
+        mainCoins2Paracross(privateKey, amount, fee, note='') {
             const to = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
             return this.createRawTransaction(to, amount, fee, note).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
@@ -21,7 +21,7 @@ export default {
                 return this.sendTransation(signedTx)
             })
         },
-
+        // 资产从主链转移到平行链（默认位于平行链的paracross执行器下）
         main2Parallel(privateKey, to, amount) {
             const execer = "user.p.fzmtest.paracross"
             const actionName = "ParacrossAssetTransfer"
@@ -36,7 +36,7 @@ export default {
                 return this.sendTransation(signedTx)
             })
         },
-
+        // 平行链资产从paracross执行器转移到trade执行器
         parallelParacross2Trade(privateKey, to, amount) {
             const execer = "user.p.fzmtest.paracross"
             const actionName = "TransferToExec"
@@ -52,12 +52,12 @@ export default {
                 return this.sendTransation(signedTx)
             })
         },
-
+        // 生成卖出指定买单的token的交易（未签名）
         parallelMarketSell(boardlotCnt, fee) {
             const buyID = ""
             return this.createRawTradeSellMarketTx(buyID, boardlotCnt, fee);
         },
-
+        // 玩家获得的平行链主代币位于trade合约下，提币到coins合约
         parallelTrade2Coins(privateKey, to, amount, fee) {
             const execName = "user.p.fzmtest.trade"
             const isWithdraw = true
@@ -67,7 +67,7 @@ export default {
                 return this.sendTransation(signedTx)
             })
         },
-
+        
         transferBTY2GameCoin(privateKey, amount) {
             const fee = 0
             const to = this.currentAccount.address
@@ -81,7 +81,7 @@ export default {
                 return this.parallelTrade2Coins(privateKey, to, amount, fee)
             })
         },
-
+        // 余额从coins执行器转到dice合约,游戏币充值完成
         parallelCoins2Dice(privateKey, to, amount, fee) {
             const execName = "user.p.fzmtest.user.wasm.dice"
             const isWithdraw = false

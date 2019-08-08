@@ -1,6 +1,6 @@
 <template>
     <div class="homeHeader_container">
-        <p>BTY</p>
+        <p><img src="../assets/images/logo.png" alt=""></p>
         <p>比特元钱包</p>
     </div>
 </template>
@@ -13,15 +13,23 @@ export default {
 
 <style lang='scss'>
 .homeHeader_container{
+    padding: 21.5px 0 44.5px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     p{
         &:nth-of-type(1){
-            padding:10px;
+            padding:0px 23px 0px 28px;
+            img{
+                width: 55px;
+                height: 55px;
+            }
         }
         &:nth-of-type(2){
-            
+            font-size:23px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(255,255,255,1);
         }
     }
 }

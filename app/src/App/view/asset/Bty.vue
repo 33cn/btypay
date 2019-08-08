@@ -72,10 +72,8 @@ export default {
 <style lang='scss'>
 .bty_container{
     >section.records{
-        overflow-x: hidden;
-        width: 100%;
-        // overflow-y: auto;
-        // max-height: 445px;
+        // width: 100%;
+        // overflow-x: hidden;
         >ul{
             display: flex;
             justify-content: space-around;
@@ -84,7 +82,30 @@ export default {
         >div{
             overflow-y: auto;
             max-height: 445px;
+            /* 设置滚动条的样式 */
+            &::-webkit-scrollbar {
+              width: 0px;
+              height: 0px;
+              background: transparent;
+            }
+            // /* 滚动槽 */
+            // &::-webkit-scrollbar-track {
+            // //   border-radius: $--border-radius-base;
+            //   background: transparent;
+            // }
+            // /* 滚动条滑块 */
+            &::-webkit-scrollbar-thumb {
+              background:red;
+              border-radius:2px;
+              opacity: 0.2;
+            }
+            // &::-webkit-scrollbar-thumb:window-inactive {
+            //   background:rgba(74,125,180,.2);
+            // //   border-radius:4px;
+            //   opacity: 0.2;
+            // }
         }
+        
     }
     .ani-enter{
         transform: translateX(-100%);
