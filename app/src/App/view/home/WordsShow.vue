@@ -1,66 +1,123 @@
 <template>
-    <div class="wordsShow_container">
-        <home-back></home-back>
-        <section class="content">
-            <p>请记录下您的助记词，并妥善保存，建议通过纸笔的方式。不建议截图保存，会对您的资金安全造成威胁。</p>
-            <div></div>
-            <p><router-link :to="{ name: 'WordsConfirm'}">下一步</router-link></p>
-        </section>
-    </div>
+  <div class="wordsShow_container">
+    <home-back></home-back>
+    <section class="content">
+      <p class="notice">请记录下您的助记词，并妥善保存，建议通过纸笔的方式。不建议截图保存，会对您的资金安全造成威胁。</p>
+      <div class="mnemonic">
+        <span v-for="(item, index) in seedCharts" :key="index">{{item}}</span>
+      </div>
+      <p class="btn">
+        <router-link :to="{ name: 'WordsConfirm'}">下一步</router-link>
+      </p>
+    </section>
+  </div>
 </template>
 
 <script>
-import HomeBack from '@/components/HomeBack.vue'
+import HomeBack from "@/components/HomeBack.vue";
 // import { randomSort, addPropToArrElem, getLocalLang } from '@/libs/common.js'
 // import {encrypt} from '@/libs/crypto.js'
 export default {
-    components:{HomeBack},
-    data(){
-        return{
-            seedString:'',
-            // seedCharts:[],
-        }
-    },
-    methods:{
-        //生成助记词
-        generateSeed(){
-            this.seedString = this.newMnemonic(1);
-            // console.log(this.seedString)
-            this.$store.commit('Account/UPDATE_SEED',this.seedString)
-        },
-        // //创建钱包
-        // createWallet(){
-        //     // 省略各种判断
-        //     this.saveSeed(seedString, 'password');
-
-        // },
-        // //保存加密助记词并创建钱包
-        // saveSeed(seedString,password){
-        //     const walletObj = this.createHDWallet(seedString);
-        //     // 加密助记词 
-        //     let ciphertext = encrypt(seedString, password);
-        //     window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
-        //     // this.newAccount('创世地址');
-        //     return walletObj;
-        // }
-    },
-    computed:{
-
-    },
-    watch:{
-        // seedString(val){
-            // this.seedCharts = val.split(' ');
-        // },
-        
-    },
-    mounted(){
-        this.generateSeed();
+  components: { HomeBack },
+  data() {
+    return {
+      seedString: "",
+      seedCharts: [
+        "织",
+        "狂",
+        "换",
+        "建",
+        "讯",
+        "春",
+        "症",
+        "掷",
+        "些",
+        "官",
+        "插",
+        "气",
+        "丽",
+        "声",
+        "忧"
+      ]
+    };
+  },
+  methods: {
+    //生成助记词
+    generateSeed() {
+      this.seedString = this.newMnemonic(1);
+      // console.log(this.seedString)
+      this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
-}
+    // //创建钱包
+    // createWallet(){
+    //     // 省略各种判断
+    //     this.saveSeed(seedString, 'password');
+
+    // },
+    // //保存加密助记词并创建钱包
+    // saveSeed(seedString,password){
+    //     const walletObj = this.createHDWallet(seedString);
+    //     // 加密助记词
+    //     let ciphertext = encrypt(seedString, password);
+    //     window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
+    //     // this.newAccount('创世地址');
+    //     return walletObj;
+    // }
+  },
+  computed: {},
+  watch: {
+    // seedString(val){
+    // this.seedCharts = val.split(' ');
+    // },
+  },
+  mounted() {
+    this.generateSeed();
+  }
+};
 </script>
 
 <style lang='scss'>
-.wordsShow_container{
-
+.wordsShow_container {
+  .content {
+    width: 350px;
+    margin: 0 auto;
+    margin-top: 34.5px;
+    .notice {
+      font-size: 18.4px;
+      color: #ffffff;
+    }
+    .mnemonic {
+      height: 203.5px;
+      background: #ffffff;
+      margin: 11.5px 0;
+      padding: 33px 46px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px 3px #ffffff;
+      > span {
+        font-size: 26px;
+        color: #ff6a8b;
+        width: 50px;
+        display: inline-block;
+        text-align: center;
+        margin-bottom: 12px;
+      }
+    }
+    .btn {
+      margin-top: 60px;
+      height: 43.5px;
+      background-image: url("../../../assets/images/longBtnBg.png");
+      background-size: 100% 100%;
+      text-align: center;
+      font-size: 21px;
+      font-family: MicrosoftYaHei;
+      font-weight: 400;
+      a {
+        width: 100%;
+        display: inline-block;
+        color: rgba(255, 255, 255, 1) !important;
+        margin-top: 3px;
+      }
+    }
+  }
 }
 </style>
