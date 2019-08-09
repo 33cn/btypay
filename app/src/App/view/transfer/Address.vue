@@ -84,6 +84,8 @@ export default {
         position: fixed;
         bottom: 107px;
         a{
+            width: 100%;
+            display: inline-block;
             font-size:20px;
             font-family:MicrosoftYaHei;
             font-weight:400;

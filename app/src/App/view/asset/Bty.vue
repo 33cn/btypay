@@ -207,6 +207,8 @@ export default {
             background-size: 100% 100%;
             padding-top: 3px;
             a{
+                width: 100%;
+                display: inline-block;
                 color:rgba(255,255,255,1);
             }
         }

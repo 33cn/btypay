@@ -32,9 +32,6 @@
             <p>0.001BTY</p>
         </div>
       </el-form-item>
-      <!-- <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-      </el-form-item> -->
     </el-form>
     <p @click="submitForm('ruleForm')">创建</p>
   </div>
@@ -87,6 +84,18 @@ export default {
   },
   methods: {
     submitForm(formName) {
+      this.$alert('请关注您的资金变动。', '转账成功', {
+                confirmButtonText: '知道了',
+                closeOnClickModal:true,
+                center:true,
+                showClose:false,
+                callback: action => {
+                    this.$message({
+                      type: 'info',
+                      message: `action: ${ action }`
+                    });
+                }
+            });
       this.$refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");

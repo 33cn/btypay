@@ -28,7 +28,7 @@
             </div>
             <p>温馨提示：跨链兑换支持使用GAME兑换BTY，也可将GAME兑换成BTY。</p>
         </section>
-        <p>跨链兑换</p>
+        <p @click="convertHandle">跨链兑换</p>
     </div>
 </template>
 
@@ -49,6 +49,20 @@ export default {
             console.log(e)
             this.exportVal = e.target.value;
             this.receiptVal = e.target.value;
+        },
+        convertHandle(){
+            this.$alert('请关注收款地址的资金变动。', '兑换成功', {
+                confirmButtonText: '知道了',
+                closeOnClickModal:true,
+                center:true,
+                showClose:false,
+                callback: action => {
+                    this.$message({
+                      type: 'info',
+                      message: `action: ${ action }`
+                    });
+                }
+            });
         }
     }
 }

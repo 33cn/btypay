@@ -1,7 +1,7 @@
 <template>
-    <div class="addAddress_container">
-        <asset-back title='添加地址'></asset-back>
-        <section class="content">
+  <div class="addAddress_container">
+    <asset-back title="添加地址"></asset-back>
+    <!-- <section class="content">
             <div>
                 <p>地址标签</p>
                 <input type="text" placeholder="请输入标签内容">
@@ -11,79 +11,128 @@
                 <input class="address" type="text" placeholder="请输入地址">
                 <img src="../../../assets/images/scan.png" alt="">
             </div>
-        </section>
-        <p>添加</p>
-    </div>
+    </section>-->
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
+      <el-form-item label="地址标签" prop="label">
+        <el-input v-model="ruleForm.label" placeholder="请输入标签内容" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="地址" prop="address">
+        <el-input v-model="ruleForm.address" placeholder="请输入地址" autocomplete="off"></el-input>
+        <img src="../../../assets/images/scan.png" alt />
+      </el-form-item>
+    </el-form>
+    <p @click="submitForm('ruleForm')">添加</p>
+  </div>
 </template>
 
 <script>
-import AssetBack from '@/components/AssetBack.vue'
+import AssetBack from "@/components/AssetBack.vue";
 export default {
-    components:{AssetBack},
-}
+  components: { AssetBack },
+  data() {
+    var validateAddress = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("地址不能为空"));
+      } 
+    };
+    var checkLabel = (rule, value, callback) => {
+      console.log(value);
+      if (!value) {
+        return callback(new Error("地址标签不能为空"));
+      }
+    };
+    return {
+      ruleForm: {
+        label: "",
+        address: "",
+        comment: ""
+      },
+      rules: {
+        label: [{ validator: checkLabel, trigger: "blur" }],
+        address: [{ validator: validateAddress, trigger: "blur" }]
+      }
+    };
+  },
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          alert("submit!");
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    }
+  }
+};
 </script>
 
 <style lang='scss'>
-.addAddress_container{
-    width: 100%;
-    height: 100vh;
-    background-image: url('../../../assets/images/lightColorBg.png');
-    background-size: 100% 100%;
-    >section.content{
-        margin: 69px 63px 0 25px;
-        div{
-            position: relative;
-            margin-bottom: 40px;
-            p{
-                font-size:18px;
-                font-family:MicrosoftYaHei;
-                font-weight:400;
-                color:rgba(22,42,84,1);
-                line-height:1;
-                margin-bottom: 25px;
-            }
-            input{
-                width: 100%;
-                border:none;
-                background-color: transparent;
-                border-bottom: 1px solid #A8B1BD;
-                font-size: 18px;
-                color:rgba(22,42,84,1);
-                opacity:0.8;
-                &.address{
-                    padding-right: 35px;
-                }
-                ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
-		        	opacity:0.5;
-		        }
-		        ::-moz-placeholder { /* Firefox 19+ */  
-		        	opacity:0.5;
-		        }
-		        :-ms-input-placeholder { /* IE 10+ */ 
-                    opacity:0.5;
-		        }
-		        :-moz-placeholder { /* Firefox 18- */ 
-                    opacity:0.5;
-                }
-            }
-            img{
-                width: 23px;
-                position: absolute;
-                right: 0px;
-            }
-        }
-    }
-    > p {
-        margin: 210px 23px 0;
-        padding: 9px 0 14px;
-        background-image: url("../../../assets/images/addAddressBtn.png");
-        background-size: 100% 100%;
-        text-align: center;
-        font-size: 20px;
+.addAddress_container {
+  width: 100%;
+  height: 100vh;
+  background-image: url("../../../assets/images/lightColorBg.png");
+  background-size: 100% 100%;
+  > form {
+    margin: 69px 63px 0 25px;
+    > div {
+      margin-bottom: 40px;
+      position: relative;
+      > label {
+        margin-bottom: 25px;
+        text-align: left;
+        font-size: 18px;
         font-family: MicrosoftYaHei;
         font-weight: 400;
-        color: rgba(255, 255, 255, 1);
+        color: rgba(22, 42, 84, 1);
         line-height: 1;
+      }
+      > div {
+        margin-left: 0 !important;
+        input {
+          width: 100%;
+          border: none;
+          background-color: transparent;
+          border-bottom: 1px solid #a8b1bd;
+          font-size: 18px;
+          color: rgba(22, 42, 84, 1);
+          opacity: 0.8;
+          border-radius: 0px;
+          padding: 0px;
+          ::-webkit-input-placeholder {
+            /* Chrome/Opera/Safari */
+            opacity: 0.5;
+          }
+        }
+        img {
+          width: 23px;
+          position: absolute;
+          right: 0px;
+          bottom: 10px;
+        }
+      }
+      &:nth-of-type(2){
+          input{
+              padding-right: 30px;
+          }
+      }
+    }
+  }
+  > p {
+    margin: 210px 23px 0;
+    padding: 9px 0 14px;
+    background-image: url("../../../assets/images/addAddressBtn.png");
+    background-size: 100% 100%;
+    text-align: center;
+    font-size: 20px;
+    font-family: MicrosoftYaHei;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 1);
+    line-height: 1;
   }
 }
 </style>
