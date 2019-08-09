@@ -7,7 +7,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import {
   errNotify,
-  sucNotify
+  sucNotify,
 } from './libs/notification'
 import SvgIcon from './components/SvgIcon'
 import walletAPI from './mixins/walletAPI'

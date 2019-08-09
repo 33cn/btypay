@@ -1,5 +1,5 @@
 import {
-  Notification
+  Notification 
 } from 'element-ui'
 export const errNotify = (msgOrErr) => {
   let msg = msgOrErr
@@ -20,3 +20,5 @@ export const sucNotify = (msg) => {
     duration: 3000
   })
 }
+
+// export const messageBox = MessageBox

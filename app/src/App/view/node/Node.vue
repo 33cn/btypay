@@ -14,7 +14,7 @@
                         <p>http://gamemainnet-bty.token.io</p>
                     </section>
                     <p class="line"></p>
-                    <p class="add">添加自定义节点</p>
+                    <p class="add" @click="addMainNode">添加自定义节点</p>
                 </div>
             </li>
             <li>
@@ -25,18 +25,73 @@
                         <p>http://gamemainnet-bty.token.io</p>
                     </section>
                     <p class="line"></p>
-                    <p class="add">添加自定义节点</p>
+                    <p class="add" @click="paraDialog=true">添加自定义节点</p>
                 </div>
             </li>
         </ul>
+        <el-dialog title="平行链节点设置" :visible.sync="paraDialog" width='400px' :show-close=false>
+            <el-form :model="form" :rules="rules">
+                <el-form-item label="平行链名称">
+                    <el-input v-model="form.paraName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="代币名称">
+                    <el-input v-model="form.coinName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="节点地址">
+                    <el-input v-model="form.address" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="paraDialog = false">取 消</el-button>
+                <el-button type="primary" @click="paraDialog = false">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 export default {
     data(){
+        var paraNameCheck = (rule, value, callback)=>{
+
+        }
         return{
-            
+            paraDialog:false,
+            form:{
+                paraName:'',
+                coinName:'',
+                address:''
+            },
+            rules:{
+                paraName: [{ validator: paraNameCheck, trigger: "blur" }],
+            }
+        }
+    },
+    methods:{
+        addMainNode() {
+            this.$prompt('请输入您要添加的主链节点地址，建议您使用默认的主链节点', '主链节点设置', {
+                customClass:'addMain',
+              distinguishCancelAndClose: true,
+              confirmButtonText: '确认',
+              cancelButtonText: '取消',
+              showClose:false
+            }).then(() => {
+                this.$message({
+                  type: 'info',
+                  message: '保存修改'
+                });
+            })
+            .catch(action => {
+              this.$message({
+                type: 'info',
+                message: action === 'cancel'
+                  ? '放弃保存并离开页面'
+                  : '停留在当前页面'
+              })
+            });
+        },
+        addParaNode(){
+
         }
     }
 }
@@ -106,6 +161,77 @@ export default {
                 }
                 &.parallel{
 
+                }
+            }
+        }
+    }
+    .el-dialog__wrapper{
+        background:rgba(98,119,218,0.65);
+        .el-dialog{
+            background-color: transparent;
+            background-image: url('../../../assets/images/addParaBg.png');
+            background-size: 100% 100%;
+            padding: 20px 50px;
+        }
+        
+    }
+}
+.el-message-box__wrapper{
+    background:rgba(98,119,218,0.65);
+    .el-message-box{
+        width: calc(100% - 0px);
+        padding: 28px 35px 50px;
+        background-color: transparent;
+        border: none;
+        background-image: url('../../../assets/images/addMainBg.png');
+        background-size: 100% 100%;
+        div.el-message-box__header{
+            text-align: center;
+            font-size:20px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(22,42,84,1);
+            line-height:1;
+        }
+        div.el-message-box__content{
+            p{
+                font-size:18px;
+                font-family:MicrosoftYaHei;
+                font-weight:400;
+                color:rgba(22,42,84,0.68);
+                line-height:1;
+            }
+            input{
+                height: 30px;
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid rgba(22,42,84,0.23);
+                border-radius: 0px;
+                padding: 10px 0 0 0;
+            }
+        }
+        div.el-message-box__btns{
+            display: flex;
+            justify-content: center;
+            button{
+                width: 82px;
+                padding: 5px;
+                border-radius:10px;
+                font-size:20px;
+                font-family:MicrosoftYaHei;
+                font-weight:400;
+                color:rgba(33,123,244,1);
+                line-height:1;
+                &:nth-of-type(1){
+                    margin-right: 46px;
+                    border:1px solid rgba(33,123,244,1);
+                }
+                &:nth-of-type(2){
+                    color: #fff;
+                    background-color: rgba(33,123,244,1)!important;
+                }
+                &.el-button--primary{
+                    background: rgba(33,123,244,1);
                 }
             }
         }
