@@ -1,27 +1,27 @@
 <template>
-    <div class="detail_container">
+    <div class="convertDetail_container">
         <asset-back title='订单详情'></asset-back>
         <section class="status">
             <img src="../../../../assets/images/success.png" alt="">
-            <p>转账成功</p>
+            <p>兑换成功</p>
             <p>2019/02/21 10:12:12</p>
         </section>
         <ul>
             <li>
-                <p>金额</p>
+                <p>转出</p>
                 <p>100 BTY</p>
+            </li>
+            <li>
+                <p>收到</p>
+                <p>100 Game</p>
+            </li>
+            <li>
+                <p>汇率</p>
+                <p>1BTY=1GAME</p>
             </li>
             <li>
                 <p>矿工费</p>
-                <p>100 BTY</p>
-            </li>
-            <li>
-                <p>付款地址</p>
-                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
-            </li>
-            <li>
-                <p>收款地址</p>
-                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
+                <p>0.1BTY</p>
             </li>
             <li>
                 <p>区块</p>
@@ -46,7 +46,7 @@ export default {
 </script>
 
 <style lang='scss'>
-.detail_container{
+.convertDetail_container{
     width: 100%;
     height: 100vh;
     background-image: url('../../../../assets/images/lightColorBg.png');
@@ -80,15 +80,16 @@ export default {
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            margin-bottom: 19.5px;
             p{
                 font-family:MicrosoftYaHei;
                 font-weight:400;
-                line-height: 1.1;
+                line-height: 1;
                 color:rgba(22,42,84,1);
                 &:nth-of-type(1){
                     width: 100px;
                     font-size: 18px;
-                    line-height:3;
+                    // line-height:3;
                     opacity:0.67;
                 }
                 &:nth-of-type(2){

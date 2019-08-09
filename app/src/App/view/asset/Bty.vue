@@ -22,13 +22,14 @@
         </section>
         <section class="records" >
             <ul>
-                <li v-for="item in tab" :key="item.name" @click="view=item.com">{{item.name}}</li>
-                <li v-if="coin=='game'" @click="view='Convert'">兑换</li>
+                <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
+                <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
             </ul>
+            <div class="line" ref="line" :style="{left:toLeft}"></div>
             <!-- <keep-alive>
                 <component :is=""></component>
             </keep-alive> -->
-            <div ref="txListWrap">
+            <div ref="txListWrap" class="history">
                 <transition name="ani" mode="out-in">
                     <component :is="view"></component>
                 </transition>
@@ -41,21 +42,35 @@
 import All from '@/App/view/asset/record/All.vue'
 import Transfer from '@/App/view/asset/record/Transfer.vue'
 import Receipt from '@/App/view/asset/record/Receipt.vue'
+import Convert from '@/App/view/asset/record/Convert.vue'
 export default {
-    components:{All,Transfer,Receipt},
+    components:{All,Transfer,Receipt,Convert},
     data(){
         return{
             tab:[{name:'全部',com:'All'},{name:'转账',com:'Transfer'},{name:'收款',com:'Receipt'}],
             view:'All',
+            preIndex:0,
             pervScrollTop:0,
             nextIsLoading:false,
             loadingData:[],
             coin:'',
+            toLeft: null,
         }
     },
     methods:{
-        tabChange(item){
-            this.view = item.com
+        tabChange(item,i){
+            this.view = item.com;
+            let length,
+                differ = i - this.preIndex;
+            if(this.coin == 'game'){
+                length = 97*differ;
+            }else if(this.coin == 'bty'){
+                length = 145.5*differ;
+            }
+            this.toLeft = this.$refs.line.offsetLeft + length + 'px';
+            setTimeout(() => {
+                this.preIndex = i;
+            }, 300);
         },
         onScroll(){
             console.log('scrolling')
@@ -71,6 +86,11 @@ export default {
                 }
             }
             this.pervScrollTop = scrollTop
+        }
+    },
+    computed:{
+        tabIndex(){
+            // return this.view=='All'?
         }
     },
     mounted () {
@@ -208,6 +228,7 @@ export default {
         // overflow-x: hidden;
         // background-color: #fff;
         margin-top: 30px;
+        position: relative;
         >ul{
             margin: 0 37px 0 31.5px;
             display: flex;
@@ -221,7 +242,17 @@ export default {
             }
             
         }
-        >div{
+        >div.line{
+            width:20px;
+            height:2px;
+            border:1px solid rgba(245,185,71,1);
+            background:linear-gradient(90deg,rgba(115,248,253,1),rgba(128,164,253,1));
+            position: absolute;
+            top: 30px;
+            left: 32px;
+            transition: all 0.3s linear;
+        }
+        >div.history{
             overflow-y: auto;
             max-height: 320px;
             margin-top: 8px;

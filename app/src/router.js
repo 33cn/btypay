@@ -73,6 +73,10 @@ export default new Router({
       path:'/coin/detail/:id',
       name:'detail',
       component:() => import('./App/view/asset/record/Detail')
+    },{
+      path:'/coin/convertDetail/:id',
+      name:'convertDetail',
+      component:() => import('./App/view/asset/record/ConvertDetail')
     },
     {
       path: '*',
