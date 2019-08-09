@@ -1,6 +1,6 @@
 <template>
   <div class="wordsConfirm_container">
-    <asset-back title="" style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0"></asset-back>
     <section class="content">
       <p class="desc">请按顺序确认您的助记词</p>
       <div class="mnemonic">
@@ -16,9 +16,9 @@
         >{{item.value}}</el-button>
       </div>
 
-      <p class="btn">
-        <router-link :to="{ name: 'WalletIndex'}">下一步</router-link>
-      </p>
+      <div class="btn">
+        <div @click="createWallet">下一步</div>
+      </div>
     </section>
   </div>
 </template>
@@ -33,32 +33,33 @@ export default {
   data() {
     return {
       seedCharts: [],
-      seedChartsRandom: [
-        { value: "织", selected: false },
-        { value: "狂", selected: false },
-        { value: "换", selected: false },
-        { value: "建", selected: false },
-        { value: "讯", selected: false },
-        { value: "春", selected: false },
-        { value: "症", selected: false },
-        { value: "掷", selected: false },
-        { value: "些", selected: false },
-        { value: "官", selected: false },
-        { value: "插", selected: false },
-        { value: "气", selected: false },
-        { value: "丽", selected: false },
-        { value: "声", selected: false },
-        { value: "忧", selected: false }
-      ],
+      seedChartsRandom: [],
 
       seedChartsSelected: []
     };
+  },
+  computed: {
+    seedString() {
+      return this.$store.state.Account.seed;
+    },
+    seedStringSelected: function() {
+      let s = "";
+      for (let i = 0; i < this.seedChartsSelected.length; i++) {
+        s += ` ${this.seedChartsSelected[i].value}`;
+      }
+      return s.trim();
+    }
   },
   methods: {
     //创建钱包
     createWallet() {
       // 省略各种判断
-      this.saveSeed(this.seedString, "password");
+      if (this.seedStringSelected === this.seedString) {
+        this.saveSeed(this.seedString, "password");
+        this.$router.push({ name: "WalletIndex" });
+      }else{
+        this.$message.error('助记词错误！');
+      }
     },
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
@@ -79,19 +80,14 @@ export default {
       item.selected = !item.selected;
     }
   },
-  computed: {
-    seedString() {
-      return this.$store.state.Account.seed;
-    }
-  },
   mounted() {
-    // this.seedCharts = this.seedString.split(" ");
-    // this.seedChartsRandom = addPropToArrElem(
-    //   randomSort(this.seedCharts),
-    //   "selected",
-    //   false
-    // );
-    // this.createWallet();
+    this.seedCharts = this.seedString.split(" ");
+    this.seedChartsRandom = addPropToArrElem(
+      randomSort(this.seedCharts),
+      "selected",
+      false
+    );
+    this.createWallet();
   }
 };
 </script>
@@ -107,7 +103,7 @@ export default {
       color: #ffffff;
     }
     .btn {
-      margin-top: 60px;
+      margin-top: 40px;
       height: 43.5px;
       background-image: url("../../../assets/images/longBtnBg.png");
       background-size: 100% 100%;
@@ -115,7 +111,10 @@ export default {
       font-size: 21px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
-      a {
+      > div {
+        &:hover {
+          cursor: pointer;
+        }
         width: 100%;
         display: inline-block;
         color: rgba(255, 255, 255, 1) !important;
@@ -162,6 +161,12 @@ export default {
     .word-btn.el-button--primary {
       background: #ff6a8b;
       opacity: 1;
+      &:hover,
+      &:active,
+      &:focus {
+        background: #ff6a8b;
+        opacity: 1;
+      }
     }
   }
   .selected-word-btn-group {

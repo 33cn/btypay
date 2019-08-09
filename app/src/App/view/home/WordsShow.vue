@@ -22,30 +22,14 @@ export default {
   data() {
     return {
       seedString: "",
-      seedCharts: [
-        "织",
-        "狂",
-        "换",
-        "建",
-        "讯",
-        "春",
-        "症",
-        "掷",
-        "些",
-        "官",
-        "插",
-        "气",
-        "丽",
-        "声",
-        "忧"
-      ]
+      seedCharts: []
     };
   },
   methods: {
     //生成助记词
     generateSeed() {
       this.seedString = this.newMnemonic(1);
-      // console.log(this.seedString)
+      this.seedCharts = this.seedString.split(" ")
       this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
     // //创建钱包

@@ -1,6 +1,6 @@
 <template>
   <div class="createWallet_container">
-    <asset-back title="" style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0"></asset-back>
     <el-form
       label-position="top"
       :rules="createRules"
@@ -15,9 +15,9 @@
         <el-input v-model="createForm.confirmPwd" type="password"></el-input>
       </el-form-item>
     </el-form>
-    <p class="btn">
-      <router-link :to="{ name: 'WordsShow'}">创建</router-link>
-    </p>
+    <div class="btn">
+      <div @click="handleCreate" :to="{ name: 'WordsShow'}">创建</div>
+    </div>
   </div>
 </template>
 
@@ -26,6 +26,13 @@ import AssetBack from "@/components/AssetBack.vue";
 export default {
   components: { AssetBack },
   data() {
+    var confirmPwdValidate = (rule, value, callback) => {
+      if (value !== this.createForm.pwd) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       createForm: {
         pwd: "",
@@ -37,10 +44,21 @@ export default {
           { min: 8, max: 16, message: "8 到 16位字符", trigger: "blur" }
         ],
         confirmPwd: [
-          { required: true, message: "请输入您的确认密码", trigger: "blur" }
+          { required: true, message: "请输入您的确认密码", trigger: "blur" },
+          { validator: confirmPwdValidate, trigger: "blur" }
         ]
       }
     };
+  },
+  methods: {
+    handleCreate() {
+      this.$refs.createForm.validate(valid => {
+        if (valid) {
+          this.$store.commit('Account/UPDATE_PASSWORD', this.createForm.pwd)
+          this.$router.push({ name: "WordsShow" });
+        }
+      });
+    }
   }
 };
 </script>
@@ -70,11 +88,14 @@ export default {
     font-size: 21px;
     font-family: MicrosoftYaHei;
     font-weight: 400;
-    a {
+    > div {
       width: 100%;
       display: inline-block;
       color: rgba(255, 255, 255, 1) !important;
       margin-top: 3px;
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 }
