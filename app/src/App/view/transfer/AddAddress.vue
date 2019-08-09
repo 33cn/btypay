@@ -12,6 +12,7 @@
                 <img src="../../../assets/images/scan.png" alt="">
             </div>
         </section>
+        <p>添加</p>
     </div>
 </template>
 
@@ -72,5 +73,17 @@ export default {
             }
         }
     }
+    > p {
+        margin: 210px 23px 0;
+        padding: 9px 0 14px;
+        background-image: url("../../../assets/images/addAddressBtn.png");
+        background-size: 100% 100%;
+        text-align: center;
+        font-size: 20px;
+        font-family: MicrosoftYaHei;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 1);
+        line-height: 1;
+  }
 }
 </style>
