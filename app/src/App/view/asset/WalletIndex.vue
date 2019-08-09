@@ -35,16 +35,16 @@
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
 export default {
-    components: { HomeHeader },
-    methods:{
-        toBty(){
-            this.$router.push({path:'/coin?coin=bty'})
-        },
-        toGame(){
-            this.$router.push({path:'/coin?coin=game'})
-        }
+  components: { HomeHeader },
+  methods: {
+    toBty() {
+      this.$router.push({ path: "/coin?coin=bty" });
+    },
+    toGame() {
+      this.$router.push({ path: "/coin?coin=game" });
     }
-}
+  }
+};
 </script>
 
 <style lang='scss'>

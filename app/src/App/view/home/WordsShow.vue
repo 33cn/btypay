@@ -1,6 +1,6 @@
 <template>
   <div class="wordsShow_container">
-    <home-back></home-back>
+    <asset-back title="" style="padding-top:0"></asset-back>
     <section class="content">
       <p class="notice">请记录下您的助记词，并妥善保存，建议通过纸笔的方式。不建议截图保存，会对您的资金安全造成威胁。</p>
       <div class="mnemonic">
@@ -14,11 +14,11 @@
 </template>
 
 <script>
-import HomeBack from "@/components/HomeBack.vue";
+import AssetBack from "@/components/AssetBack.vue";
 // import { randomSort, addPropToArrElem, getLocalLang } from '@/libs/common.js'
 // import {encrypt} from '@/libs/crypto.js'
 export default {
-  components: { HomeBack },
+  components: { AssetBack },
   data() {
     return {
       seedString: "",

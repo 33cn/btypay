@@ -1,39 +1,121 @@
 <template>
-    <div class="importWallet_container">
-        <home-back></home-back>
-        <section class="content">
-            <div class="words">
-                <p>请输入您12位钱包助记词</p>
-                <div>
-
-                </div>
-            </div>
-            <ul class="password">
-                <li>
-                    <p>新密码（8-16位字符）</p>
-                    <input type="text">
-                </li>
-                <li>
-                    <p>确认密码</p>
-                    <input type="text">
-                </li>
-            </ul>
-            <p>
-                <router-link :to="{ name: 'WalletIndex'}">导入</router-link>
-            </p>
-        </section>
-    </div>
+  <div class="importWallet_container">
+    <asset-back title style="padding-top:0"></asset-back>
+    <section class="content">
+      <div class="words">
+        <p>请输入您12位钱包助记词</p>
+        <div class="seed-ui__word-group_zh">
+          <one-box-one-word :box-num="15" v-model="seedStringInput"></one-box-one-word>
+        </div>
+      </div>
+      <el-form
+        label-position="top"
+        :rules="createRules"
+        :model="createForm"
+        ref="createForm"
+        class="password"
+      >
+        <el-form-item label="请输入您的密码（8-16位字符）" prop="pwd">
+          <el-input v-model="createForm.pwd" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPwd">
+          <el-input v-model="createForm.confirmPwd" type="password"></el-input>
+        </el-form-item>
+      </el-form>
+      <p class="btn">
+        <router-link :to="{ name: 'WalletIndex'}">导入</router-link>
+      </p>
+    </section>
+  </div>
 </template>
 
 <script>
-import HomeBack from '@/components/HomeBack.vue'
+import AssetBack from "@/components/AssetBack.vue";
+import OneBoxOneWord from "@/components/OneBoxOneWord.vue";
 export default {
-    components:{HomeBack}
-}
+  components: { AssetBack, OneBoxOneWord },
+  data() {
+    return {
+      seedStringInput: "",
+      createForm: {
+        pwd: "",
+        confirmPwd: ""
+      },
+      createRules: {
+        pwd: [
+          { required: true, message: "请输入您的密码", trigger: "blur" },
+          { min: 8, max: 16, message: "8 到 16位字符", trigger: "blur" }
+        ],
+        confirmPwd: [
+          { required: true, message: "请输入您的确认密码", trigger: "blur" }
+        ]
+      }
+    };
+  }
+};
 </script>
 
 <style lang='scss'>
-.importWallet_container{
-
+.importWallet_container {
+  .content {
+    width: 350px;
+    margin: 0 auto;
+    margin-top: 30px;
+    .words {
+      > p {
+        font-size: 18px;
+        color: #ffffff;
+      }
+      > div {
+        height: 190px;
+        background: #ffffff;
+        margin: 11.5px 0;
+        padding: 20px 30px 35px 30px;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px 3px #ffffff;
+      }
+      .seed-ui__word-group_zh{
+        .word-box{
+            height: 36px;
+            width: 36px;
+            margin-left: 20px;
+            font-size: 26px;
+            text-align: center;
+        }
+      }
+    }
+    .password {
+      .el-form-item {
+        margin-bottom: 19px;
+      }
+      .el-form-item__label {
+        font-size: 18px;
+        color: #ffffff;
+        padding: 0;
+      }
+      input {
+        border-radius: 10px;
+        height: 38px;
+      }
+    }
+    .btn {
+      margin: 0 auto;
+      margin-top: 60px;
+      width: 350px;
+      height: 43.5px;
+      background-image: url("../../../assets/images/longBtnBg.png");
+      background-size: 100% 100%;
+      text-align: center;
+      font-size: 21px;
+      font-family: MicrosoftYaHei;
+      font-weight: 400;
+      a {
+        width: 100%;
+        display: inline-block;
+        color: rgba(255, 255, 255, 1) !important;
+        margin-top: 3px;
+      }
+    }
+  }
 }
 </style>

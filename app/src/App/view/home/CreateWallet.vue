@@ -1,6 +1,6 @@
 <template>
   <div class="createWallet_container">
-    <home-back></home-back>
+    <asset-back title="" style="padding-top:0"></asset-back>
     <el-form
       label-position="top"
       :rules="createRules"
@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import HomeBack from "@/components/HomeBack.vue";
+import AssetBack from "@/components/AssetBack.vue";
 export default {
-  components: { HomeBack },
+  components: { AssetBack },
   data() {
     return {
       createForm: {
