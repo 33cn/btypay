@@ -1,6 +1,6 @@
 <template>
   <div class="wordsConfirm_container">
-    <home-back></home-back>
+    <asset-back title="" style="padding-top:0"></asset-back>
     <section class="content">
       <p class="desc">请按顺序确认您的助记词</p>
       <div class="mnemonic">
@@ -25,11 +25,11 @@
 
 <script>
 import DargableBtnGroup from "@/components/DragableBtnGroup.vue";
-import HomeBack from "@/components/HomeBack.vue";
+import AssetBack from "@/components/AssetBack.vue";
 import { randomSort, addPropToArrElem } from "@/libs/common.js";
 import { encrypt } from "@/libs/crypto.js";
 export default {
-  components: { HomeBack, DargableBtnGroup },
+  components: { AssetBack, DargableBtnGroup },
   data() {
     return {
       seedCharts: [],

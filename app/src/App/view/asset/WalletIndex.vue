@@ -43,7 +43,8 @@ export default {
     toGame() {
       this.$router.push({ path: "/coin?coin=game" });
     }
-}
+  }
+};
 </script>
 
 <style lang='scss'>
