@@ -57,8 +57,9 @@ export default {
       if (this.seedStringSelected === this.seedString) {
         this.saveSeed(this.seedString, "password");
         this.$router.push({ name: "WalletIndex" });
-      }else{
-        this.$message.error('助记词错误！');
+        this.$message.success("钱包创建成功！");
+      } else {
+        this.$message.error("助记词错误！");
       }
     },
     //保存加密助记词并创建钱包
@@ -87,7 +88,7 @@ export default {
       "selected",
       false
     );
-    this.createWallet();
+    // this.createWallet();
   }
 };
 </script>
@@ -95,22 +96,25 @@ export default {
 <style lang='scss'>
 .wordsConfirm_container {
   .content {
-    width: 350px;
+    width: 344px;
     margin: 0 auto;
-    margin-top: 23px;
+    margin-top: 19px;
     .desc {
-      font-size: 18.5px;
+      font-size: 16px;
       color: #ffffff;
     }
     .btn {
-      margin-top: 40px;
-      height: 43.5px;
+      margin: 0 auto;
+      margin-top: 25px;
+      width: 344px;
+      height: 47px;
       background-image: url("../../../assets/images/longBtnBg.png");
       background-size: 100% 100%;
       text-align: center;
-      font-size: 21px;
+      font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
+      padding-top: 5px;
       > div {
         &:hover {
           cursor: pointer;
@@ -127,9 +131,9 @@ export default {
     margin: 11.5px 0;
     box-shadow: 2px 2px 5px 3px #ffffff;
     border-radius: 10px;
-    padding: 10px 0;
+    padding: 10px 15px;
     background: white;
-    height: 205px;
+    height: 190px;
     display: flex;
     position: relative;
     align-items: center;
@@ -156,8 +160,8 @@ export default {
     }
   }
   .mnemonic-select {
-    margin-top: 32px;
-    padding: 0 20px;
+    margin-top: 11px;
+    padding: 0 35px;
     .word-btn.el-button--primary {
       background: #ff6a8b;
       opacity: 1;
@@ -176,20 +180,24 @@ export default {
     width: auto;
     border-radius: 10px;
     padding: 6px 6px;
-    font-size: 27px;
+    font-size: 18px;
     border: none;
     font-family: MicrosoftYaHei;
     margin-bottom: 5px;
     margin-top: 10px;
-    margin-left: 20px;
+    margin-left: 30px;
     color: #ffffff;
     background: #ff89a3;
     opacity: 0.71;
+    &:nth-child(5n+1){
+      margin-left: 0;
+    }
     &:hover {
       color: #ffffff;
       background: #ff89a3;
       opacity: 1;
     }
+    
   }
 }
 </style>

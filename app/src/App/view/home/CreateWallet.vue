@@ -54,7 +54,7 @@ export default {
     handleCreate() {
       this.$refs.createForm.validate(valid => {
         if (valid) {
-          this.$store.commit('Account/UPDATE_PASSWORD', this.createForm.pwd)
+          this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
           this.$router.push({ name: "WordsShow" });
         }
       });
@@ -66,36 +66,44 @@ export default {
 <style lang='scss'>
 .createWallet_container {
   .content {
-    width: 350px;
+    width: 344px;
     margin: 0 auto;
-    margin-top: 34.5px;
+    margin-top: 27.6px;
+    .el-form-item {
+      margin-bottom: 15px;
+    }
     .el-form-item__label {
-      font-size: 18px;
+      font-size: 16px;
       color: #ffffff;
+      padding: 0;
+      line-height: 30px;
     }
     input {
       border-radius: 10px;
+      height: 38px;
     }
   }
+
   .btn {
     margin: 0 auto;
-    margin-top: 60px;
-    width: 350px;
-    height: 43.5px;
+    margin-top: 36px;
+    width: 344px;
+    height: 47px;
     background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
-    font-size: 21px;
+    font-size: 16px;
     font-family: MicrosoftYaHei;
     font-weight: 400;
+    padding-top: 5px;
     > div {
+      &:hover {
+        cursor: pointer;
+      }
       width: 100%;
       display: inline-block;
       color: rgba(255, 255, 255, 1) !important;
       margin-top: 3px;
-      &:hover {
-        cursor: pointer;
-      }
     }
   }
 }

@@ -58,40 +58,45 @@ export default {
 <style lang='scss'>
 .importWallet_container {
   .content {
-    width: 350px;
+    width: 344px;
     margin: 0 auto;
-    margin-top: 30px;
+    margin-top: 24px;
     .words {
+      margin-bottom: 22px;
       > p {
-        font-size: 18px;
+        font-size: 16px;
         color: #ffffff;
+        margin-bottom: 7px;
       }
       > div {
-        height: 190px;
+        height: 150px;
         background: #ffffff;
-        margin: 11.5px 0;
-        padding: 20px 30px 35px 30px;
+        padding: 10px 40px 15px 40px;
         border-radius: 10px;
         box-shadow: 2px 2px 5px 3px #ffffff;
       }
-      .seed-ui__word-group_zh{
-        .word-box{
-            height: 36px;
-            width: 36px;
-            margin-left: 20px;
-            font-size: 26px;
-            text-align: center;
+      .seed-ui__word-group_zh {
+        .word-box {
+          height: 36px;
+          width: 36px;
+          margin-left: 21px;
+          font-size: 26px;
+          text-align: center;
+          &:nth-child(5n + 1) {
+            margin-left: 0;
+          }
         }
       }
     }
     .password {
       .el-form-item {
-        margin-bottom: 19px;
+        margin-bottom: 15px;
       }
       .el-form-item__label {
-        font-size: 18px;
+        font-size: 16px;
         color: #ffffff;
         padding: 0;
+        line-height: 30px;
       }
       input {
         border-radius: 10px;
@@ -100,15 +105,16 @@ export default {
     }
     .btn {
       margin: 0 auto;
-      margin-top: 60px;
-      width: 350px;
-      height: 43.5px;
+      margin-top: 36px;
+      width: 344px;
+      height: 47px;
       background-image: url("../../../assets/images/longBtnBg.png");
       background-size: 100% 100%;
       text-align: center;
-      font-size: 21px;
+      font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
+      padding-top: 5px;
       a {
         width: 100%;
         display: inline-block;
