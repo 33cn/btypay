@@ -65,36 +65,38 @@ export default {
   .content {
     width: 350px;
     margin: 0 auto;
-    margin-top: 34.5px;
+    margin-top: 30px;
     .notice {
-      font-size: 18.4px;
+      font-size: 14px;
       color: #ffffff;
+      margin-bottom: 11px;
     }
     .mnemonic {
-      height: 203.5px;
+      height: 190px;
       background: #ffffff;
-      margin: 11.5px 0;
-      padding: 33px 46px;
+      padding: 35px 36px;
       border-radius: 10px;
       box-shadow: 2px 2px 5px 3px #ffffff;
       > span {
-        font-size: 26px;
+        font-size: 18px;
+        // font-weight: bold;
         color: #ff6a8b;
-        width: 50px;
+        width: 55px;
         display: inline-block;
         text-align: center;
-        margin-bottom: 12px;
+        margin-bottom: 22px;
       }
     }
     .btn {
-      margin-top: 60px;
+      margin-top: 48px;
       height: 43.5px;
       background-image: url("../../../assets/images/longBtnBg.png");
       background-size: 100% 100%;
       text-align: center;
-      font-size: 21px;
+      font-size: 16.8px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
+      padding-top: 4px;
       a {
         width: 100%;
         display: inline-block;

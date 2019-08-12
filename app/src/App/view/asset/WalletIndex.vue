@@ -27,6 +27,16 @@
             <p>≈￥0.00</p>
           </div>
         </li>
+        <li v-for="(item, index) in GameAsset" :key="index">
+          <div class="left">
+            <img src="../../../assets/images/logo.png" alt />
+            <p>{{ item.name }}</p>
+          </div>
+          <div class="right">
+            <p>{{ item.num }}</p>
+            <p>≈￥0.00</p>
+          </div>
+        </li>
       </ul>
     </section>
   </div>
@@ -36,6 +46,14 @@
 import HomeHeader from "@/components/HomeHeader.vue";
 export default {
   components: { HomeHeader },
+  data() {
+    return {
+      BTYAsset: 0,
+      GameAsset: [
+        { name: "", num: 0 }
+      ]
+    };
+  },
   methods: {
     toBty() {
       this.$router.push({ path: "/coin?coin=bty" });
