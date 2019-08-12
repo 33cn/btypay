@@ -29,30 +29,31 @@
   background:rgba(98,119,218,0.65);
   .el-dialog{
       background-color: transparent;
-      padding: 40px 55px;
+      // padding: 40px 55px;
       // margin-top: 200px!important;
       div.el-dialog__header{
-        height: 57px;
-        font-size:20px;
+        height: 24px;
+        font-size:18px;
         font-family:MicrosoftYaHei;
         font-weight:400;
         color:rgba(22,42,84,1);
         line-height:1;
       }
       div.el-dialog__body{
+        margin: 24px 0 0px;
         form{
           label{
-            font-size:18px;
+            font-size:16px;
             font-family:MicrosoftYaHei;
             font-weight:400;
             color:rgba(22,42,84,0.68);
             line-height:1;
-            margin-bottom: 5px;
+            // margin-bottom: 5px;
           }
           
         }
         >p{
-          font-size:18px;
+          font-size:16px;
           font-family:MicrosoftYaHei;
           font-weight:400;
           color:rgba(22,42,84,0.68);
@@ -69,17 +70,18 @@
           padding: 10px 0 0 0;
         }
         input.mainAddress{
-          margin-top: 30px;
+          margin-top: 20px;
         }
       }
       div.el-dialog__footer{
+        padding: 9px 18px 0;
         display: flex;
         justify-content: center;
         button{
-          width: 82px;
+          width: 78px;
           padding: 5px;
           border-radius:10px;
-          font-size:20px;
+          font-size:16px;
           font-family:MicrosoftYaHei;
           font-weight:400;
           color:rgba(33,123,244,1);
@@ -91,6 +93,7 @@
           &:nth-of-type(2){
               color: #fff;
               background-color: rgba(33,123,244,1)!important;
+              margin: 0px;
           }
           &.el-button--primary{
               background: rgba(33,123,244,1);
@@ -100,10 +103,23 @@
   }
   &.mainNode{
     .el-dialog{
-      padding: 28px 35px 30px;
+      margin-top: 203px!important;
+      padding: 48px 59px 51px 55px;
     }
   }
-  
+  &.paraNode{
+    .el-dialog{
+      margin-top: 105px!important;
+      padding: 50px 65px 62px 62px;
+      div.el-dialog__body{
+        margin: 36px 0 0px;
+        padding-bottom: 0px;
+      }
+      div.el-dialog__footer{
+        padding: 0 16px;
+      }
+    }
+  }
 }
 
 .el-message-box__wrapper{

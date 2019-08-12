@@ -4,8 +4,8 @@
         <section class="content">
             <canvas id="qrcode"></canvas>
             <div>
-                <p class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy">dskjsdkghdshdskfghdkf</p>
-                <img src="../../../assets/images/copy.png" alt="">
+                <p class="copy" >dskjsdkghdshdskfghdkf</p>
+                <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt="">
             </div>
             <p>注意：该地址仅支持BTY收款，请勿向该地址充值其他币种。</p>
         </section>
@@ -20,8 +20,9 @@ export default {
     components:{AssetBack},
     mounted(){
         var clipboard = new Clipboard('.copy');
-        clipboard.on('success', function(e) {
-            alert('复制成功')
+        clipboard.on('success', (e) => {
+            console.log(this)
+            this.$serverSucNotify('复制成功')
             // console.info('Action:', e.action);
             // console.info('Text:', e.text);
             // console.info('Trigger:', e.trigger);

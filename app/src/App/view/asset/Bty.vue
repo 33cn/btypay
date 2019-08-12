@@ -5,14 +5,15 @@
             <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p>
         </header>
         <section class="balance">
-            <img src="../../../assets/images/logo.png" alt="">
+            <img v-if="coin=='bty'" src="../../../assets/images/logo.png" alt="">
+            <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt="">
             <div class="balance">
                 <p>0.00</p>
                 <p>≈￥0.00</p>
             </div>
             <div class="address">
-                <p>fdsfdsfdsfssfsfsdfsdffsfsfsffsfsfsfsdsf</p>
-                <img src="../../../assets/images/copy.png" alt="">
+                <p class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy">fdsfdsfdsfssfsfsdfsdffsfsfsffsfsfsfsdsf</p>
+                <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt="">
             </div>
         </section>
         <section :class="coin=='bty'?'btn bty':'btn game'">
@@ -43,6 +44,7 @@ import All from '@/App/view/asset/record/All.vue'
 import Transfer from '@/App/view/asset/record/Transfer.vue'
 import Receipt from '@/App/view/asset/record/Receipt.vue'
 import Convert from '@/App/view/asset/record/Convert.vue'
+import Clipboard from 'clipboard'
 export default {
     components:{All,Transfer,Receipt,Convert},
     data(){
@@ -97,6 +99,19 @@ export default {
         this.coin = this.$route.query.coin;
         this.$refs['txListWrap'].addEventListener('scroll', this.onScroll)
         // console.log(this.$route.query.coin)
+        var clipboard = new Clipboard('.copy');
+        clipboard.on('success', (e) => {
+            console.log(this)
+            this.$serverSucNotify('复制成功')
+            // console.info('Action:', e.action);
+            // console.info('Text:', e.text);
+            // console.info('Trigger:', e.trigger);
+            e.clearSelection();
+        });
+        clipboard.on('error', function(e) {
+            // console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+        });
     },
     beforeDestroy(){
         this.$refs['txListWrap'].removeEventListener('scroll', this.onScroll)
@@ -110,7 +125,7 @@ export default {
     height: 100vh;
     background-image: url('../../../assets/images/assetOperateBg.png');
     background-size: 100% 100%;
-    padding-top: 80px;
+    padding-top: 64px;
     position: relative;
     >header{
         margin: 0 29px 0 46px;
@@ -120,7 +135,7 @@ export default {
         z-index: 1000;
         position: relative;
         p{
-            font-size:18px;
+            font-size:15px;
             font-family:MicrosoftYaHei-Bold;
             font-weight:bold;
             a{
@@ -128,7 +143,7 @@ export default {
             }
         }
         img{
-            width: 30.5px;
+            width: 23px;
         }
     }
     >section.balance{
@@ -142,9 +157,8 @@ export default {
         justify-content: center;
         align-items: center;
         >img{
-            width: 60px;
-            height: 60px;
-            margin-bottom: 20px;
+            width: 54px;
+            margin-bottom: 16px;
         }
         div{
             display: flex;
@@ -152,30 +166,30 @@ export default {
                 flex-direction: column;
                 align-items: center;
                 p{
-                    font-size:23px;
+                    font-size:19px;
                     font-family:MicrosoftYaHei;
                     font-weight:400;
                     color:rgba(22,42,84,1);
                     line-height: 1;
                     &:nth-of-type(2){
-                        margin-top: 6px;
-                        font-size:20px; 
+                        margin-top: 5px;
+                        font-size:16.5px; 
                         color:rgba(255,255,255,1);
                     }
                 }
             }
             &.address{
                 width: 230px;
-                margin: 18px 0 0;
+                margin: 15px 0 0;
                 justify-content: center;
                 align-items: center;
                 position: relative;
                 
                 p{
-                    padding: 4px 13px 4px 16px;
+                    padding: 3px 13px 3px 16px;
                     background:rgba(255,255,255,1);
                     border-radius:7.5px;
-                    font-size:15.5px;
+                    font-size:13px;
                     font-family:MicrosoftYaHei;
                     font-weight:400;
                     color:rgba(22,42,84,1);
@@ -183,8 +197,8 @@ export default {
                     text-overflow: ellipsis;
                 }
                 img{
-                    width: 25px;
-                    height: 25px;
+                    width: 21px;
+                    height: 21px;
                     position: absolute;
                     left: 245px;
                 }
@@ -197,10 +211,10 @@ export default {
         align-items: center;
         p{
             width: 116px;
-            height: 43.5px;
+            height: 37px;
             text-align: center;
             background-size: 100% 100%;
-            font-size:20px;
+            font-size:18px;
             font-family:MicrosoftYaHei;
             font-weight:400;
             background-image: url('../../../assets/images/transferBtnBg.png');
@@ -229,14 +243,14 @@ export default {
         // width: 100%;
         // overflow-x: hidden;
         // background-color: #fff;
-        margin-top: 30px;
+        margin-top: 25px;
         position: relative;
         >ul{
             margin: 0 37px 0 31.5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size:20px;
+            font-size:17px;
             font-family:MicrosoftYaHei;
             font-weight:400;
             li{

@@ -153,7 +153,7 @@ export default {
     }
     >p{
         margin: 56px 23px 0;
-        background-image: url('../../../assets/images/convertConfirm.png');
+        background-image: url('../../../assets/images/longBtnBg.png');
         background-size: 100% 100%;
         text-align: center;
         padding: 9px 0 14px;

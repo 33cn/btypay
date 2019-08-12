@@ -24,12 +24,12 @@ body {
   margin: 0;
   padding: 0;
   width: 400px;
-  height: 721px;
+  height: 600px;
 }
 #app {
   width: 400px;
-  height: 721px;
-  min-height: 721px;
+  height: 600px;
+  min-height: 600x;
   // background: #dfe7f3;
   background-image: url('../assets/images/indexBg.png');
   background-size: 100% 100%;

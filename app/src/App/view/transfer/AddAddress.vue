@@ -125,7 +125,7 @@ export default {
   > p {
     margin: 210px 23px 0;
     padding: 9px 0 14px;
-    background-image: url("../../../assets/images/addAddressBtn.png");
+    background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
     font-size: 20px;

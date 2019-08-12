@@ -13,20 +13,20 @@ export default {
 
 <style lang='scss'>
 .homeHeader_container{
-    padding: 20.7px 0 26.8px;
+    padding: 27px 0 37px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     p{
         &:nth-of-type(1){
-            padding:0px 23px 0px 28px;
+            padding:0px 13px 0px 33px;
             img{
-                width: 55px;
-                height: 55px;
+                width: 36px;
+                height: 36px;
             }
         }
         &:nth-of-type(2){
-            font-size:23px;
+            font-size:18px;
             font-family:MicrosoftYaHei;
             font-weight:400;
             color:rgba(255,255,255,1);
