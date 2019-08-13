@@ -28,8 +28,8 @@ export default {
     padding-top: 100px;
     p{
         &:nth-of-type(1){
-            width: 30.5px;
-            height: 26px;
+            width: 25px;
+            height: 22px;
             img{
                 width: 100%;
                 height: 100%;
