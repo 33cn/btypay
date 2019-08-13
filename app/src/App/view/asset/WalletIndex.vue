@@ -9,7 +9,7 @@
       <ul>
         <li @click="toBty">
           <div class="left">
-            <img src="../../../assets/images/logo.png" alt />
+            <img src="../../../assets/images/btyLogo.png" alt />
             <p>BTY</p>
           </div>
           <div class="right">
@@ -27,7 +27,7 @@
             <p>≈￥0.00</p>
           </div>
         </li>
-        <li v-for="(item, index) in GameAsset" :key="index">
+        <!-- <li v-for="(item, index) in GameAsset" :key="index">
           <div class="left">
             <img src="../../../assets/images/logo.png" alt />
             <p>{{ item.name }}</p>
@@ -36,7 +36,7 @@
             <p>{{ item.num }}</p>
             <p>≈￥0.00</p>
           </div>
-        </li>
+        </li> -->
       </ul>
     </section>
     <section class="btn"><router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link></section>
@@ -125,12 +125,16 @@ export default {
               line-height: 1;
               &:nth-of-type(1) {
                 color: rgba(22, 42, 84, 1);
+                margin-bottom: 6px;
               }
               &:nth-of-type(2) {
                 color: rgba(153, 153, 153, 1);
               }
             }
           }
+        }
+        &:hover{
+          cursor: pointer;
         }
       }
     }

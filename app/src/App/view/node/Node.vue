@@ -15,9 +15,9 @@
                         <div>
                             <p>http://gamemainnet-bty.token.io</p>
                             <img src="../../../assets/images/selected.png" alt="">
+                            <p class="line"></p>
                         </div>
                     </section>
-                    <p class="line"></p>
                     <p class="add" @click="mainDialog=true">添加自定义节点</p>
                 </div>
             </li>
@@ -29,9 +29,9 @@
                             <p class="name">敢么（GMT）</p>
                             <p>http://gamemainnet-bty.token.io</p>
                             <img src="../../../assets/images/selected.png" alt="">
+                            <p class="line"></p>
                         </div>
                     </section>
-                    <p class="line"></p>
                     <p class="add" @click="paraDialog=true">添加自定义节点</p>
                 </div>
             </li>
@@ -141,10 +141,13 @@ export default {
             }
             &:nth-of-type(2){
                 font-size: 14px;
+                cursor: pointer;
             }
         }
     }
     ul{
+        height: calc(100vh - 101px - 78px - 10px);
+        overflow-y: scroll;
         margin: 0 26px 0 31px;
         li{
             margin-bottom: 36px;
@@ -192,6 +195,9 @@ export default {
                     font-family:MicrosoftYaHei;
                     font-weight:400;
                     color:rgba(28,192,198,1);
+                    &:hover{
+                      cursor: pointer;
+                    }
                 }
                 &.main{
                     

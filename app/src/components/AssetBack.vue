@@ -24,15 +24,16 @@ export default {
 <style lang='scss'>
 .assetBack_container{
     position: relative;
-    margin-left: 25px;
-    padding-top: 100px;
+    padding-top: 106px;
     p{
         &:nth-of-type(1){
-            width: 30.5px;
-            height: 26px;
+            margin-left: 41px;
+            width: 25px;
+            height: 22px;
             img{
                 width: 100%;
                 height: 100%;
+                cursor: pointer;
             }
         }
         &:nth-of-type(2){
@@ -40,8 +41,8 @@ export default {
             text-align: center;
             position: absolute;
             left: calc(50% - 50px);
-            top: 103.5px;
-            font-size:23px;
+            top: 106px;
+            font-size:16px;
             font-family:MicrosoftYaHei;
             font-weight:bold;
             color:rgba(139,176,255,1);

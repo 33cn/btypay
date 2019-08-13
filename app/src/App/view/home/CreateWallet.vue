@@ -8,7 +8,7 @@
       ref="createForm"
       class="content"
     >
-      <el-form-item label="请输入您的密码（8-16位字符）" prop="pwd">
+      <el-form-item label="请输入您的密码（8-16位字符）" prop="pwd" >
         <el-input v-model="createForm.pwd" type="password"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPwd">

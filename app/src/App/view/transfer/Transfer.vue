@@ -143,35 +143,42 @@ export default {
   background-image: url("../../../assets/images/lightColorBg.png");
   background-size: 100% 100%;
   >form{
-      margin: 70px 20.5px 0;
+      margin: 41px 48px 60px;
       >div{
-          margin-bottom: 46px;
+          margin-bottom: 43px;
           position: relative;
           >label{
-                margin-bottom: 13px;
+                margin-bottom: 6px;
                 text-align: left;
-                font-size:18px;
+                font-size:14px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 color:rgba(22,42,84,1);
                 line-height:1;
+                margin-left: 10px;
           }
           >div{
               margin-left: 0!important;
               input{
-                  padding: 25px 100px 25px 15px;
-                  border: 1px solid transparent;
-                  font-size:20px;
+                  padding: 12px 79px 13px 16px;
+                  border:1px solid rgba(232, 235, 249, 1);
+                  border-radius:10px;
+                  font-size:14px;
                     font-family:MicrosoftYaHei;
                     font-weight:400;
                     // color:rgba(206,213,232,1);
                     line-height:1;
                   ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
-		        	color:rgba(206,213,232,1);
-		        }
+		                color:rgba(206,213,232,1);
+		              }
+              }
+              div.el-form-item__error{
+                margin-left: 9px;
+                color: #FF785B;
+                font-size: 12px;
               }
               p{
-                  font-size:18px;
+                  font-size:14px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 line-height:1;
@@ -182,87 +189,85 @@ export default {
                     right: 8px;
                 }
                 &.mentionAll{
-                    font-size: 20px;
+                    font-size: 14px;
                     color:rgba(255,120,91,1);
-                    top: 46px;
-                    right: 8.5px;
+                    top: 33px;
+                    right: 23px;
+                    cursor: pointer;
                 }
               }
               p.line{
                   width: 1px;
                   height: 25px;
                   position: absolute;
-                  top: 44px;
-                  right: 44px;
+                  top: 29px;
+                  right: 45px;
                   background-color: rgba(230,230,230,1);
               }
               img{
                   position: absolute;
-                  width: 23px;
-                  top: 45px;
-                  right: 54px;
+                  width: 20px;
+                  top: 30px;
+                  right: 57px;
+                  cursor: pointer;
                   &.add{
-                      right: 11px;
+                      right: 17px;
                   }
               }
               div.fee{
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
-                  margin-top: 8.5px;
+                  margin-top: 4px;
                   p{
                       position: static;
-                      font-size:18px;
+                      font-size:12px;
                     font-family:MicrosoftYaHei;
                     font-weight:400;
                     color:rgba(22,42,84,0.63);
                     line-height:1;
+                    margin-left: 12px;
                     &:nth-of-type(2){
-                        margin-right: 8px;
+                        margin-right: 30px;
                     }
                   }
               }
           }
-          &:nth-of-type(3){
-              input{
-                  padding: 25px 15px!important;
-              }
-          }
       }
   }
-  section.content {
-    margin: 70px 20.5px 0;
-    > div {
-      margin-bottom: 23.5px;
-      position: relative;
-      p {
-        font-size: 18px;
-        font-family: MicrosoftYaHei;
-        font-weight: 400;
-        color: rgba(22, 42, 84, 1);
-        line-height: 1;
-        &.name {
-          margin-bottom: 13px;
-        }
-        &.balance {
-          opacity: 0.53;
-          position: absolute;
-          top: 0px;
-          right: 0px;
-        }
-      }
-      input {
-        width: 100%;
-      }
-    }
-  }
+  // section.content {
+  //   margin: 70px 20.5px 0;
+  //   > div {
+  //     margin-bottom: 23.5px;
+  //     position: relative;
+  //     p {
+  //       font-size: 18px;
+  //       font-family: MicrosoftYaHei;
+  //       font-weight: 400;
+  //       color: rgba(22, 42, 84, 1);
+  //       line-height: 1;
+  //       &.name {
+  //         margin-bottom: 13px;
+  //       }
+  //       &.balance {
+  //         opacity: 0.53;
+  //         position: absolute;
+  //         top: 0px;
+  //         right: 0px;
+  //       }
+  //     }
+  //     input {
+  //       width: 100%;
+  //     }
+  //   }
+  // }
   > p {
-    margin: 55px 23px 0;
-    padding: 9px 0 14px;
+    margin: 0px 26px 0 29px;
+    padding: 11px 0 19px;
     background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
-      font-size: 20px;
+      font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
       color: rgba(255, 255, 255, 1);

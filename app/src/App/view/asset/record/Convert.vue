@@ -3,7 +3,7 @@
         <ul>
             <li v-for="item in list" :key="item.time" @click="toDetail(item)">
                 <div>
-                    <img src="../../../../assets/images/transferLogo.png" alt="">
+                    <img src="../../../../assets/images/convertLogo.png" alt="">
                     <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
                     <div>
                         <p>{{item.address}}</p>
@@ -55,21 +55,23 @@ export default {
 .convertD_Container{
     ul{
         li{
-            width: calc(100% - 26px);
+            // width: calc(100% - 0px);
             background-image: url('../../../../assets/images/txBg.png');
             background-size: 100% 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 10px 0 16px;
-            padding: 18px 0px 40px 12px;
+            // margin: 0 10px 0 16px;
+            padding: 12px 37px 29px 35px;
+            cursor: pointer;
             >div{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 img{
-                    width: 36.5px;
-                    margin-right: 5px;
+                    width: 27px;
+                    height: 28px;
+                    margin-right: 18px;
                 }
                 div{
                     display: flex;
@@ -80,26 +82,27 @@ export default {
                         font-weight:400;
                         line-height:1;
                         &:nth-of-type(1){
-                            width: 150px;
-                            font-size:23px;
+                            // width: 90px;
+                            font-size:14px;
                             color:rgba(51,51,51,1);
-                            margin-bottom: 12px;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
+                            margin-bottom: 4px;
+                            // overflow: hidden;
+                            // text-overflow: ellipsis;
+                            line-height: 1.2;
                         }
                         &:nth-of-type(2){
-                            font-size:16.5px;
+                            font-size:12px;
                             color:rgba(171,177,193,0.62);
                         }
                     }
                 }
             }
             p{
-                font-size:23px;
+                font-size:16px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 line-height:1;
-                margin-right: 25px;
+                // margin-right: 25px;
                 &.transfer{
                     color:rgba(59,225,237,1);
                 }
