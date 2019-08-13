@@ -34,26 +34,26 @@ export default {
 .ImportOrCreate_container{
     >p{
         // height:30px;
-        font-size:23px;
+        font-size:18px;
         font-family:MicrosoftYaHei-Bold;
         font-weight:bold;
         color:rgba(245,185,71,1);
-        margin: 0 0 32px 53.7px;
+        margin: 0 0 31px 67px;
     }
     >ul{
-        width: 304px;
+        width: 278px; 
         margin: 0 auto;
         li{
             p.desc{
-                font-size:18px;
+                font-size:16px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 color:rgba(255,255,255,1);
-                margin:  0 0px 13px 8px;
+                margin:  0 0px 10px 7px;
             }
             >div{
                 width: 100%;
-                height: 186px;
+                height: 156px;
                 background-image: url('../../../assets/images/importBg.png');
                 background-size: 100% 100%;
                 padding: 20px 0 0 0;
@@ -62,39 +62,42 @@ export default {
                 // justify-content: center;
                 align-items: center;
                 p{
-                    width: 225px;
-                    height: 43.5px;
+                    width: 178px;
+                    height: 34px;
                     background-image: url('../../../assets/images/importBtnBg.png');
                     background-size: 100% 100%;
                     text-align: center;
-                    font-size:21px;
+                    font-size:14px;
                     font-family:MicrosoftYaHei;
                     font-weight:400;
                     // padding-bottom: 8px;
                     a{
+                        width: 100%;
+                        height: 100%;
                         display: inline-block;
                         color:rgba(255,255,255,1)!important;
-                        margin-top: 3px;
+                        margin-top: 8px;
                     }
                 }
                 &.import{
                     img{
-                        width: 63px;
-                        height: 73px;
-                        margin-bottom: 19px;
+                        width: 44px;
+                        height: 50px;
+                        margin-bottom: 26px;
                     }
                 }
                 &.create{
-                    padding: 33px 0 0 0;
+                    height: 144px;
+                    padding-top: 18px;
                     img{
-                        width: 53px;
-                        height: 53px;
+                        width: 47px;
+                        height: 47px;
                         margin-bottom: 26px;
                     }
                 }
             }
             &:nth-of-type(1){
-                margin-bottom: 46px;
+                margin-bottom: 36px;
             }
         }
     }

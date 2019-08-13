@@ -9,24 +9,24 @@
             </div>
     </section>-->
     <el-form
-      :model="ruleForm"
+      :model="form"
       :rules="rules"
       ref="ruleForm"
       class="demo-ruleForm"
     >
       <el-form-item label="转账金额" prop="num">
-        <el-input type='number' v-model="ruleForm.num" placeholder='请输入金额' autocomplete="off" ></el-input>
+        <el-input type='number' v-model="form.num" placeholder='请输入金额' autocomplete="off" ></el-input>
         <p class="balance">余额0.00BTY</p>
         <p class="mentionAll">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="ruleForm.address" placeholder='请输入BTY地址' autocomplete="off"></el-input>
+        <el-input v-model="form.address" placeholder='请输入BTY地址' autocomplete="off"></el-input>
         <img src="../../../assets/images/scan.png" alt="" class="scan">
         <p class="line"></p>
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
       </el-form-item>
       <el-form-item label="备注" prop="comment">
-        <el-input v-model.number="ruleForm.comment" placeholder='选填'></el-input>
+        <el-input v-model.number="form.comment" placeholder='选填'></el-input>
         <div class="fee">
             <p>矿工费</p>
             <p>0.001BTY</p>
@@ -39,7 +39,16 @@
 
 <script>
 import AssetBack from "@/components/AssetBack.vue";
+import {createNamespacedHelpers} from 'vuex'
+import walletAPI from '@/mixins/walletAPI.js'
+import chain33API from '@/mixins/chain33API.js'
+import backgroundCommuncation from '@/mixins/backgroundCommuncation.js'
+import { dMinFee, addrValidate } from '@/libs/bitcoinAmount.js'
+import {eventBus} from '@/libs/eventBus.js'
+
+const {mapState} = createNamespacedHelpers('Account')
 export default {
+  mixins: [walletAPI, chain33API, backgroundCommuncation],
   components: { AssetBack },
   data() {
     var validateAddress = (rule, value, callback) => {
@@ -70,7 +79,8 @@ export default {
       }, 1000);
     };
     return {
-      ruleForm: {
+      
+      form: {
         num: "",
         address: "",
         comment: ""
@@ -99,15 +109,29 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
+          this.sendToAddr({
+            fee: dMinFee * 1e8,
+            privateKey: this.from.hexPrivateKey,
+            to: this.form.address,
+            note: this.form.comment,
+            amount: this.form.num * 1e8,
+          }).then(res => {
+            // console.log(res)
+            this.$serverSucNotify('发送成功，等区块链确认后，等待列表中刷新!')
+            this.replyBackground(res)
+          })
+          } else {
+            console.log("error submit!!");
+            return false;
+          }
+        });
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+  },
+  computed:{
+    ...mapState(['accountMap', 'currentAccount']),
   }
 };
 </script>
@@ -235,7 +259,7 @@ export default {
   > p {
     margin: 55px 23px 0;
     padding: 9px 0 14px;
-    background-image: url("../../../assets/images/addAddressBtn.png");
+    background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
       font-size: 20px;

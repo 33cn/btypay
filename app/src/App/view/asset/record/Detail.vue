@@ -37,6 +37,7 @@
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
+import Clipboard from 'clipboard'
 export default {
     components:{AssetBack},
     mounted(){

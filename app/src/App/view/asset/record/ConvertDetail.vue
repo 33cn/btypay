@@ -29,7 +29,7 @@
             </li>
             <li>
                 <p>交易哈希</p>
-                <p>1NkjfHkiqodnHjKjfjfkknknkljbkbbjhbhbjbhbhbufkIIfgxggfgfCDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
+                <p class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy">1NkjfHkiqodnHjKjfjfkknknkljbkbbjhbhbjbhbhbufkIIfgxggfgfCDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
             </li>
         </ul>
     </div>
@@ -37,10 +37,24 @@
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
+import Clipboard from 'clipboard'
 export default {
     components:{AssetBack},
     mounted(){
-        console.log(this.$route.params)
+        console.log(this.$route.params);
+        var clipboard = new Clipboard('.copy');
+        clipboard.on('success', (e) => {
+            console.log(this)
+            this.$serverSucNotify('复制成功')
+            // console.info('Action:', e.action);
+            // console.info('Text:', e.text);
+            // console.info('Trigger:', e.trigger);
+            e.clearSelection();
+        });
+        clipboard.on('error', function(e) {
+            // console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+        });
     }
 }
 </script>

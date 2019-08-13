@@ -77,7 +77,7 @@ export default {
     >p{
         width: calc(100% - 49px);
         margin: 0 24.5px;
-        background-image: url('../../../assets/images/addAddressBtn.png');
+        background-image: url('../../../assets/images/longBtnBg.png');
         background-size: 100% 100%;
         text-align: center;
         padding: 9px 0 14px;
