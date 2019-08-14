@@ -56,8 +56,10 @@ export default {
     ul{
         li{
             // width: calc(100% - 0px);
-            background-image: url('../../../../assets/images/txBg.png');
-            background-size: 100% 100%;
+            // background-image: url('../../../../assets/images/txBg.png');
+            // background-size: 100% 100%;
+            background:rgba(243,246,251,1);
+            box-shadow:6px 5px 10px #d6d4d4;
             display: flex;
             justify-content: space-between;
             align-items: center;

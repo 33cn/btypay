@@ -24,11 +24,15 @@
   
 }
 
-
+.el-form-item__label::before{
+  content:''!important;
+ }
 .el-dialog__wrapper{
   background:rgba(98,119,218,0.65);
   .el-dialog{
-      background-color: transparent;
+      background:rgba(251,251,251,1);
+      box-shadow:0px 7px 17px 4px rgba(7,50,98,0.23);
+      border-radius:10px;
       // padding: 40px 55px;
       // margin-top: 200px!important;
       div.el-dialog__header{
@@ -104,13 +108,13 @@
   &.mainNode{
     .el-dialog{
       margin-top: 203px!important;
-      padding: 48px 59px 51px 55px;
+      padding: 32px 35px 21px 33px;
     }
   }
   &.paraNode{
     .el-dialog{
       margin-top: 105px!important;
-      padding: 50px 65px 62px 62px;
+      padding: 35px 45px 32px 43px;
       div.el-dialog__body{
         margin: 36px 0 0px;
         padding-bottom: 0px;

@@ -27,10 +27,12 @@ const mutations = {
   UPDATE_SEED(state, payload) {
     state.seed = payload;
   },
-  UPDATE_ACCOUNTS(state, accountMap) {
+  UPDATE_ACCOUNTS (state, accountMap) {
+    console.log(accountMap)
     state.accountMap = accountMap
   },
-  UPDATE_CURRENTACCOUNT(state, currentAccount) {
+  UPDATE_CURRENTACCOUNT (state, currentAccount) {
+    console.log(currentAccount)
     state.currentAccount = currentAccount
   },
 

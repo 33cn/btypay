@@ -4,7 +4,7 @@
         <section class="status">
             <!-- <img src="../../../../assets/images/success.png" alt=""> -->
             <img src="../../../../assets/images/fail.png" alt="">
-            <p>转账成功</p>
+            <p>转账失败</p>
             <p>2019/02/21 10:12:12</p>
         </section>
         <ul>
@@ -48,10 +48,10 @@ export default {
                 text,
                 response: (err, msg) => {
                   if (err) {
-                    this.$serverErrNotify(msg)
+                    this.$message.error(msg)
                     return
                   }
-                  this.$serverSucNotify(msg)
+                  this.$message.success(msg)
                 }
             })
         }

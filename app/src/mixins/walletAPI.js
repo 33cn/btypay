@@ -22,16 +22,16 @@ export default {
   methods: {
     getChromeStorage(keys) {
       return new Promise(resolve => {
-        // window.chrome.storage.local.get(keys, (result) => {
+        window.chrome.storage.local.get(keys, (result) => {
           resolve(result)
-        // })
+        })
       })
     },
     setChromeStorage(key, value) {
       return new Promise(resolve => {
-        // window.chrome.storage.local.set({ [key]: value }, () => {
-          resolve(value)
-        // })
+        window.chrome.storage.local.set({ [key]: value }, () => {
+          resolve('success')
+        })
       })
     },
     /* 账户相关 -- start */
@@ -68,6 +68,7 @@ export default {
       return this.getWallet().then(wallet => {
         const account = wallet.newAccount(name)//生成公私钥地址等
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+        this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
         this.setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
@@ -96,6 +97,7 @@ export default {
     },
     setCurrentAccount(account) {
       return getBackgroundPage().then(win => {
+        console.log(win)
         win.currentAccount = account
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
         return account

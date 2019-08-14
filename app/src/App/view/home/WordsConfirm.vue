@@ -65,6 +65,7 @@ export default {
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
       const walletObj = this.createHDWallet(seedString);
+      console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
       // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})

@@ -25,10 +25,10 @@ export default {
                 text,
                 response: (err, msg) => {
                   if (err) {
-                    this.$serverErrNotify(msg)
+                    this.$message.error(msg)
                     return
                   }
-                  this.$serverSucNotify(msg)
+                  this.$message.success(msg)
                 }
             })
         }

@@ -77,6 +77,9 @@ export default {
       color: #ffffff;
       padding: 0;
       line-height: 30px;
+      &::before{
+       content:''!important;
+      }
     }
     input {
       border-radius: 10px;

@@ -27,29 +27,18 @@
 
 <script>
 import AssetBack from "@/components/AssetBack.vue";
+import walletAPI from '@/mixins/walletAPI.js'
 export default {
   components: { AssetBack },
   data() {
-    var validateAddress = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("地址不能为空"));
-      } 
-    };
-    var checkLabel = (rule, value, callback) => {
-      console.log(value);
-      if (!value) {
-        return callback(new Error("地址标签不能为空"));
-      }
-    };
     return {
       ruleForm: {
         label: "",
         address: "",
-        comment: ""
       },
       rules: {
-        label: [{ validator: checkLabel, trigger: "blur" }],
-        address: [{ validator: validateAddress, trigger: "blur" }]
+        label: [{ required: true, message: "请输入地址标签", trigger: "blur" }],
+        address: [{ required: true, message: "请输入地址", trigger: "blur" }]
       }
     };
   },
@@ -57,7 +46,16 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          console.log("submit!");
+          this.getChromeStorage('address').then(res=>{
+            console.log(res)
+            let arr = res.address.concat(this.ruleForm);
+            this.setChromeStorage('address',arr).then(res=>{
+              if(res=='success'){
+                this.$router.go(-1)
+              }
+          })
+          })
         } else {
           console.log("error submit!!");
           return false;
@@ -136,6 +134,7 @@ export default {
     font-weight: 400;
     color: rgba(255, 255, 255, 1);
     line-height: 1;
+    cursor: pointer;
   }
 }
 </style>

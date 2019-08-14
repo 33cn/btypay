@@ -96,10 +96,10 @@ export default {
                 text,
                 response: (err, msg) => {
                   if (err) {
-                    this.$serverErrNotify(msg)
+                    this.$message.error(msg)
                     return
                   }
-                  this.$serverSucNotify(msg)
+                  this.$message.success(msg)
                 }
             })
         }
@@ -266,8 +266,8 @@ export default {
         >div.line{
             width:25px;
             height:3px;
-            border:1.5px solid rgba(245,185,71,1);
-            background:linear-gradient(90deg,rgba(115,248,253,1),rgba(128,164,253,1));
+            // background:linear-gradient(90deg,rgba(115,248,253,1),rgba(128,164,253,1));
+            background: #F5B947;
             position: absolute;
             top: 43px;
             left: 55px;

@@ -2,8 +2,8 @@
     <div class="address_container" :class="addresses.length==0?'noAddress':'haveAddress'">
         <asset-back title='地址簿'></asset-back>
         <ul v-if="addresses.length>0">
-            <li v-for="(item,i) in addresses" :key="i">
-                <p>{{item.name}}</p>
+            <li v-for="(item,i) in addresses" :key="i" @click="selectedAddress(item.address)">
+                <p>{{item.label}}</p>
                 <p>{{item.address}}</p>
             </li>
         </ul>
@@ -16,22 +16,28 @@
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
+import walletAPI from '@/mixins/walletAPI.js'
 export default {
     components:{AssetBack},
     data(){
         return{
             addresses:[
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46eeeeeeejd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46jd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46jd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46eeeeeeejd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46jd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46jd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46eeeeeeejd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46jd'},
-                {name:'找币',address:'89fjindHkiqodnHjKjfjfkfkIICDINNkdn46jd'},
+                // {label:'hhhh',address:'qsdfsdfsdfdsfsdfsdfsdfdsf'}
             ]
         }
+    },
+    methods:{
+        selectedAddress(ad){
+            console.log(ad)
+            // this.$router.push({ path: "/coin?coin=bty" });
+            this.$router.push({ path: "/coin/transfer?address="+ad })
+        }
+    },
+    mounted(){
+        this.getChromeStorage('address').then(res=>{
+            console.log(res)
+            this.addresses = res.address;
+        })
     }
 }
 </script>

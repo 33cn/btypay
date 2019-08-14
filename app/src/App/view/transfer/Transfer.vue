@@ -1,13 +1,6 @@
 <template>
   <div class="transfer_container">
     <asset-back title="BTY转账"></asset-back>
-    <!-- <section class="content">
-            <div>
-                <p class="name">转账金额</p>
-                <p class="balance">余额0.00BTY</p>
-                <input type="text" placeholder="请输入金额">
-            </div>
-    </section>-->
     <el-form
       :model="form"
       :rules="rules"
@@ -15,12 +8,12 @@
       class="demo-ruleForm"
     >
       <el-form-item label="转账金额" prop="num">
-        <el-input type='number' v-model="form.num" placeholder='请输入金额' autocomplete="off" ></el-input>
+        <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
         <p class="balance">余额0.00BTY</p>
         <p class="mentionAll">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="form.address" placeholder='请输入BTY地址' autocomplete="off"></el-input>
+        <el-input v-model="form.address" placeholder='请输入BTY地址' auto-complete="off"></el-input>
         <img src="../../../assets/images/scan.png" alt="" class="scan">
         <p class="line"></p>
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
@@ -51,26 +44,20 @@ export default {
   mixins: [walletAPI, chain33API, backgroundCommuncation],
   components: { AssetBack },
   data() {
-    var validateAddress = (rule, value, callback) => {
+    let validateAddress = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入地址"));
-      } else {
-        if (this.ruleForm.address !== "") {
-          this.$refs.ruleForm.validateField("address");
-        }
-        callback();
-      }
+      } 
     };
-    var checkNum = (rule, value, callback) => {
-        console.log(value)
+    let checkNum = (rule, value, callback) => {
       if (!value) {
         return callback(new Error("转账金额不能为空"));
       }
       setTimeout(() => {
-        if (!Number.isInteger(value)) {
+        if (!Number.isInteger(parseFloat(value))) {
           callback(new Error("请输入数字值"));
         } else {
-          if (value < 0) {
+          if (parseFloat(value) < 0) {
             callback(new Error("金额需大于零"));
           } else {
             callback();
@@ -78,60 +65,77 @@ export default {
         }
       }, 1000);
     };
+    let checkComment = (rule, value, callback) =>{
+      return callback()
+    }
     return {
-      
       form: {
-        num: "",
+        num: null,
         address: "",
         comment: ""
       },
       rules: {
-        num: [{ validator: checkNum, trigger: "blur" }],
-        address: [{ validator: validateAddress, trigger: "blur" }],
-        // comment: [{ validator: checkAge, trigger: "blur" }]
-      }
+        num: [{ required: true, message: "请输入转账金额", trigger: "blur" }],
+        address: [{ required: true, message: "请输入转账地址", trigger: "blur" }],
+        // comment: [{ validator: checkComment, trigger: "blur" }]
+      },
+      balance:0,
     };
   },
   methods: {
     submitForm(formName) {
       this.$alert('请关注您的资金变动。', '转账成功', {
-                confirmButtonText: '知道了',
-                closeOnClickModal:true,
-                center:true,
-                showClose:false,
-                callback: action => {
-                    this.$message({
-                      type: 'info',
-                      message: `action: ${ action }`
-                    });
-                }
+        confirmButtonText: '知道了',
+        closeOnClickModal:true,
+        center:true,
+        showClose:false,
+        callback: action => {
+            this.$message({
+              type: 'info',
+              message: `action: ${ action }`
             });
-      this.$refs[formName].validate(valid => {
+        }
+      });
+      this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          console.log("submit!");
           this.sendToAddr({
             fee: dMinFee * 1e8,
-            privateKey: this.from.hexPrivateKey,
+            privateKey: this.accountMap[0].hexPrivateKey,
             to: this.form.address,
             note: this.form.comment,
             amount: this.form.num * 1e8,
           }).then(res => {
-            // console.log(res)
+            console.log(res)
             this.$serverSucNotify('发送成功，等区块链确认后，等待列表中刷新!')
             this.replyBackground(res)
           })
-          } else {
-            console.log("error submit!!");
-            return false;
-          }
-        });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+    //获取余额
+    getBalance(addr){
+      this.getAddrBalance(addr, 'coins').then(result => {
+        console.log(result)
+        this.balance = result[0].balance / 1e8
+      })
+    }
   },
   computed:{
     ...mapState(['accountMap', 'currentAccount']),
+  },
+  mounted(){
+    this.form.address = this.$route.query.address || '';
+    console.log(this.accountMap)
+    if (this.currentAccount) {
+      this.getBalance(this.currentAccount.address)
+    }
   }
 };
 </script>
