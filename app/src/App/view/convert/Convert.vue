@@ -20,7 +20,7 @@
         <section class="desc">
             <div>
                 <p>汇率</p>
-                <p>1BTY=1GANE</p>
+                <p>1BTY=1GAME</p>
             </div>
             <div>
                 <p>手续费</p>

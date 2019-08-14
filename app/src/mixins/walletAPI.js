@@ -7,9 +7,13 @@ let isDev = process.env.NODE_ENV === 'development'
 
 function getBackgroundPage() {
   return new Promise((resolve) => {
-    window.chrome.runtime.getBackgroundPage(win => {
-      resolve(win)
-    })
+    if (isDev) {
+      resolve(window)
+    } else {
+      window.chrome.runtime.getBackgroundPage(win => {
+        resolve(win)
+      })
+    }
   })
 }
 
@@ -18,16 +22,16 @@ export default {
   methods: {
     getChromeStorage(keys) {
       return new Promise(resolve => {
-        window.chrome.storage.local.get(keys, (result) => {
+        // window.chrome.storage.local.get(keys, (result) => {
           resolve(result)
-        })
+        // })
       })
     },
     setChromeStorage(key, value) {
       return new Promise(resolve => {
-        window.chrome.storage.local.set({ [key]: value }, () => {
+        // window.chrome.storage.local.set({ [key]: value }, () => {
           resolve(value)
-        })
+        // })
       })
     },
     /* 账户相关 -- start */

@@ -54,13 +54,13 @@ export default {
     //创建钱包
     createWallet() {
       // 省略各种判断
-      if (this.seedStringSelected === this.seedString) {
+      // if (this.seedStringSelected === this.seedString) {
         this.saveSeed(this.seedString, "password");
         this.$router.push({ name: "WalletIndex" });
         this.$message.success("钱包创建成功！");
-      } else {
-        this.$message.error("助记词错误！");
-      }
+      // } else {
+      //   this.$message.error("助记词错误！");
+      // }
     },
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {

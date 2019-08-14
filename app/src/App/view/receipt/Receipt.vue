@@ -26,6 +26,7 @@ export default {
             // console.info('Action:', e.action);
             // console.info('Text:', e.text);
             // console.info('Trigger:', e.trigger);
+            
             e.clearSelection();
         });
         clipboard.on('error', function(e) {

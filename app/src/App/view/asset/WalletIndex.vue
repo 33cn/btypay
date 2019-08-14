@@ -13,11 +13,11 @@
             <p>BTY</p>
           </div>
           <div class="right">
-            <p>0.00</p>
-            <p>≈￥0.00</p>
+            <p>{{ BTYAsset.num }}</p>
+            <p>≈￥{{ BTYAsset.num * BTYAsset.price }}</p>
           </div>
         </li>
-        <li @click="toGame">
+        <!-- <li @click="toGame">
           <div class="left">
             <img src="../../../assets/images/gameLogo.png" alt />
             <p>GAME</p>
@@ -26,15 +26,15 @@
             <p>0.00</p>
             <p>≈￥0.00</p>
           </div>
-        </li>
-        <li v-for="(item, index) in GameAsset" :key="index">
+        </li> -->
+        <li v-for="(item, index) in GameAsset" :key="index" @click="toGame">
           <div class="left">
             <img src="../../../assets/images/logo.png" alt />
             <p>{{ item.name }}</p>
           </div>
           <div class="right">
             <p>{{ item.num }}</p>
-            <p>≈￥0.00</p>
+            <p>≈￥{{ item.num * item.price }}</p>
           </div>
         </li>
       </ul>
@@ -45,15 +45,27 @@
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
+import {createNamespacedHelpers} from 'vuex'
+
+const {mapState} = createNamespacedHelpers('Account')
+
 export default {
   components: { HomeHeader },
   data() {
     return {
-      BTYAsset: 0,
+      BTYAsset: { num: 0.00, price: 10 },
       GameAsset: [
-        { name: "", num: 0 }
+        { name: "GAME", num: 0.00, price: 10 }
       ]
     };
+  },
+  computed: {
+    ...mapState(['accountMap', 'currentAccount'])
+  },
+  watch: {
+    currentAccount(account) {
+      account && this.getBalance(account.address)
+    }
   },
   methods: {
     toBty() {
@@ -61,7 +73,21 @@ export default {
     },
     toGame() {
       this.$router.push({ path: "/coin?coin=game" });
+    },
+    getBalance(addr) {
+      this.getAddrBalance(addr, 'coins').then(result => {
+        return result[0].balance / 1e8
+      })
+    },
+    init(){
+      for(let account in this.accountMap){
+        let balance = this.getBalance(account.address)
+      }
     }
+  },
+  mounted() {
+    // this.getAsset();
+    console.log(this.accountMap)
   }
 };
 </script>
