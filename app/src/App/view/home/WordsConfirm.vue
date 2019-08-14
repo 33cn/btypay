@@ -54,13 +54,13 @@ export default {
     //创建钱包
     createWallet() {
       // 省略各种判断
-      if (this.seedStringSelected === this.seedString) {
+      // if (this.seedStringSelected === this.seedString) {
         this.saveSeed(this.seedString, "password");
         this.$router.push({ name: "WalletIndex" });
         this.$message.success("钱包创建成功！");
-      } else {
-        this.$message.error("助记词错误！");
-      }
+      // } else {
+      //   this.$message.error("助记词错误！");
+      // }
     },
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
@@ -106,7 +106,7 @@ export default {
     }
     .btn {
       margin: 0 auto;
-      margin-top: 25px;
+      margin-top: 20px;
       width: 344px;
       height: 47px;
       background-image: url("../../../assets/images/longBtnBg.png");
@@ -132,13 +132,11 @@ export default {
     margin: 11.5px 0;
     box-shadow: 2px 2px 5px 3px #ffffff;
     border-radius: 10px;
-    padding: 10px 15px;
     background: white;
-    height: 190px;
+    min-height: 190px;
     display: flex;
-    position: relative;
+    align-content: center;
     align-items: center;
-    flex-wrap: wrap;
     .word-btn_combine {
       flex: 0;
       width: auto;
@@ -161,8 +159,8 @@ export default {
     }
   }
   .mnemonic-select {
-    margin-top: 11px;
-    padding: 0 35px;
+    margin-top: 15px;
+    padding: 0;
     .word-btn.el-button--primary {
       background: #ff6a8b;
       opacity: 1;
@@ -185,14 +183,11 @@ export default {
     border: none;
     font-family: MicrosoftYaHei;
     margin-bottom: 5px;
-    margin-top: 10px;
-    margin-left: 30px;
+    margin-top: 5px;
+    margin-left: 10px;
     color: #ffffff;
     background: #ff89a3;
     opacity: 0.71;
-    &:nth-child(5n+1){
-      margin-left: 0;
-    }
     &:hover {
       color: #ffffff;
       background: #ff89a3;

@@ -7,9 +7,13 @@ let isDev = process.env.NODE_ENV === 'development'
 
 function getBackgroundPage() {
   return new Promise((resolve) => {
-    window.chrome.runtime.getBackgroundPage(win => {
-      resolve(win)
-    })
+    if (isDev) {
+      resolve(window)
+    } else {
+      window.chrome.runtime.getBackgroundPage(win => {
+        resolve(win)
+      })
+    }
   })
 }
 
@@ -63,7 +67,6 @@ export default {
     newAccount(name) {
       return this.getWallet().then(wallet => {
         const account = wallet.newAccount(name)//生成公私钥地址等
-        console.log(account)
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)

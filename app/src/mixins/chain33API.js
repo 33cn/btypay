@@ -20,9 +20,9 @@ export default {
     sendTransation(signedTx) {
       return this.$chain33Sdk.sendTransaction(signedTx)
     },
-    // getAddrBalance
-    getAddrBalance(addr, execer) {
-      return this.$chain33Sdk.getAddrBalance([addr], execer)
+
+    getAddrBalance(addr, execer, url) {
+      return this.$chain33Sdk.getAddrBalance([addr], execer, url)
     },
     // 根据地址获取交易信息
     getAddrTx(addr, count, direction, height, index, url) {

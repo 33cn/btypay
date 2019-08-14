@@ -13,47 +13,52 @@
             <p>BTY</p>
           </div>
           <div class="right">
-            <p>0.00</p>
-            <p>≈￥0.00</p>
+            <p>{{ BTYAsset.num }}</p>
+            <p>≈￥{{ BTYAsset.num * BTYAsset.price }}</p>
           </div>
         </li>
         <li @click="toGame">
           <div class="left">
-            <img src="../../../assets/images/gameLogo.png" alt />
-            <p>GAME</p>
+            <img src="../../../assets/images/logo.png" alt />
+            <p>{{ GameAsset.name }}</p>
           </div>
           <div class="right">
-            <p>0.00</p>
-            <p>≈￥0.00</p>
+            <p>{{ GameAsset.num }}</p>
+            <p>≈￥{{ GameAsset.num * GameAsset.price }}</p>
           </div>
         </li>
-        <!-- <li v-for="(item, index) in GameAsset" :key="index">
-          <div class="left">
-            <img src="../../../assets/images/logo.png" alt />
-            <p>{{ item.name }}</p>
-          </div>
-          <div class="right">
-            <p>{{ item.num }}</p>
-            <p>≈￥0.00</p>
-          </div>
-        </li> -->
       </ul>
     </section>
-    <section class="btn"><router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link></section>
+    <section class="btn">
+      <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
+    </section>
   </div>
 </template>
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
+import { createNamespacedHelpers } from "vuex";
+import walletAPI from "@/mixins/walletAPI.js";
+import chain33API from "@/mixins/chain33API.js";
+
+const { mapState } = createNamespacedHelpers("Account");
+
 export default {
+  mixins: [walletAPI, chain33API],
   components: { HomeHeader },
   data() {
     return {
-      BTYAsset: 0,
-      GameAsset: [
-        { name: "", num: 0 }
-      ]
+      BTYAsset: { num: 1, price: 10 },
+      GameAsset: { name: "GAME", num: 1, price: 10 }
     };
+  },
+  computed: {
+    ...mapState([
+      "accountMap",
+      "currentAccount",
+      "currentMain",
+      "currentParallel"
+    ])
   },
   methods: {
     toBty() {
@@ -61,7 +66,27 @@ export default {
     },
     toGame() {
       this.$router.push({ path: "/coin?coin=game" });
+    },
+    init() {
+      if (this.currentAccount) {
+        const addr = this.currentAccount.address;
+        if (this.currentMain) {
+          this.getAddrBalance(addr, "coins", this.currentMain).then(result => {
+            this.BTYAsset.num = result[0].balance / 1e8;
+          });
+        }
+        if (this.currentParallel) {
+          this.getAddrBalance(addr, "coins", this.currentParallel).then(
+            result => {
+              this.GameAsset.num = result[0].balance / 1e8;
+            }
+          );
+        }
+      }
     }
+  },
+  mounted() {
+    this.init();
   }
 };
 </script>
@@ -104,7 +129,7 @@ export default {
             justify-content: flex-start;
             align-items: center;
             img {
-              width:37px;
+              width: 37px;
               height: 37px;
               margin-right: 24px;
             }
@@ -133,23 +158,23 @@ export default {
             }
           }
         }
-        &:hover{
+        &:hover {
           cursor: pointer;
         }
       }
     }
   }
-  >section.btn{
+  > section.btn {
     margin: 0 26px 0 30px;
     height: 47px;
-    font-size:16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    background-image: url('../../../assets/images/longBtnBg.png');
+    font-size: 16px;
+    font-family: MicrosoftYaHei;
+    font-weight: 400;
+    background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
     margin-top: 82px;
-    a{
+    a {
       width: 100%;
       height: 100%;
       display: inline-block;

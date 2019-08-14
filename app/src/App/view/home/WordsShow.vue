@@ -1,10 +1,15 @@
 <template>
   <div class="wordsShow_container">
-    <asset-back title="" style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0"></asset-back>
     <section class="content">
       <p class="notice">请记录下您的助记词，并妥善保存，建议通过纸笔的方式。不建议截图保存，会对您的资金安全造成威胁。</p>
-      <div class="mnemonic">
-        <span v-for="(item, index) in seedCharts" :key="index">{{item}}</span>
+      <div class="mnemonic-con">
+        <!-- <div class="mnemonic">
+          <span v-for="(item, index) in seedCharts" :key="index">{{item}}</span>
+        </div>-->
+        <div class="mnemonic">
+          <span v-for="(item, index) in seedCharts" :key="index">{{item}}</span>
+        </div>
       </div>
       <p class="btn">
         <router-link :to="{ name: 'WordsConfirm'}">下一步</router-link>
@@ -28,9 +33,8 @@ export default {
   methods: {
     //生成助记词
     generateSeed() {
-      this.seedString = this.newMnemonic(1);
-      this.seedCharts = this.seedString.split(" ")
-      console.log(this.seedString)
+      this.seedString = this.newMnemonic(2);
+      this.seedCharts = this.seedString.split(" ");
       this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
     // //创建钱包
@@ -64,28 +68,33 @@ export default {
 <style lang='scss'>
 .wordsShow_container {
   .content {
-    width: 350px;
+    width: 344px;
     margin: 0 auto;
     margin-top: 30px;
     .notice {
       font-size: 14px;
       color: #ffffff;
       margin-bottom: 11px;
+      line-height: 20px;
     }
-    .mnemonic {
+    .mnemonic-con {
       height: 190px;
       background: #ffffff;
-      padding: 35px 36px;
       border-radius: 10px;
       box-shadow: 2px 2px 5px 3px #ffffff;
-      > span {
-        font-size: 18px;
-        // font-weight: bold;
-        color: #ff6a8b;
-        width: 55px;
-        display: inline-block;
-        text-align: center;
-        margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .mnemonic {
+        width: 270px;
+        > span {
+          font-size: 18px;
+          line-height: 30px;
+          color: #ff6a8b;
+          display: inline-block;
+          text-align: center;
+          margin-right: 10px;
+        }
       }
     }
     .btn {
