@@ -52,7 +52,7 @@ export default {
         },
         convertHandle(){
             this.$alert('请关注收款地址的资金变动。', '兑换成功', {
-                confirmButtonText: '知道了',
+                confirmButtonText: '确认',
                 closeOnClickModal:true,
                 center:true,
                 showClose:false,
@@ -75,35 +75,36 @@ export default {
     background-image: url('../../../assets/images/lightColorBg.png');
     background-size: 100% 100%;
     section.ope{
-        margin: 60px 24.5px 50px;
+        margin: 35px 44px 24px 55px;
         display: flex;
         justify-content: space-between;
         >img{
             width: 32px;
-            height: 24.5px;
+            height: 24px;
             position: relative;
-            top: 10px;
+            top: 13px;
+            cursor: pointer;
         }
         >div{
             display: flex;
             flex-direction: column;
             align-items: center;
             img{
-                width: 47.5px;
+                width: 47px;
             }
             p.coin{
-                font-size:23px;
+                font-size:18px;
                 font-family:MicrosoftYaHei;
                 font-weight:bold;
                 color:rgba(22,42,84,1);
                 line-height:1;
-                margin: 11.5px 0 30px;
+                margin: 7px 0 30px;
             }
             input{
-                width: calc(100% - 29px);
-                padding: 6px 29px;
+                width: 100px;
+                padding: 5px 11px 5px;
                 border:1px solid rgba(22,42,84,0.61);
-                font-size: 18px;
+                font-size: 14px;
                 // color:rgba(223,223,223,1);
                 &::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
 		        	color:rgba(223,223,223,1);
@@ -113,55 +114,56 @@ export default {
                 // }
             }
             p.balance{
-                font-size:18px;
+                font-size:12px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 color:rgba(209,209,209,1);
                 line-height: 1;
-                margin-top: 10px;
+                margin-top: 7px;
             }
         }
     }
     section.desc{
-        margin: 0 46px 0 39px;
+        margin: 0 56px 0 55px;
         div{
             &:nth-of-type(2){
-                margin: 21px 0 27px;
+                margin: 17px 0 20px;
             }
             display: flex;
             justify-content: flex-start;
             align-items: center;
             p{
-                font-size:20px;
+                font-size:16px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 color:rgba(22,42,84,1);
                 line-height:1;
                 &:nth-of-type(1){
-                    width: 100px;
+                    width: 130px;
                     opacity:0.67;
                 }
             }
         }
         >p{
-            font-size:18px;
+            font-size:16px;
             font-family:MicrosoftYaHei;
             font-weight:400;
             color:rgba(22,42,84,0.67);
-            line-height:1;
+            line-height:24px;
         }
     }
     >p{
-        margin: 56px 23px 0;
+        margin: 55px 26px 0 29px;
         background-image: url('../../../assets/images/longBtnBg.png');
         background-size: 100% 100%;
         text-align: center;
-        padding: 9px 0 14px;
-        font-size:20px;
+        padding: 12px 0 18px;
+        font-size:16px;
         font-family:MicrosoftYaHei;
         font-weight:400;
         color:rgba(255,255,255,1);
         line-height:1;
+        cursor: pointer;
     }
 }
 </style>

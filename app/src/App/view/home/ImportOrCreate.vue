@@ -14,7 +14,7 @@
             <li>
                 <p class="desc">是，让我们赶紧开始吧。</p>
                 <div class="create">
-                    <img src="../../../assets/images/add.png" alt="">
+                    <img src="../../../assets/images/adds.png" alt="">
                     <p class="btn">
                         <router-link :to="{ name: 'CreateWallet'}">创建钱包</router-link>
                     </p>

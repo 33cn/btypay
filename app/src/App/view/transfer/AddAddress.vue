@@ -78,12 +78,12 @@ export default {
   background-image: url("../../../assets/images/lightColorBg.png");
   background-size: 100% 100%;
   > form {
-    margin: 69px 63px 0 25px;
+    margin: 51px 50px 0 45px;
     > div {
-      margin-bottom: 40px;
+      margin-bottom: 32px;
       position: relative;
       > label {
-        margin-bottom: 25px;
+        margin-bottom: 15px;
         text-align: left;
         font-size: 18px;
         font-family: MicrosoftYaHei;
@@ -98,10 +98,12 @@ export default {
           border: none;
           background-color: transparent;
           border-bottom: 1px solid #a8b1bd;
-          font-size: 18px;
+          font-size: 14px;
           color: rgba(22, 42, 84, 1);
           opacity: 0.8;
           border-radius: 0px;
+          height: 30px;
+          line-height: 1;
           padding: 0px;
           ::-webkit-input-placeholder {
             /* Chrome/Opera/Safari */
@@ -111,24 +113,25 @@ export default {
         img {
           width: 23px;
           position: absolute;
-          right: 0px;
-          bottom: 10px;
+          right: 12px;
+          bottom: 18px;
+          cursor: pointer;
         }
       }
       &:nth-of-type(2){
           input{
-              padding-right: 30px;
+              padding-right: 40px;
           }
       }
     }
   }
   > p {
-    margin: 210px 23px 0;
-    padding: 9px 0 14px;
+    margin: 160px 26px 0 29px;
+    padding: 12px 0 18px;
     background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
-    font-size: 20px;
+    font-size: 16px;
     font-family: MicrosoftYaHei;
     font-weight: 400;
     color: rgba(255, 255, 255, 1);

@@ -114,12 +114,12 @@ export default {
       font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
-      padding-top: 5px;
+      padding: 12px 0 18px;
       a {
         width: 100%;
         display: inline-block;
         color: rgba(255, 255, 255, 1) !important;
-        margin-top: 3px;
+        // margin-top: 6px;
       }
     }
   }

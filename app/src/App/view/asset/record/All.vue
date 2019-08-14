@@ -3,14 +3,16 @@
         <ul>
             <li v-for="item in list" :key="item.time" @click="toDetail(item)">
                 <div>
-                    <img src="../../../../assets/images/transferLogo.png" alt="">
+                    <img v-if="item.type==1" src="../../../../assets/images/transferLogo.png" alt="">
+                    <img v-if="item.type==2" src="../../../../assets/images/receiptLogo.png" alt="">
+                    <img v-if="item.type==3" style="width:27px;height:28px" src="../../../../assets/images/convertLogo.png" alt="">
                     <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
                     <div>
-                        <p>{{item.address}}</p>
-                        <p>{{item.time}}</p>
+                        <p>{{item.address.substring(0,5)}}...{{item.address.substring(item.address.length-5)}}</p>
+                        <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p>
                     </div>
                 </div>
-                <p :class="item.type==1?'transfer':'receipt'">{{item.type==2?'+':'-'}}{{item.value}}</p>
+                <p :class="item.type==1?'transfer':'receipt'">{{item.type==1?'-':'+'}}{{item.value}}</p>
             </li>
         </ul>
     </div>
@@ -24,8 +26,9 @@ export default {
         return{
             list:[
                 {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
-                {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/01 10:23:23'},
-                {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/02 10:23:23'},
+                {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:200,time:'2019/09/01 10:23:23'},
+                {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/02 10:23:23'},
+                {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/03 10:23:23'},
             ]
         }
     },
@@ -55,21 +58,23 @@ export default {
 .all_Container{
     ul{
         li{
-            width: calc(100% - 26px);
+            // width: calc(100% - 0px);
             background-image: url('../../../../assets/images/txBg.png');
             background-size: 100% 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 10px 0 16px;
-            padding: 18px 0px 40px 12px;
+            // margin: 0 10px 0 16px;
+            padding: 12px 37px 29px 35px;
+            cursor: pointer;
             >div{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 img{
-                    width: 36.5px;
-                    margin-right: 5px;
+                    width: 28px;
+                    height: 25px;
+                    margin-right: 18px;
                 }
                 div{
                     display: flex;
@@ -80,26 +85,27 @@ export default {
                         font-weight:400;
                         line-height:1;
                         &:nth-of-type(1){
-                            width: 150px;
-                            font-size:23px;
+                            // width: 90px;
+                            font-size:14px;
                             color:rgba(51,51,51,1);
-                            margin-bottom: 12px;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
+                            margin-bottom: 4px;
+                            // overflow: hidden;
+                            // text-overflow: ellipsis;
+                            line-height: 1.2;
                         }
                         &:nth-of-type(2){
-                            font-size:16.5px;
+                            font-size:12px;
                             color:rgba(171,177,193,0.62);
                         }
                     }
                 }
             }
             p{
-                font-size:23px;
+                font-size:16px;
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 line-height:1;
-                margin-right: 25px;
+                // margin-right: 25px;
                 &.transfer{
                     color:rgba(59,225,237,1);
                 }

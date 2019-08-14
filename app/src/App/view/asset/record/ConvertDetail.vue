@@ -3,6 +3,7 @@
         <asset-back title='订单详情'></asset-back>
         <section class="status">
             <img src="../../../../assets/images/success.png" alt="">
+            <!-- <img src="../../../../assets/images/fail.png" alt=""> -->
             <p>兑换成功</p>
             <p>2019/02/21 10:12:12</p>
         </section>
@@ -29,7 +30,7 @@
             </li>
             <li>
                 <p>交易哈希</p>
-                <p class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy">1NkjfHkiqodnHjKjfjfkknknkljbkbbjhbhbjbhbhbufkIIfgxggfgfCDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
+                <p>1NkjfHkiqodnHjKjfjfkknknkljbkbfbjhbhbjbhbfgfCDINN46Jjf<img @click="copyHandle($event, 'currentAccount.hash')" src="../../../../assets/images/copy.png"></p>
             </li>
         </ul>
     </div>
@@ -37,24 +38,26 @@
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
-import Clipboard from 'clipboard'
+import {clip} from '@/libs/clip.js'
 export default {
     components:{AssetBack},
+    methods:{
+        copyHandle(event,text){
+            clip({
+                event,
+                text,
+                response: (err, msg) => {
+                  if (err) {
+                    this.$serverErrNotify(msg)
+                    return
+                  }
+                  this.$serverSucNotify(msg)
+                }
+            })
+        }
+    },
     mounted(){
         console.log(this.$route.params);
-        var clipboard = new Clipboard('.copy');
-        clipboard.on('success', (e) => {
-            console.log(this)
-            this.$serverSucNotify('复制成功')
-            // console.info('Action:', e.action);
-            // console.info('Text:', e.text);
-            // console.info('Trigger:', e.trigger);
-            e.clearSelection();
-        });
-        clipboard.on('error', function(e) {
-            // console.error('Action:', e.action);
-            console.error('Trigger:', e.trigger);
-        });
     }
 }
 </script>
@@ -66,57 +69,64 @@ export default {
     background-image: url('../../../../assets/images/lightColorBg.png');
     background-size: 100% 100%;
     >section.status{
-        margin: 32px 0 43px;
+        margin: 25px 0 46px;
         display: flex;
         flex-direction: column;
         align-items: center;
         img{
-            width: 50.5px;
+            width: 43px;
         }
         p{
             font-family:MicrosoftYaHei;
             font-weight:400;
             line-height: 1;
             &:nth-of-type(1){
-                font-size:18px;
+                font-size:16px;
                 color:rgba(22,42,84,1);
-                margin: 23px 0 16px;
+                margin: 23px 0 9px;
             }
             &:nth-of-type(2){
-                font-size:15px;
+                font-size:14px;
                 color:rgba(153,153,153,1);
             }
         }
     }
     >ul{
-        margin: 0 20.5px 0 25px;
+        margin: 0 55px 0 74px;
         li{
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            margin-bottom: 19.5px;
+            margin-bottom: 17px;
             p{
                 font-family:MicrosoftYaHei;
                 font-weight:400;
                 line-height: 1;
                 color:rgba(22,42,84,1);
                 &:nth-of-type(1){
-                    width: 100px;
-                    font-size: 18px;
+                    width: 90px;
+                    font-size: 14px;
                     // line-height:3;
                     opacity:0.67;
                 }
                 &:nth-of-type(2){
-                    font-size: 16.5px;
+                    font-size: 12px;
                     word-wrap:break-word;
                     word-break: break-all;
-                    width: calc(100% - 100px);
+                    width: calc(100% - 90px);
                     flex-wrap: wrap;
+                    position: relative;
+                    line-height: 16px;
                     img{
-                        width: 16.5px;
-                        margin: 4px 0 0 16px;
+                        width: 17px;
+                        margin: 0px 0 0 13px;
+                        cursor: pointer;
+                        position: absolute;
                     }
                 }
+            }
+            &:nth-last-of-type(2){
+                margin-bottom: 10px;
             }
         }
     }

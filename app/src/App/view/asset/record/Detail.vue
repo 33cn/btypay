@@ -2,7 +2,8 @@
     <div class="detail_container">
         <asset-back title='订单详情'></asset-back>
         <section class="status">
-            <img src="../../../../assets/images/success.png" alt="">
+            <!-- <img src="../../../../assets/images/success.png" alt=""> -->
+            <img src="../../../../assets/images/fail.png" alt="">
             <p>转账成功</p>
             <p>2019/02/21 10:12:12</p>
         </section>
@@ -17,11 +18,11 @@
             </li>
             <li>
                 <p>付款地址</p>
-                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
+                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img @click="copyHandle($event, 'currentAccount.payAddress')" src="../../../../assets/images/copy.png"></p>
             </li>
             <li>
                 <p>收款地址</p>
-                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
+                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img @click="copyHandle($event, 'currentAccount.receiptAddress')" src="../../../../assets/images/copy.png"></p>
             </li>
             <li>
                 <p>区块</p>
@@ -29,7 +30,7 @@
             </li>
             <li>
                 <p>交易哈希</p>
-                <p>1NkjfHkiqodnHjKjfjfkknknkljbkbbjhbhbjbhbhbufkIIfgxggfgfCDINN46Jjf<img src="../../../../assets/images/copy.png"></p>
+                <p>1NkjfHkiqodnHjKjfjfkknknkljbkbbjhbhbjbhbhbufkIIfgxggfgfCDINN46Jjf<img @click="copyHandle($event, 'currentAccount.hash')" src="../../../../assets/images/copy.png"></p>
             </li>
         </ul>
     </div>
@@ -37,9 +38,24 @@
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
-import Clipboard from 'clipboard'
+import {clip} from '@/libs/clip.js'
 export default {
     components:{AssetBack},
+    methods:{
+        copyHandle(event,text){
+            clip({
+                event,
+                text,
+                response: (err, msg) => {
+                  if (err) {
+                    this.$serverErrNotify(msg)
+                    return
+                  }
+                  this.$serverSucNotify(msg)
+                }
+            })
+        }
+    },
     mounted(){
         console.log(this.$route.params)
     }
@@ -53,30 +69,30 @@ export default {
     background-image: url('../../../../assets/images/lightColorBg.png');
     background-size: 100% 100%;
     >section.status{
-        margin: 32px 0 43px;
+        margin: 25px 0 46px;
         display: flex;
         flex-direction: column;
         align-items: center;
         img{
-            width: 50.5px;
+            width: 43px;
         }
         p{
             font-family:MicrosoftYaHei;
             font-weight:400;
             line-height: 1;
             &:nth-of-type(1){
-                font-size:18px;
+                font-size:16px;
                 color:rgba(22,42,84,1);
-                margin: 23px 0 16px;
+                margin: 23px 0 9px;
             }
             &:nth-of-type(2){
-                font-size:15px;
+                font-size:14px;
                 color:rgba(153,153,153,1);
             }
         }
     }
     >ul{
-        margin: 0 20.5px 0 25px;
+        margin: 0 50px;
         li{
             display: flex;
             justify-content: flex-start;
@@ -84,23 +100,26 @@ export default {
             p{
                 font-family:MicrosoftYaHei;
                 font-weight:400;
-                line-height: 1.1;
+                line-height: 1.3;
                 color:rgba(22,42,84,1);
                 &:nth-of-type(1){
-                    width: 100px;
-                    font-size: 18px;
+                    width: 110px;
+                    font-size: 14px;
                     line-height:3;
                     opacity:0.67;
                 }
                 &:nth-of-type(2){
-                    font-size: 16.5px;
+                    font-size: 12px;
                     word-wrap:break-word;
                     word-break: break-all;
-                    width: calc(100% - 100px);
+                    width: calc(100% - 110px);
                     flex-wrap: wrap;
+                    position: relative;
                     img{
-                        width: 16.5px;
-                        margin: 4px 0 0 16px;
+                        width: 17px;
+                        margin: 0px 0 0 13px;
+                        cursor: pointer;
+                        position: absolute;
                     }
                 }
             }
