@@ -26,7 +26,7 @@
             <p>0.00</p>
             <p>≈￥0.00</p>
           </div>
-        </li> -->
+        </li>-->
         <li v-for="(item, index) in GameAsset" :key="index" @click="toGame">
           <div class="left">
             <img src="../../../assets/images/logo.png" alt />
@@ -36,35 +36,35 @@
             <p>{{ item.num }}</p>
             <p>≈￥{{ item.num * item.price }}</p>
           </div>
-        </li> -->
+        </li>
       </ul>
     </section>
-    <section class="btn"><router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link></section>
+    <section class="btn">
+      <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
+    </section>
   </div>
 </template>
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
-import {createNamespacedHelpers} from 'vuex'
+import { createNamespacedHelpers } from "vuex";
 
-const {mapState} = createNamespacedHelpers('Account')
+const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   components: { HomeHeader },
   data() {
     return {
-      BTYAsset: { num: 0.00, price: 10 },
-      GameAsset: [
-        { name: "GAME", num: 0.00, price: 10 }
-      ]
+      BTYAsset: { num: 0.0, price: 10 },
+      GameAsset: [{ name: "GAME", num: 0.0, price: 10 }]
     };
   },
   computed: {
-    ...mapState(['accountMap', 'currentAccount'])
+    ...mapState(["accountMap", "currentAccount"])
   },
   watch: {
     currentAccount(account) {
-      account && this.getBalance(account.address)
+      account && this.getBalance(account.address);
     }
   },
   methods: {
@@ -75,19 +75,19 @@ export default {
       this.$router.push({ path: "/coin?coin=game" });
     },
     getBalance(addr) {
-      this.getAddrBalance(addr, 'coins').then(result => {
-        return result[0].balance / 1e8
-      })
+      this.getAddrBalance(addr, "coins").then(result => {
+        return result[0].balance / 1e8;
+      });
     },
-    init(){
-      for(let account in this.accountMap){
-        let balance = this.getBalance(account.address)
+    init() {
+      for (let account in this.accountMap) {
+        let balance = this.getBalance(account.address);
       }
     }
   },
   mounted() {
     // this.getAsset();
-    console.log(this.accountMap)
+    console.log(this.accountMap);
   }
 };
 </script>
@@ -130,7 +130,7 @@ export default {
             justify-content: flex-start;
             align-items: center;
             img {
-              width:37px;
+              width: 37px;
               height: 37px;
               margin-right: 24px;
             }
@@ -159,23 +159,23 @@ export default {
             }
           }
         }
-        &:hover{
+        &:hover {
           cursor: pointer;
         }
       }
     }
   }
-  >section.btn{
+  > section.btn {
     margin: 0 26px 0 30px;
     height: 47px;
-    font-size:16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    background-image: url('../../../assets/images/longBtnBg.png');
+    font-size: 16px;
+    font-family: MicrosoftYaHei;
+    font-weight: 400;
+    background-image: url("../../../assets/images/longBtnBg.png");
     background-size: 100% 100%;
     text-align: center;
     margin-top: 82px;
-    a{
+    a {
       width: 100%;
       height: 100%;
       display: inline-block;

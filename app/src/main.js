@@ -31,6 +31,7 @@ Vue.use({
         throw new Error(res.error)
       }
     })
+    
   }
 })
 
