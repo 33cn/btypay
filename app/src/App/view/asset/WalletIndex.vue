@@ -19,7 +19,7 @@
         </li>
         <li @click="toGame">
           <div class="left">
-            <img src="../../../assets/images/logo.png" alt />
+            <img src="../../../assets/images/gameLogo.png" alt />
             <p>{{ GameAsset.name }}</p>
           </div>
           <div class="right">
@@ -68,16 +68,19 @@ export default {
       this.$router.push({ path: "/coin?coin=game" });
     },
     init() {
+      console.log(this.currentAccount)
       if (this.currentAccount) {
         const addr = this.currentAccount.address;
         if (this.currentMain) {
           this.getAddrBalance(addr, "coins", this.currentMain).then(result => {
+            console.log(result)
             this.BTYAsset.num = result[0].balance / 1e8;
           });
         }
         if (this.currentParallel) {
           this.getAddrBalance(addr, "coins", this.currentParallel).then(
             result => {
+              console.log(result)
               this.GameAsset.num = result[0].balance / 1e8;
             }
           );

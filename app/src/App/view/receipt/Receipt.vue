@@ -16,8 +16,13 @@
 import AssetBack from '@/components/AssetBack.vue'
 import QRious from 'qrious'
 import {clip} from '@/libs/clip.js'
+import {createNamespacedHelpers} from 'vuex'
+const {mapState} = createNamespacedHelpers('Account')
 export default {
     components:{AssetBack},
+    computed:{
+        ...mapState(['accountMap', 'currentAccount']),
+    },
     methods:{
         copyHandle(event,text){
             clip({
@@ -34,27 +39,14 @@ export default {
         }
     },
     mounted(){
-        var clipboard = new Clipboard('.copy');
-        clipboard.on('success', (e) => {
-            console.log(this)
-            this.$serverSucNotify('复制成功')
-            // console.info('Action:', e.action);
-            // console.info('Text:', e.text);
-            // console.info('Trigger:', e.trigger);
-            
-            e.clearSelection();
-        });
-        clipboard.on('error', function(e) {
-            // console.error('Action:', e.action);
-            console.error('Trigger:', e.trigger);
-        });
+        let value = this.currentAccount?this.currentAccount.address:'出错了';
         new QRious({
             element: document.querySelector('#qrcode'),
             // background: '#000',
             // foreground: '#fff',
             level: 'H',
             size: 154,
-            value: 'http://www.jq22.com/'
+            value
         })
     }
 }

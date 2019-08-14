@@ -6,8 +6,8 @@
             <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p>
         </section>
         <section class="balance">
-            <img v-if="coin=='bty'" src="../../../assets/images/btyLogo.png" alt="">
             <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt="">
+            <img v-else src="../../../assets/images/btyLogo.png" alt="">
             <div class="balance">
                 <p>0.00</p>
                 <p>≈￥0.00</p>
