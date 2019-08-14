@@ -15,6 +15,10 @@ export default {
     },
     methods:{
         backHandle(){
+            if(this.title == 'BTY转账'){
+                this.$router.push({name:'bty'})
+                return
+            }
             this.$router.go(-1)
         }
     }
@@ -41,8 +45,8 @@ export default {
             text-align: center;
             position: absolute;
             left: calc(50% - 50px);
-            top: 106px;
-            font-size:16px;
+            top: 105px;
+            font-size:18px;
             font-family:MicrosoftYaHei;
             font-weight:bold;
             color:rgba(139,176,255,1);

@@ -30,6 +30,7 @@ export default {
     generateSeed() {
       this.seedString = this.newMnemonic(1);
       this.seedCharts = this.seedString.split(" ")
+      console.log(this.seedString)
       this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
     // //创建钱包

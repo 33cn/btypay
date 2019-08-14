@@ -18,7 +18,7 @@
                             <p class="line"></p>
                         </div>
                     </section>
-                    <p class="add" @click="mainDialog=true">添加自定义节点</p>
+                    <p class="add" @click="mainDialog=true;mainIsInput=false">添加自定义节点</p>
                 </div>
             </li>
             <li>
@@ -36,15 +36,16 @@
                 </div>
             </li>
         </ul>
-        <el-dialog title="主链节点设置" :visible.sync="mainDialog" width='370px' :show-close=false class="mainNode">
+        <el-dialog title="主链节点设置" :visible.sync="mainDialog" width='324px' :show-close=false class="mainNode">
             <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
             <input type="text" class="mainAddress" v-model="mainData">
+            <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="mainDialog = false">取消</el-button>
-                <el-button type="primary" @click="mainDialog = false">确认</el-button>
+                <el-button type="primary" @click="mainSubmit">确认</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="平行链节点设置" :visible.sync="paraDialog" width='369px' :show-close=false class="paraNode">
+        <el-dialog title="平行链节点设置" :visible.sync="paraDialog" width='324px' :show-close=false class="paraNode">
             <el-form :model="form" :rules="rules" ref="ruleForm">
                 <el-form-item label="平行链名称" prop="paraName">
                     <el-input v-model="form.paraName" autocomplete="off"></el-input>
@@ -88,15 +89,16 @@ export default {
             mainDialog:false,
             paraDialog:false,
             mainData:'',
+            mainIsInput:false,
             form:{
                 paraName:'',
                 coinName:'',
                 address:''
             },
             rules:{
-                paraName: [{ validator: paraNameCheck, trigger: "blur" }],
-                coinName: [{ validator: coinNameCheck, trigger: "blur" }],
-                address: [{ validator: addressCheck, trigger: "blur" }],
+                paraName: [{ required: true, message: "请输入平行链名称", trigger: "blur" }],
+                coinName: [{ required: true, message: "请输入代币名称", trigger: "blur" }],
+                address: [{ required: true, message: "请输入节点地址", trigger: "blur" }],
             }
         }
     },
@@ -104,12 +106,17 @@ export default {
         paraSubmit(formName){
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                  alert("submit!");
+                  console.log("submit!");
                 } else {
                   console.log("error submit!!");
                   return false;
                 }
             });
+        },
+        mainSubmit(){
+            if(this.mainData == ''&&this.mainDialog){
+                this.mainIsInput = true;
+            }
         }
     },
     watch:{
@@ -117,7 +124,12 @@ export default {
             if(!val){
                 this.$refs['ruleForm'].resetFields();
             }
-        }
+        },
+        // mainDialog(val){
+        //     if(!val){
+        //         this.mainIsInput = false;
+        //     }
+        // }
     }
 }
 </script>
@@ -218,12 +230,19 @@ export default {
     }
     .el-dialog__wrapper{
         .el-dialog{
-            background-image: url('../../../assets/images/addParaBg.png');
-            background-size: 100% 100%;
+            // background:rgba(251,251,251,1);
+            // box-shadow:0px 7px 17px 4px rgba(7,50,98,0.23);
+            // border-radius:10px;
         }
         &.mainNode{
             .el-dialog{
-                background-image: url('../../../assets/images/addMainBg.png');
+                // background-image: url('../../../assets/images/addMainBg.png');
+                p.main_error{
+                    font-size: 12px;
+                    margin-top: 4px;
+                    color: #F56C6C;
+                    position: absolute;
+                }
             }
         }
     }

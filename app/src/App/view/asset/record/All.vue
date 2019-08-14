@@ -59,13 +59,15 @@ export default {
     ul{
         li{
             // width: calc(100% - 0px);
-            background-image: url('../../../../assets/images/txBg.png');
-            background-size: 100% 100%;
+            // background-image: url('../../../../assets/images/txBg.png');
+            // background-size: 100% 100%;
+            background:rgba(243,246,251,1);
+            box-shadow:6px 5px 10px #d6d4d4;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            // margin: 0 10px 0 16px;
-            padding: 12px 37px 29px 35px;
+            padding: 12px 37px 9px 35px;
+            margin-bottom: 20px;
             cursor: pointer;
             >div{
                 display: flex;

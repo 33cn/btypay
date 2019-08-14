@@ -26,7 +26,7 @@ export default {
     setChromeStorage(key, value) {
       return new Promise(resolve => {
         window.chrome.storage.local.set({ [key]: value }, () => {
-          resolve(value)
+          resolve('success')
         })
       })
     },
@@ -65,6 +65,7 @@ export default {
         const account = wallet.newAccount(name)//生成公私钥地址等
         console.log(account)
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+        this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
         this.setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
@@ -93,6 +94,7 @@ export default {
     },
     setCurrentAccount(account) {
       return getBackgroundPage().then(win => {
+        console.log(win)
         win.currentAccount = account
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
         return account

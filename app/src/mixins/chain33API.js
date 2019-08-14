@@ -1,3 +1,4 @@
+import {eventBus} from '@/libs/eventBus'
 export default {
   methods: {
 
@@ -19,20 +20,23 @@ export default {
     sendTransation(signedTx) {
       return this.$chain33Sdk.sendTransaction(signedTx)
     },
-
+    // getAddrBalance
     getAddrBalance(addr, execer) {
       return this.$chain33Sdk.getAddrBalance([addr], execer)
     },
-
-    getAddrTx(addr, count, direction, height, index) {
+    // 根据地址获取交易信息
+    getAddrTx(addr, count, direction, height, index, url) {
+      if(url){
+        eventBus.$emit('node-change', url)
+      }
       return this.$chain33Sdk.getAddrTx({
         addr,
         count,
         direction,
         height,
         index,
-        flag: 0
-      })
+        flag: 0,
+      },url)
     }
   }
 }

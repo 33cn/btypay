@@ -23,7 +23,7 @@ Vue.use({
     // 注入定制样式的消息提示
     Vue.prototype.$serverErrNotify = errNotify
     Vue.prototype.$serverSucNotify = sucNotify
-    Vue.prototype.$chain33Sdk = new BtyBaseSdk('https://mainnode.bityuan.com:8801', (res) => {
+    Vue.prototype.$chain33Sdk = new BtyBaseSdk('172.16.103.18:8801', (res) => {
       if (res.error === null) {
         return res.result
       } else {

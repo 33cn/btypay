@@ -56,12 +56,6 @@ export default {
                 closeOnClickModal:true,
                 center:true,
                 showClose:false,
-                callback: action => {
-                    this.$message({
-                      type: 'info',
-                      message: `action: ${ action }`
-                    });
-                }
             });
         }
     }
@@ -105,6 +99,7 @@ export default {
                 padding: 5px 11px 5px;
                 border:1px solid rgba(22,42,84,0.61);
                 font-size: 14px;
+                font-family: MicrosoftYaHei;
                 // color:rgba(223,223,223,1);
                 &::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
 		        	color:rgba(223,223,223,1);
