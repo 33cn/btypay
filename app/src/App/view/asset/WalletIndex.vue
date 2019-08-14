@@ -17,24 +17,14 @@
             <p>≈￥{{ BTYAsset.num * BTYAsset.price }}</p>
           </div>
         </li>
-        <!-- <li @click="toGame">
-          <div class="left">
-            <img src="../../../assets/images/gameLogo.png" alt />
-            <p>GAME</p>
-          </div>
-          <div class="right">
-            <p>0.00</p>
-            <p>≈￥0.00</p>
-          </div>
-        </li>-->
-        <li v-for="(item, index) in GameAsset" :key="index" @click="toGame">
+        <li @click="toGame">
           <div class="left">
             <img src="../../../assets/images/logo.png" alt />
-            <p>{{ item.name }}</p>
+            <p>{{ GameAsset.name }}</p>
           </div>
           <div class="right">
-            <p>{{ item.num }}</p>
-            <p>≈￥{{ item.num * item.price }}</p>
+            <p>{{ GameAsset.num }}</p>
+            <p>≈￥{{ GameAsset.num * GameAsset.price }}</p>
           </div>
         </li>
       </ul>
@@ -48,24 +38,27 @@
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
 import { createNamespacedHelpers } from "vuex";
+import walletAPI from "@/mixins/walletAPI.js";
+import chain33API from "@/mixins/chain33API.js";
 
 const { mapState } = createNamespacedHelpers("Account");
 
 export default {
+  mixins: [walletAPI, chain33API],
   components: { HomeHeader },
   data() {
     return {
-      BTYAsset: { num: 0.0, price: 10 },
-      GameAsset: [{ name: "GAME", num: 0.0, price: 10 }]
+      BTYAsset: { num: 1, price: 10 },
+      GameAsset: { name: "GAME", num: 1, price: 10 }
     };
   },
   computed: {
-    ...mapState(["accountMap", "currentAccount"])
-  },
-  watch: {
-    currentAccount(account) {
-      account && this.getBalance(account.address);
-    }
+    ...mapState([
+      "accountMap",
+      "currentAccount",
+      "currentMain",
+      "currentParallel"
+    ])
   },
   methods: {
     toBty() {
@@ -74,20 +67,26 @@ export default {
     toGame() {
       this.$router.push({ path: "/coin?coin=game" });
     },
-    getBalance(addr) {
-      this.getAddrBalance(addr, "coins").then(result => {
-        return result[0].balance / 1e8;
-      });
-    },
     init() {
-      for (let account in this.accountMap) {
-        let balance = this.getBalance(account.address);
+      if (this.currentAccount) {
+        const addr = this.currentAccount.address;
+        if (this.currentMain) {
+          this.getAddrBalance(addr, "coins", this.currentMain).then(result => {
+            this.BTYAsset.num = result[0].balance / 1e8;
+          });
+        }
+        if (this.currentParallel) {
+          this.getAddrBalance(addr, "coins", this.currentParallel).then(
+            result => {
+              this.GameAsset.num = result[0].balance / 1e8;
+            }
+          );
+        }
       }
     }
   },
   mounted() {
-    // this.getAsset();
-    console.log(this.accountMap);
+    this.init();
   }
 };
 </script>

@@ -52,12 +52,12 @@ export default {
   },
   methods: {
     handleCreate() {
-      this.$refs.createForm.validate(valid => {
-        if (valid) {
+      // this.$refs.createForm.validate(valid => {
+      //   if (valid) {
           this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
           this.$router.push({ name: "WordsShow" });
-        }
-      });
+      //   }
+      // });
     }
   }
 };

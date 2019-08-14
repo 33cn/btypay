@@ -1,6 +1,6 @@
 const state = {
     // string url
-    mainNode: [],
+    mainNode: ['mainNode'],
     currentMain: null,
 
     // { string name, string coinName, string url }
