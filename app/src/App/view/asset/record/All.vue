@@ -1,21 +1,26 @@
 <template>
-    <div class="all_Container">
-        <ul>
-            <li v-for="item in list" :key="item.time" @click="toDetail(item)">
-                <div>
-                    <img v-if="item.type==1" src="../../../../assets/images/transferLogo.png" alt="">
-                    <img v-if="item.type==2" src="../../../../assets/images/receiptLogo.png" alt="">
-                    <img v-if="item.type==3" style="width:27px;height:28px" src="../../../../assets/images/convertLogo.png" alt="">
-                    <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
-                    <div>
-                        <p>{{item.address.substring(0,5)}}...{{item.address.substring(item.address.length-5)}}</p>
-                        <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p>
-                    </div>
-                </div>
-                <p :class="item.type==1?'transfer':'receipt'">{{item.type==1?'-':'+'}}{{item.value}}</p>
-            </li>
-        </ul>
-    </div>
+  <div class="all_Container">
+    <ul>
+      <li v-for="item in list" :key="item.time" @click="toDetail(item)">
+        <div>
+          <img v-if="item.type==TX_TYPE.OUT" src="../../../../assets/images/transferLogo.png" alt />
+          <img v-if="item.type==TX_TYPE.IN" src="../../../../assets/images/receiptLogo.png" alt />
+          <img
+            v-if="item.type==TX_TYPE.EXCHANGE"
+            style="width:27px;height:28px"
+            src="../../../../assets/images/convertLogo.png"
+            alt
+          />
+          <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
+          <div>
+            <p>{{item.address.substring(0,5)}}...{{item.address.substring(item.address.length-5)}}</p>
+            <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p>
+          </div>
+        </div>
+        <p :class="item.type==1?'transfer':'receipt'">{{item.type==1?'-':'+'}}{{item.value}}</p>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -23,103 +28,103 @@
 // const {mapState} = createNamespacedHelpers('Records')
 import records from "@/mixins/records.js";
 export default {
-    mixins:[records],
-    data(){
-        return{
-            // list:[
-            //     {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
-            //     {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:200,time:'2019/09/01 10:23:23'},
-            //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/02 10:23:23'},
-            //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/03 10:23:23'},
-            // ]
-        }
-    },
-    // methods:{
-    //     toDetail(val){
-    //         this.$router.push({name:'detail',params:{id:val.time}})
-    //     }
-    // },
-    // computed:{
-    //     ...mapState(['loadingData'])
-    // },
-    // watch:{
-    //     'loadingData':function(val){
-    //         console.log(val instanceof Array)
-    //         if(val instanceof Array){
-    //             this.list = this.list.concat(val)
-    //         }
-    //     }
-    // },
-    // mounted(){
-    //     console.log(this.$store.state.Records.loadingData)
-    // }
-}
+  mixins: [records],
+  data() {
+    return {
+      // list:[
+      //     {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
+      //     {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:200,time:'2019/09/01 10:23:23'},
+      //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/02 10:23:23'},
+      //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/03 10:23:23'},
+      // ]
+    };
+  }
+  // methods:{
+  //     toDetail(val){
+  //         this.$router.push({name:'detail',params:{id:val.time}})
+  //     }
+  // },
+  // computed:{
+  //     ...mapState(['loadingData'])
+  // },
+  // watch:{
+  //     'loadingData':function(val){
+  //         console.log(val instanceof Array)
+  //         if(val instanceof Array){
+  //             this.list = this.list.concat(val)
+  //         }
+  //     }
+  // },
+  // mounted(){
+  //     console.log(this.$store.state.Records.loadingData)
+  // }
+};
 </script>
 
 <style lang='scss'>
-.all_Container{
-    ul{
-        li{
-            // width: calc(100% - 0px);
-            // background-image: url('../../../../assets/images/txBg.png');
-            // background-size: 100% 100%;
-            background:rgba(243,246,251,1);
-            box-shadow: 0px 10px 10px -5px #d6d4d4;
-            // box-shadow:6px 5px 10px #d6d4d4;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 37px 9px 35px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            >div{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                img{
-                    width: 28px;
-                    height: 25px;
-                    margin-right: 18px;
-                }
-                div{
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    p{
-                        font-family:MicrosoftYaHei;
-                        font-weight:400;
-                        line-height:1;
-                        &:nth-of-type(1){
-                            // width: 90px;
-                            font-size:14px;
-                            color:rgba(51,51,51,1);
-                            margin-bottom: 4px;
-                            // overflow: hidden;
-                            // text-overflow: ellipsis;
-                            line-height: 1.2;
-                        }
-                        &:nth-of-type(2){
-                            font-size:12px;
-                            color:rgba(171,177,193,0.62);
-                        }
-                    }
-                }
-            }
-            p{
-                font-size:16px;
-                font-family:MicrosoftYaHei;
-                font-weight:400;
-                line-height:1;
-                // margin-right: 25px;
-                &.transfer{
-                    color:rgba(59,225,237,1);
-                }
-                &.receipt{
-                    color:rgba(255,179,89,1);
-                }
-            }
+.all_Container {
+  ul {
+    li {
+      // width: calc(100% - 0px);
+      // background-image: url('../../../../assets/images/txBg.png');
+      // background-size: 100% 100%;
+      background: rgba(243, 246, 251, 1);
+      box-shadow: 0px 10px 10px -5px #d6d4d4;
+      // box-shadow:6px 5px 10px #d6d4d4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 37px 9px 35px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        img {
+          width: 28px;
+          height: 25px;
+          margin-right: 18px;
         }
+        div {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          p {
+            font-family: MicrosoftYaHei;
+            font-weight: 400;
+            line-height: 1;
+            &:nth-of-type(1) {
+              // width: 90px;
+              font-size: 14px;
+              color: rgba(51, 51, 51, 1);
+              margin-bottom: 4px;
+              // overflow: hidden;
+              // text-overflow: ellipsis;
+              line-height: 1.2;
+            }
+            &:nth-of-type(2) {
+              font-size: 12px;
+              color: rgba(171, 177, 193, 0.62);
+            }
+          }
+        }
+      }
+      p {
+        font-size: 16px;
+        font-family: MicrosoftYaHei;
+        font-weight: 400;
+        line-height: 1;
+        // margin-right: 25px;
+        &.transfer {
+          color: rgba(59, 225, 237, 1);
+        }
+        &.receipt {
+          color: rgba(255, 179, 89, 1);
+        }
+      }
     }
+  }
 }
 </style>

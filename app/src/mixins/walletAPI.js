@@ -77,7 +77,6 @@ export default {
     newAccount(name) {
       return this.getWallet().then(wallet => {
         const account = wallet.newAccount(name)//生成公私钥地址等
-        console.log(account)
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
@@ -108,7 +107,6 @@ export default {
     },
     setCurrentAccount(account) {
       return getBackgroundPage().then(win => {
-        console.log(win)
         win.currentAccount = account
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
         return account
@@ -167,7 +165,6 @@ export default {
       let url = this.currentParallel
       this.getAddrBalance(addr, 'coins', url).then(res => {
         let payload = { amt: res[0].balance / 1e8 }
-        
         this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
       })
     }

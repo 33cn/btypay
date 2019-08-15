@@ -1,54 +1,84 @@
 <template>
-    <div class="bty_container">
-        <home-header></home-header>
-        <section class="header">
-            <router-link :to="{ name: 'WalletIndex'}"><img src="../../../assets/images/back.png" alt=""></router-link>
-            <!-- <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p> -->
-        </section>
-        <section class="balance">
-            <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt="">
-            <img v-else src="../../../assets/images/btyLogo.png" alt="">
-            <div class="balance">
-                <p>{{asset.balance}}</p>
-                <p>≈￥{{asset.balance}}</p>
-            </div>
-            <div class="address">
-                <p>{{asset.addr}}</p>
-                <img @click="copyHandle($event, 'currentAccount.address')" src="../../../assets/images/copy.png" alt="">
-                <!-- <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt=""> -->
-            </div>
-        </section>
-        <section :class="coin=='bty'?'btn bty':'btn game'">
-            <p><router-link :to="{ name: 'transfer'}">转账</router-link></p>
-            <p><router-link :to="{ name: 'receipt'}">收款</router-link></p>
-            <p v-if="coin=='game'"><router-link :to="{ name: 'convert'}">兑换</router-link></p>
-        </section>
-        <section class="records" >
-            <!-- <div class="bg"></div> -->
-            <ul>
-                <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
-                <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
-            </ul>
-            <div class="line" ref="line" :style="{left:toLeft}"></div>
-            <div ref="txListWrap" class="history">
-                <transition name="ani" mode="out-in">
-                    <component :is="view"></component>
-                </transition>
-            </div>
-        </section>
-    </div>
+  <div class="bty_container">
+    <home-header></home-header>
+    <section class="header">
+      <router-link :to="{ name: 'WalletIndex'}">
+        <img src="../../../assets/images/back.png" alt />
+      </router-link>
+      <!-- <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p> -->
+    </section>
+
+    <section class="balance" v-if="coin=='bty'">
+      <img src="../../../assets/images/btyLogo.png" alt />
+      <div class="balance">
+        <p>{{mainAsset.amt}}</p>
+        <p>≈￥{{mainAsset.amt * mainAsset.price}}</p>
+      </div>
+      <div class="address">
+        <p>{{currentAccount.address}}</p>
+        <img
+          @click="copyHandle($event, 'currentAccount.address')"
+          src="../../../assets/images/copy.png"
+          alt
+        />
+      </div>
+    </section>
+
+    <section class="balance" v-else>
+      <img src="../../../assets/images/gameLogo.png" alt />
+      <div class="balance">
+        <p>{{parallelAsset.amt}}</p>
+        <p>≈￥{{parallelAsset.amt * parallelAsset.price}}</p>
+      </div>
+      <div class="address">
+        <p>{{currentAccount.address}}</p>
+        <img
+          @click="copyHandle($event, 'currentAccount.address')"
+          src="../../../assets/images/copy.png"
+          alt
+        />
+      </div>
+    </section>
+
+    <section :class="coin=='bty'?'btn bty':'btn game'">
+      <p>
+        <router-link :to="{ name: 'transfer'}">转账</router-link>
+      </p>
+      <p>
+        <router-link :to="{ name: 'receipt'}">收款</router-link>
+      </p>
+      <p v-if="coin=='game'">
+        <router-link :to="{ name: 'convert'}">兑换</router-link>
+      </p>
+    </section>
+    <section class="records">
+      <!-- <div class="bg"></div> -->
+      <ul>
+        <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
+        <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
+      </ul>
+      <div class="line" ref="line" :style="{left:toLeft}"></div>
+      <div ref="txListWrap" class="history">
+        <transition name="ani" mode="out-in">
+          <component :is="view"></component>
+        </transition>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
-import All from '@/App/view/asset/record/All.vue'
-import Transfer from '@/App/view/asset/record/Transfer.vue'
-import Receipt from '@/App/view/asset/record/Receipt.vue'
-import Convert from '@/App/view/asset/record/Convert.vue'
-import {clip} from '@/libs/clip.js'
+import All from "@/App/view/asset/record/All.vue";
+import Transfer from "@/App/view/asset/record/Transfer.vue";
+import Receipt from "@/App/view/asset/record/Receipt.vue";
+import Convert from "@/App/view/asset/record/Convert.vue";
+import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
 import { createNamespacedHelpers } from "vuex";
+import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
+import { timeFormat } from "@/libs/common";
 
 const { mapState } = createNamespacedHelpers("Account");
 
@@ -68,7 +98,11 @@ export default {
       nextIsLoading: false,
       loadingData: [],
       coin: "",
-      toLeft: null
+      toLeft: null,
+      asset: {
+        balance: 0,
+        addr: "xxxxxxxxxxxxxxxx"
+      }
     };
   },
   computed: {
@@ -97,8 +131,8 @@ export default {
         this.preIndex = i;
       }, 300);
     },
+
     onScroll() {
-      console.log("scrolling");
       let scrollTop = this.$refs["txListWrap"].scrollTop;
       let scrollBottom =
         this.$refs["txListWrap"].scrollHeight -
@@ -108,7 +142,6 @@ export default {
         // near the bottom
         if (scrollBottom <= 0 && !this.nextIsLoading) {
           // do something
-          console.log("near");
           let arr = [
             {
               type: 3,
@@ -123,11 +156,75 @@ export default {
               time: "2019/09/05 10:23:23"
             }
           ];
-          this.$store.commit("Records/LOADING_RECORDS", arr);
+          // this.$store.commit("Records/LOADING_RECORDS", arr);
         }
       }
       this.pervScrollTop = scrollTop;
     },
+
+    getNTxFromTx(flag, n, direction, height, index) {
+      this.getAddrTx(
+        this.currentAccount.address,
+        flag,
+        n,
+        direction,
+        height,
+        index
+      ).then(res => {
+        console.log(res.txs);
+        let arr = res.txs.map(_ => {
+          let blockHeight = _.height;
+          let txIndex = _.index;
+          let amount = _.amount;
+          let strToAddr = _.tx.to;
+          let strFromAddr = _.fromAddr;
+          let strTxHash = _.txHash;
+          let nTime = _.blockTime;
+          let nFee = _.tx.fee;
+          let strExecer = _.tx.execer;
+          let strActionname = _.actionName;
+          let nTy = _.receipt.ty;
+
+          let strNote = "";
+          if (_.tx && _.tx.payload && _.tx.Value && _.tx.Value.Transfer) {
+            strNote = _.tx.payload.Value.Transfer.note;
+          }
+
+          let strError = "unKnow";
+          if (nTy === 1) {
+            let errors = _.receipt.logs;
+            if (errors) {
+              for (let err of errors) {
+                if (err.ty === 1) {
+                  strError = err.log;
+                  break;
+                }
+              }
+            }
+          }
+
+          return new TransactionsListEntry(
+            this.currentAccount.address,
+            blockHeight,
+            txIndex,
+            nTime,
+            strToAddr,
+            strFromAddr,
+            strTxHash,
+            amount,
+            nFee,
+            strExecer,
+            strActionname,
+            nTy,
+            strNote,
+            strError
+          );
+        });
+        console.log(arr)
+        // this.$store.commit("Records/LOADING_RECORDS", arr);
+      });
+    },
+
     copyHandle(event, text) {
       clip({
         event,
@@ -145,7 +242,9 @@ export default {
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    // console.log(this.$route.query.coin)
+    let url = this.coin == "BTY" ? this.currentMain : this.currentParallel;
+    this.$chain33Sdk.httpProvider.setUrl(url);
+    this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);
@@ -211,62 +310,18 @@ export default {
             color: rgba(255, 255, 255, 1);
           }
         }
-        div{
-            display: flex;
-            &.balance{
-                flex-direction: column;
-                align-items: center;
-                p{
-                    font-size:19px;
-                    font-family:MicrosoftYaHei;
-                    font-weight:400;
-                    color:rgba(22,42,84,1);
-                    line-height: 1;
-                    &:nth-of-type(2){
-                        margin-top: 5px;
-                        font-size:16.5px; 
-                        color:rgba(255,255,255,1);
-                    }
-                }
-            }
-            &.address{
-                width: 222px;
-                margin: 15px 0 0;
-                justify-content: center;
-                align-items: center;
-                position: relative;
-                
-                p{
-                    width: 100%;
-                    padding: 5px 24px 6px 23px;
-                    height: 25px;
-                    background:rgba(255,255,255,1);
-                    border-radius:10px;
-                    font-size:14px;
-                    font-family:MicrosoftYaHei;
-                    font-weight:400;
-                    color:rgba(22,42,84,1);
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                img{
-                    width: 22px;
-                    height: 22px;
-                    position: absolute;
-                    left: 245px;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
-    >section.btn{
-        display: flex;
-        justify-content: space-between;
+      }
+      &.address {
+        width: 222px;
+        margin: 15px 0 0;
+        justify-content: center;
         align-items: center;
         position: relative;
 
         p {
+          width: 100%;
           padding: 5px 24px 6px 23px;
+          height: 25px;
           background: rgba(255, 255, 255, 1);
           border-radius: 10px;
           font-size: 14px;
@@ -284,6 +339,31 @@ export default {
           cursor: pointer;
         }
       }
+    }
+  }
+  > section.btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    p {
+      padding: 5px 24px 6px 23px;
+      background: rgba(255, 255, 255, 1);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: MicrosoftYaHei;
+      font-weight: 400;
+      color: rgba(22, 42, 84, 1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    img {
+      width: 22px;
+      height: 22px;
+      position: absolute;
+      left: 245px;
+      cursor: pointer;
     }
   }
   > section.btn {
