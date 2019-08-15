@@ -4,8 +4,8 @@
         <section class="content">
             <canvas id="qrcode"></canvas>
             <div>
-                <p class="copy" >dskjsdkghdshdskfghdkf</p>
-                <img @click="copyHandle($event, 'currentAccount.hash')" src="../../../assets/images/copy.png" alt="">
+                <p class="copy" >{{currentAccount.address}}</p>
+                <img @click="copyHandle($event, currentAccount.address)" src="../../../assets/images/copy.png" alt="">
             </div>
             <p>注意：该地址仅支持BTY收款，请勿向该地址充值其他币种。</p>
         </section>
@@ -67,10 +67,13 @@ export default {
             margin: 20px 0 22px;
             position: relative;
             p{
+                width: 160px;
                 font-size:14px;
                 font-family:ArialMT;
                 font-weight:400;
                 color:rgba(22,42,84,1);
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             img{
                 width: 22px;

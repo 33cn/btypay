@@ -9,8 +9,8 @@
     >
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
-        <p class="balance">余额{{balance}}BTY</p>
-        <p class="mentionAll">全部提取</p>
+        <p class="balance">余额{{mainAsset.amt}}BTY</p>
+        <p class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
         <el-input v-model="form.address" placeholder='请输入BTY地址' auto-complete="off"></el-input>
@@ -75,40 +75,42 @@ export default {
         comment: ""
       },
       rules: {
-        num: [{ required: true, message: "请输入转账金额", trigger: "blur" }],
+        num: [{ required: true, message: "请输入转账金额", trigger: "blur" },{ validator: checkNum, trigger: "blur" }],
         address: [{ required: true, message: "请输入转账地址", trigger: "blur" }],
         // comment: [{ validator: checkComment, trigger: "blur" }]
       },
-      balance:0.00,
+      // balance:0.00,
     };
   },
   methods: {
     submitForm(formName) {
-      this.$alert('请关注您的资金变动。', '转账成功', {
-        confirmButtonText: '知道了',
-        closeOnClickModal:true,
-        center:true,
-        showClose:false,
-        callback: action => {
-            this.$message({
-              type: 'info',
-              message: `action: ${ action }`
-            });
-        }
-      });
+      // this.$alert('请关注您的资金变动。', '转账成功', {
+      //   confirmButtonText: '知道了',
+      //   closeOnClickModal:true,
+      //   center:true,
+      //   showClose:false,
+      // });
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log("submit!");
           this.sendToAddr({
             privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
-            amount: this.form.num,
-            fee: dMinFee * 1e8,
+            amount: this.form.num * 1e1,
+            fee: dMinFee * 1e3,
             note: this.form.comment,
           }).then(res => {
             console.log(res)
-            this.$serverSucNotify('发送成功，等区块链确认后，等待列表中刷新!')
+            this.$alert('请关注您的资金变动。', '转账成功', {
+              confirmButtonText: '知道了',
+              closeOnClickModal:true,
+              center:true,
+              showClose:false,
+            });
             this.replyBackground(res)
+          }).catch(err=>{
+            console.log(err)
+            this.$message.error('发生错误');
           })
         } else {
           console.log("error submit!!");
@@ -120,22 +122,23 @@ export default {
       this.$refs[formName].resetFields();
     },
     //获取余额
-    getBalance(addr){
-      this.getAddrBalance(addr, 'coins').then(result => {
-        console.log(result)
-        this.balance = result[0].balance / 1e8
-      })
-    }
+    // getBalance(addr){
+    //   this.getAddrBalance(addr, 'coins').then(result => {
+    //     console.log(result)
+    //     this.balance = result[0].balance / 1e8
+    //   })
+    // }
   },
   computed:{
-    ...mapState(['accountMap', 'currentAccount']),
+    ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset"]),
   },
   mounted(){
     this.form.address = this.$route.query.address || '';
     console.log(this.currentAccount)
-    if (this.currentAccount) {
-      this.getBalance(this.currentAccount.address)
-    }
+    this.refreshMainAsset();
+    // if (this.currentAccount) {
+    //   this.getBalance(this.currentAccount.address)
+    // }
   }
 };
 </script>

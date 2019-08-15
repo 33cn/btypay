@@ -12,23 +12,23 @@
                 <div class="main">
                     <section class="up">
                         <!-- <p class="name">敢么（GMT）</p> -->
-                        <div>
-                            <p>http://gamemainnet-bty.token.io</p>
-                            <img src="../../../assets/images/selected.png" alt="">
+                        <div v-for="(item,i) in mainNodeList" :key="i">
+                            <p>{{item.addr}}</p>
+                            <img v-if="item.addr==currentMain" src="../../../assets/images/selected.png" alt="">
                             <p class="line"></p>
                         </div>
                     </section>
-                    <p class="add" @click="mainDialog=true;mainIsInput=false">添加自定义节点</p>
+                    <p class="add" @click="mainDialog=true;mainIsInput=false;mainData=''">添加自定义节点</p>
                 </div>
             </li>
             <li>
                 <p>平行链节点设置</p>
                 <div class="parallel">
                     <section class="up">
-                        <div>
-                            <p class="name">敢么（GMT）</p>
-                            <p>http://gamemainnet-bty.token.io</p>
-                            <img src="../../../assets/images/selected.png" alt="">
+                        <div v-for="(item,i) in paraNodeList" :key="i">
+                            <p class="name">{{item.name}}（{{item.coin}}）</p>
+                            <p>{{item.addr}}</p>
+                            <img v-if="item.addr==currentParallel" src="../../../assets/images/selected.png" alt="">
                             <p class="line"></p>
                         </div>
                     </section>
@@ -47,14 +47,14 @@
         </el-dialog>
         <el-dialog title="平行链节点设置" :visible.sync="paraDialog" width='324px' :show-close=false class="paraNode">
             <el-form :model="form" :rules="rules" ref="ruleForm">
-                <el-form-item label="平行链名称" prop="paraName">
-                    <el-input v-model="form.paraName" autocomplete="off"></el-input>
+                <el-form-item label="平行链名称" prop="name">
+                    <el-input v-model="form.name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="代币名称" prop="coinName">
-                    <el-input v-model="form.coinName" autocomplete="off"></el-input>
+                <el-form-item label="代币名称" prop="coin">
+                    <el-input v-model="form.coin" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="节点地址" prop="address">
-                    <el-input v-model="form.address" autocomplete="off"></el-input>
+                <el-form-item label="节点地址" prop="addr">
+                    <el-input v-model="form.addr" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -67,38 +67,43 @@
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
+import walletAPI from '@/mixins/walletAPI.js'
+import { createNamespacedHelpers } from "vuex";
+
+const { mapState } = createNamespacedHelpers("Account");
+
 export default {
+    mixins: [walletAPI],
     components: { HomeHeader },
+    computed: {
+        ...mapState([
+          "accountMap",
+          "currentAccount",
+          "currentMain",
+          "currentParallel",
+          "mainAsset",
+          "parallelAsset",
+          "mainNode",
+          "parallelNode"
+        ])
+    },
     data(){
-        let paraNameCheck = (rule, value, callback)=>{
-            if (value == "") {
-              callback(new Error("请输入平行链名称"));
-            }
-        }
-        let coinNameCheck = (rule, value, callback)=>{
-            if (value == "") {
-              callback(new Error("请输入代币名称"));
-            }
-        }
-        let addressCheck = (rule, value, callback)=>{
-            if (value == "") {
-              callback(new Error("请输入节点地址"));
-            }
-        }
         return{
             mainDialog:false,
             paraDialog:false,
             mainData:'',
             mainIsInput:false,
+            mainNodeList:[],
+            paraNodeList:[],
             form:{
-                paraName:'',
-                coinName:'',
-                address:''
+                name:'',
+                coin:'',
+                addr:''
             },
             rules:{
-                paraName: [{ required: true, message: "请输入平行链名称", trigger: "blur" }],
-                coinName: [{ required: true, message: "请输入代币名称", trigger: "blur" }],
-                address: [{ required: true, message: "请输入节点地址", trigger: "blur" }],
+                name: [{ required: true, message: "请输入平行链名称", trigger: "blur" }],
+                coin: [{ required: true, message: "请输入代币名称", trigger: "blur" }],
+                addr: [{ required: true, message: "请输入节点地址", trigger: "blur" }],
             }
         }
     },
@@ -107,6 +112,19 @@ export default {
             this.$refs[formName].validate(valid => {
                 if (valid) {
                   console.log("submit!");
+                  let obj = JSON.parse(JSON.stringify(this.form))
+                  this.$store.commit("Account/UPDATE_PARALLEL_NODE", obj);
+                //   let arr = this.paraNodeList.concat([obj])
+                  this.setChromeStorage('parallelNode',this.parallelNode).then(res=>{
+                    if(res=='success'){
+                        // this.paraNodeList = this.mainNode;
+                        this.$message.success('平行链节点添加成功');
+                        this.getParaNode();//更新视图
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                })
+                  this.paraDialog = false;
                 } else {
                   console.log("error submit!!");
                   return false;
@@ -116,8 +134,45 @@ export default {
         mainSubmit(){
             if(this.mainData == ''&&this.mainDialog){
                 this.mainIsInput = true;
+                return
             }
+            this.$store.commit("Account/UPDATE_MAIN_NODE", {'addr':this.mainData});
+            // let arr = this.mainNodeList.concat([{'addr':this.mainData}])
+            this.setChromeStorage('mainNodeList',this.mainNode).then(res=>{
+              if(res=='success'){
+                // this.mainNodeList = this.mainNode;
+                this.$message.success('主链节点添加成功');
+                this.getMainNode();//更新视图
+              }
+            }).catch(err=>{
+                console.log(err)
+            })
+            this.mainDialog = false;
+            this.mainData = '';
+        },
+        getMainNode(){
+            this.getChromeStorage('mainNodeList').then(res=>{
+                console.log(res)
+                if(res.mainNodeList){
+                    this.mainNodeList = res.mainNodeList;
+                }
+            })
+            
+        },
+        getParaNode(){
+            this.getChromeStorage('parallelNode').then(res=>{
+                console.log(res)
+                if(res.parallelNode){
+                    this.paraNodeList = res.parallelNode;
+                }
+            })
         }
+    },
+    mounted(){
+        this.mainNodeList = this.mainNode;
+        this.paraNodeList = this.parallelNode;
+        this.getMainNode();
+        this.getParaNode();
     },
     watch:{
         paraDialog(val){
@@ -161,6 +216,11 @@ export default {
         height: calc(100vh - 101px - 78px - 10px);
         overflow-y: scroll;
         margin: 0 26px 0 31px;
+        &::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+        }
         li{
             margin-bottom: 36px;
             >p{
@@ -187,7 +247,7 @@ export default {
                             width: 18px;
                             position: absolute;
                             right: -37px;
-                            bottom: -1px;
+                            bottom: 5px;
                         }
                         
                         p.name{

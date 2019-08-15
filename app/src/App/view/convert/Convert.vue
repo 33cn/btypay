@@ -6,21 +6,21 @@
                 <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt="">
                 <img v-else src="../../../assets/images/gameLogo.png" alt="">
                 <p class="coin">{{convert=='B2G'?'BTY':'GAME'}}</p>
-                <input :class="isInput?'error':''" v-model="exportVal" @input.prevent="inputHandle" data-type='111' type="number" placeholder="转出数量">
-                <p class="balance">余额0.00{{convert=='B2G'?'BTY':'GAME'}}</p>
+                <input :class="isInput?'error':''" v-model="exportVal" @input.prevent="inputHandle($event,'from')" type="number" placeholder="转出数量">
+                <p class="balance">余额{{asset.amt}}{{convert=='B2G'?'BTY':'GAME'}}</p>
             </div>
-            <img @click="convert=='B2G'?convert='G2B':convert='B2G'" src="../../../assets/images/exchange.png" alt="">
+            <img @click="exchangeHandle" src="../../../assets/images/exchange.png" alt="">
             <div class="right">
                 <img v-if="convert=='B2G'" src="../../../assets/images/gameLogo.png" alt="">
                 <img v-else src="../../../assets/images/btyLogo.png" alt="">
                 <p class="coin">{{convert=='G2B'?'BTY':'GAME'}}</p>
-                <input :class="isInput?'error':''" v-model="receiptVal" @input.prevent="inputHandle" type="number" placeholder="收到数量">
+                <input :class="isInput?'error':''" v-model="receiptVal" @input.prevent="inputHandle($event,'to')" type="number" placeholder="收到数量">
             </div>
         </section>
         <section class="desc">
             <div>
                 <p>汇率</p>
-                <p>1BTY=1GAME</p>
+                <p>1{{convert=='B2G'?'BTY':'GAME'}}=1{{convert=='G2B'?'BTY':'GAME'}}</p>
             </div>
             <div>
                 <p>手续费</p>
@@ -34,23 +34,83 @@
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
+import walletAPI from '@/mixins/walletAPI.js'
+import { createNamespacedHelpers } from "vuex";
+
+const { mapState } = createNamespacedHelpers("Account");
+
 export default {
+    mixins: [walletAPI],
     components:{AssetBack},
+    computed: {
+        ...mapState([
+        //   "accountMap",
+        //   "currentAccount",
+        //   "currentMain",
+        //   "currentParallel",
+          "mainAsset",
+          "parallelAsset",
+        //   "mainNode",
+        //   "parallelNode"
+        ])
+    },
     data(){
         return{
             convert:'B2G',
             exportVal:null,
             receiptVal:null,
             isInput:false,
+            asset:{
+                amt:10.00
+            },
             rate:2,//待删
         }
     },
     methods:{
-        inputHandle(e){
-            // console.log(e)
+        inputHandle(e,v){
+            console.log(e.target.value)
+            console.log(v)
             this.isInput = false;
-            this.exportVal = e.target.value;
-            this.receiptVal = e.target.value;
+            if(e.target.value < 0){
+                this.exportVal = null;
+                this.receiptVal = null;
+                return
+            }
+            if(e.target.value == null || e.target.value == 0){
+                this.receiptVal = null;
+                this.exportVal = null
+            }
+            let val = null;
+            if(v == 'to'){
+                if(this.convert == 'B2G'){
+                    val = this.asset.amt*this.rate;
+                    console.log(val)
+                    this.exportVal = this.receiptVal/2
+                }else{
+                    val = this.asset.amt/this.rate;
+                    this.exportVal = this.receiptVal*2
+                }
+            }else{
+                if(this.convert == 'B2G'){
+                    this.receiptVal = this.exportVal*2;
+                }else{
+                    this.receiptVal = this.exportVal/2;
+                }
+                val = this.asset.amt;
+                
+            }
+            if(e.target.value > val){
+                this.isInput = true;
+                this.$message.error('余额不足')
+                setTimeout(() => {
+                    this.exportVal = null;
+                    this.receiptVal = null;
+                    this.isInput = false;
+                }, 500);
+            }else{
+                // this.exportVal = e.target.value;
+                // this.receiptVal = e.target.value;
+            }
         },
         convertHandle(){
             if(this.exportVal){
@@ -67,8 +127,24 @@ export default {
                 }, 3000);
                 this.$message.error('请输入兑换数量')
             }
-            
+        },
+        exchangeHandle(){
+            if(this.convert == 'B2G'){
+                this.convert = 'G2B';
+                // this.asset = this.parallelAsset;
+                return
+            }else{
+                this.convert = 'B2G'
+                // this.asset = this.mainAsset;
+            }
         }
+    },
+    mounted(){
+        // this.refreshMainAsset();
+        // this.refreshParallelAsset();
+        // setTimeout(() => {
+        //     this.asset = this.mainAsset;
+        // }, 0);
     }
 }
 </script>

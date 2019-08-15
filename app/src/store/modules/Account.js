@@ -12,11 +12,11 @@ const state = {
 
 
   // string url
-  mainNode: ['mainNode'],
+  mainNode: [{addr:'http://172.16.103.18:8801'}],
   currentMain: "http://172.16.103.18:8801",
 
   // { string name, string coinName, string url }
-  parallelNode: [],
+  parallelNode: [{name:'金比特',coin:"GBT",addr:"http://172.16.103.24:8801"}],
   currentParallel: "http://172.16.103.24:8801",
 
   mainAsset: {
@@ -45,13 +45,13 @@ const mutations = {
   },
 
   UPDATE_MAIN_NODE(state, payload) {
-    state.mainNode = payload;
+    state.mainNode.push(payload);
   },
   UPDATE_CURRENT_MAIN(state, payload) {
     state.currentMain = payload;
   },
   UPDATE_PARALLEL_NODE(state, payload) {
-    state.parallelNode = payload
+    state.parallelNode.push(payload)
   },
   UPDATE_CURRENT_PARALLEL(state, payload) {
     state.currentParallel = payload

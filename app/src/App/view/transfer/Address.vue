@@ -18,6 +18,7 @@
 import AssetBack from '@/components/AssetBack.vue'
 import walletAPI from '@/mixins/walletAPI.js'
 export default {
+    mixins: [walletAPI],
     components:{AssetBack},
     data(){
         return{

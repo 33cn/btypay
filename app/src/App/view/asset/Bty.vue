@@ -1,51 +1,63 @@
 <template>
-    <div class="bty_container">
-        <home-header></home-header>
-        <section class="header">
-            <router-link :to="{ name: 'WalletIndex'}"><img src="../../../assets/images/back.png" alt=""></router-link>
-            <!-- <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p> -->
-        </section>
-        <section class="balance">
-            <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt="">
-            <img v-else src="../../../assets/images/btyLogo.png" alt="">
-            <div class="balance">
-                <p>{{asset.balance}}</p>
-                <p>≈￥{{asset.balance}}</p>
-            </div>
-            <div class="address">
-                <p>{{asset.addr}}</p>
-                <img @click="copyHandle($event, 'currentAccount.address')" src="../../../assets/images/copy.png" alt="">
-                <!-- <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt=""> -->
-            </div>
-        </section>
-        <section :class="coin=='bty'?'btn bty':'btn game'">
-            <p><router-link :to="{ name: 'transfer'}">转账</router-link></p>
-            <p><router-link :to="{ name: 'receipt'}">收款</router-link></p>
-            <p v-if="coin=='game'"><router-link :to="{ name: 'convert'}">兑换</router-link></p>
-        </section>
-        <section class="records" >
-            <!-- <div class="bg"></div> -->
-            <ul>
-                <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
-                <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
-            </ul>
-            <div class="line" ref="line" :style="{left:toLeft}"></div>
-            <div ref="txListWrap" class="history">
-                <transition name="ani" mode="out-in">
-                    <component :is="view"></component>
-                </transition>
-            </div>
-        </section>
-    </div>
+  <div class="bty_container">
+    <home-header></home-header>
+    <section class="header">
+      <router-link :to="{ name: 'WalletIndex'}">
+        <img src="../../../assets/images/back.png" alt />
+      </router-link>
+      <!-- <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p> -->
+    </section>
+    <section class="balance">
+      <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt />
+      <img v-else src="../../../assets/images/btyLogo.png" alt />
+      <div class="balance">
+        <p>{{asset.balance}}</p>
+        <p>≈￥{{asset.balance}}</p>
+      </div>
+      <div class="address">
+        <p>{{asset.addr}}</p>
+        <img
+          @click="copyHandle($event, 'currentAccount.address')"
+          src="../../../assets/images/copy.png"
+          alt
+        />
+        <!-- <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt=""> -->
+      </div>
+    </section>
+    <section :class="coin=='bty'?'btn bty':'btn game'">
+      <p>
+        <router-link :to="{ name: 'transfer'}">转账</router-link>
+      </p>
+      <p>
+        <router-link :to="{ name: 'receipt'}">收款</router-link>
+      </p>
+      <p v-if="coin=='game'">
+        <router-link :to="{ name: 'convert'}">兑换</router-link>
+      </p>
+    </section>
+    <section class="records">
+      <!-- <div class="bg"></div> -->
+      <ul>
+        <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
+        <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
+      </ul>
+      <div class="line" ref="line" :style="{left:toLeft}"></div>
+      <div ref="txListWrap" class="history">
+        <transition name="ani" mode="out-in">
+          <component :is="view"></component>
+        </transition>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
-import All from '@/App/view/asset/record/All.vue'
-import Transfer from '@/App/view/asset/record/Transfer.vue'
-import Receipt from '@/App/view/asset/record/Receipt.vue'
-import Convert from '@/App/view/asset/record/Convert.vue'
-import {clip} from '@/libs/clip.js'
+import All from "@/App/view/asset/record/All.vue";
+import Transfer from "@/App/view/asset/record/Transfer.vue";
+import Receipt from "@/App/view/asset/record/Receipt.vue";
+import Convert from "@/App/view/asset/record/Convert.vue";
+import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
 import { createNamespacedHelpers } from "vuex";
@@ -68,7 +80,11 @@ export default {
       nextIsLoading: false,
       loadingData: [],
       coin: "",
-      toLeft: null
+      toLeft: null,
+      asset: {
+        balance: 0.00,
+        addr: ""
+      }
     };
   },
   computed: {
@@ -140,6 +156,19 @@ export default {
           this.$message.success(msg);
         }
       });
+    },
+    getBalance(){
+        if(this.coin == 'bty'){
+            this.refreshMainAsset();
+            setTimeout(() => {
+                this.asset = this.mainAsset;
+            }, 0);
+        }else if(this.coin == 'game'){
+            this.refreshParallelAsset();
+            setTimeout(() => {
+                this.asset = this.parallelAsset
+            }, 0);
+        }
     }
   },
   mounted() {
@@ -211,55 +240,36 @@ export default {
             color: rgba(255, 255, 255, 1);
           }
         }
-        div{
-            display: flex;
-            &.balance{
-                flex-direction: column;
-                align-items: center;
-                p{
-                    font-size:19px;
-                    font-family:MicrosoftYaHei;
-                    font-weight:400;
-                    color:rgba(22,42,84,1);
-                    line-height: 1;
-                    &:nth-of-type(2){
-                        margin-top: 5px;
-                        font-size:16.5px; 
-                        color:rgba(255,255,255,1);
-                    }
-                }
-            }
-            &.address{
-                width: 222px;
-                margin: 15px 0 0;
-                justify-content: center;
-                align-items: center;
-                position: relative;
-                
-                p{
-                    width: 100%;
-                    padding: 5px 24px 6px 23px;
-                    height: 25px;
-                    background:rgba(255,255,255,1);
-                    border-radius:10px;
-                    font-size:14px;
-                    font-family:MicrosoftYaHei;
-                    font-weight:400;
-                    color:rgba(22,42,84,1);
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                img{
-                    width: 22px;
-                    height: 22px;
-                    position: absolute;
-                    left: 245px;
-                    cursor: pointer;
-                }
-            }
+      }
+      &.address {
+        width: 222px;
+        margin: 15px 0 0;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        p {
+          width: 100%;
+          padding: 5px 24px 6px 23px;
+          height: 25px;
+          background: rgba(255, 255, 255, 1);
+          border-radius: 10px;
+          font-size: 14px;
+          font-family: MicrosoftYaHei;
+          font-weight: 400;
+          color: rgba(22, 42, 84, 1);
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-    }
-    >section.btn{
+        img {
+          width: 22px;
+          height: 22px;
+          position: absolute;
+          left: 245px;
+          cursor: pointer;
+        }
+      }
+      > section.btn {
         display: flex;
         justify-content: space-between;
         align-items: center;
