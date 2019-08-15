@@ -1,20 +1,19 @@
 const state = {
-    loadingData:[],
-    assetType:''
+  loadingData: [],
+  assetType: ''
+}
+
+const mutations = {
+  LOADING_RECORDS(state, payload) {
+    state.loadingData = payload;
+  },
+  ASSET_TYPE(state, payload) {
+    state.assetType = payload;
   }
-  
-  const mutations = {
-    LOADING_RECORDS(state,payload){
-      state.loadingData = payload;
-    },
-    ASSET_TYPE(state,payload){
-      state.assetType = payload;
-    }
-  }
-  
-  export default {
-    namespaced: true,
-    state,
-    mutations
-  }
-  
+}
+
+export default {
+  namespaced: true,
+  state,
+  mutations
+}
