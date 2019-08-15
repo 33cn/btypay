@@ -53,147 +53,163 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("Account");
 
 export default {
-    components:{All,Transfer,Receipt,Convert,HomeHeader},
-    computed: {
+  components: { All, Transfer, Receipt, Convert, HomeHeader },
+  mixins: [walletAPI, chain33API],
+  data() {
+    return {
+      tab: [
+        { name: "全部", com: "All" },
+        { name: "转账", com: "Transfer" },
+        { name: "收款", com: "Receipt" }
+      ],
+      view: "All",
+      preIndex: 0,
+      pervScrollTop: 0,
+      nextIsLoading: false,
+      loadingData: [],
+      coin: "",
+      toLeft: null
+    };
+  },
+  computed: {
     ...mapState([
-            "accountMap",
-            "currentAccount",
-            "currentMain",
-            "currentParallel"
-        ])
+      "accountMap",
+      "currentAccount",
+      "currentMain",
+      "currentParallel",
+      "mainAsset",
+      "parallelAsset"
+    ])
+  },
+  methods: {
+    init() {},
+    tabChange(item, i) {
+      this.view = item.com;
+      let length,
+        differ = i - this.preIndex;
+      if (this.coin == "game") {
+        length = 85 * differ;
+      } else if (this.coin == "bty") {
+        length = 127.5 * differ;
+      }
+      this.toLeft = this.$refs.line.offsetLeft + length + "px";
+      setTimeout(() => {
+        this.preIndex = i;
+      }, 300);
     },
-    data(){
-        return{
-            tab:[{name:'全部',com:'All'},{name:'转账',com:'Transfer'},{name:'收款',com:'Receipt'}],
-            view:'All',
-            preIndex:0,
-            pervScrollTop:0,
-            nextIsLoading:false,
-            loadingData:[],
-            coin:'',
-            toLeft: null,
-            asset:{
-                balance:0.00,
-                addr:'gffdfdddddddddddddddddddddddddddddddddd'
+    onScroll() {
+      console.log("scrolling");
+      let scrollTop = this.$refs["txListWrap"].scrollTop;
+      let scrollBottom =
+        this.$refs["txListWrap"].scrollHeight -
+        scrollTop -
+        this.$refs["txListWrap"].clientHeight;
+      if (this.pervScrollTop - scrollTop < 0) {
+        // near the bottom
+        if (scrollBottom <= 0 && !this.nextIsLoading) {
+          // do something
+          console.log("near");
+          let arr = [
+            {
+              type: 3,
+              address: "sdgsdhfsdhsdhfdsgfsdgfdsf",
+              value: 300,
+              time: "2019/09/04 10:23:23"
+            },
+            {
+              type: 3,
+              address: "sdgsdhfsdhsdhfdsgfsdgfdsf",
+              value: 300,
+              time: "2019/09/05 10:23:23"
             }
+          ];
+          this.$store.commit("Records/LOADING_RECORDS", arr);
         }
+      }
+      this.pervScrollTop = scrollTop;
     },
-    methods:{
-        tabChange(item,i){
-            this.view = item.com;
-            let length,
-                differ = i - this.preIndex;
-            if(this.coin == 'game'){
-                length = 85*differ;
-            }else if(this.coin == 'bty'){
-                length = 127.5*differ;
-            }
-            this.toLeft = this.$refs.line.offsetLeft + length + 'px';
-            setTimeout(() => {
-                this.preIndex = i;
-            }, 300);
-        },
-        onScroll(){
-            console.log('scrolling')
-            let scrollTop = this.$refs['txListWrap'].scrollTop
-            let scrollBottom = this.$refs['txListWrap'].scrollHeight - scrollTop - this.$refs['txListWrap'].clientHeight
-            if (this.pervScrollTop - scrollTop < 0) {
-                // near the bottom
-                if (scrollBottom <= 0 && !this.nextIsLoading) {
-                    // do something
-                    console.log('near')
-                    let arr = [{type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/04 10:23:23'},{type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/05 10:23:23'}]
-                    this.$store.commit('Records/LOADING_RECORDS',arr)
-                }
-            }
-            this.pervScrollTop = scrollTop
-        },
-        copyHandle(event,text){
-            clip({
-                event,
-                text,
-                response: (err, msg) => {
-                  if (err) {
-                    this.$message.error(msg)
-                    return
-                  }
-                  this.$message.success(msg)
-                }
-            })
-        },
-        getBalance(){
-            // let chain = this.coin=='bty'?this.currentMain:this.currentParallel;
-            if (this.currentAccount) {
-                const addr = this.currentAccount.address;
-                if (this.coin=='bty' && this.currentMain) {
-                  this.getAddrBalance(addr, "coins", this.currentMain).then(result => {
-                    console.log(result)
-                    this.asset = result[0];
-                  });
-                }
-                if (this.coin=='game' && this.currentParallel) {
-                  this.getAddrBalance(addr, "coins", this.currentParallel).then(
-                    result => {
-                      console.log(result)
-                      this.asset = result[0];
-                    }
-                  );
-                }
-            }
+    copyHandle(event, text) {
+      clip({
+        event,
+        text,
+        response: (err, msg) => {
+          if (err) {
+            this.$message.error(msg);
+            return;
+          }
+          this.$message.success(msg);
         }
-    },
-    mounted () {
-        this.coin = this.$route.query.coin;
-        this.$refs['txListWrap'].addEventListener('scroll', this.onScroll)
-        // console.log(this.$route.query.coin)
-        this.getBalance();
-    },
-    beforeDestroy(){
-        this.$refs['txListWrap'].removeEventListener('scroll', this.onScroll)
+      });
     }
-}
+  },
+  mounted() {
+    this.coin = this.$route.query.coin;
+    this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
+    // console.log(this.$route.query.coin)
+  },
+  beforeDestroy() {
+    this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);
+  }
+};
 </script>
 
 <style lang='scss'>
-.bty_container{
-    width: 100%;
-    height: 100vh;
-    // background-image: url('../../../assets/images/assetOperateBg.png');
-    // background-size: 100% 100%;
+.bty_container {
+  width: 100%;
+  height: 100vh;
+  // background-image: url('../../../assets/images/assetOperateBg.png');
+  // background-size: 100% 100%;
+  position: relative;
+  > section.header {
+    margin: 5px 29px 0 46px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
     position: relative;
-    >section.header{
-        margin: 5px 29px 0 46px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 1000;
-        position: relative;
-        p{
-            font-size:15px;
-            font-family:MicrosoftYaHei-Bold;
-            font-weight:bold;
-            a{
-                color:rgba(245,185,71,1);
-            }
-        }
-        img{
-            width: 25px;
-            height: 23px;
-        }
+    p {
+      font-size: 15px;
+      font-family: MicrosoftYaHei-Bold;
+      font-weight: bold;
+      a {
+        color: rgba(245, 185, 71, 1);
+      }
     }
-    >section.balance{
-        // width: 100%;
-        position: relative;
-        // left: calc(50% - 32px);
-        // top: 109px;
-        top: -28px;
-        display: flex;
+    img {
+      width: 25px;
+      height: 23px;
+    }
+  }
+  > section.balance {
+    // width: 100%;
+    position: relative;
+    // left: calc(50% - 32px);
+    // top: 109px;
+    top: -28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    > img {
+      width: 37px;
+      margin-bottom: 5px;
+    }
+    div {
+      display: flex;
+      &.balance {
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        >img{
-            width: 37px;
-            margin-bottom: 5px;
+        p {
+          font-size: 19px;
+          font-family: MicrosoftYaHei;
+          font-weight: 400;
+          color: rgba(22, 42, 84, 1);
+          line-height: 1;
+          &:nth-of-type(2) {
+            margin-top: 5px;
+            font-size: 16.5px;
+            color: rgba(255, 255, 255, 1);
+          }
         }
         div{
             display: flex;
@@ -247,116 +263,142 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: -5px;
-        p{
-            height: 38px;
-            text-align: center;
-            background-size: 100% 100%;
-            font-size:16px;
-            font-family:MicrosoftYaHei;
-            font-weight:400;
-            // background-image: url('../../../assets/images/transferBtnBg.png');
-            background-size: 100% 100%;
-            padding-top: 8px;
-            a{
-                width: 100%;
-                display: inline-block;
-                color:rgba(255,255,255,1);
-                cursor: pointer;
-            }
-        }
-        &.game{
-            margin: 0 43px;
-            p{
-                width: 76px;
-                background-image: url('../../../assets/images/gameBtn.png');
-            }
-        }
-        &.bty{
-            margin: 0 46px;
-            p{
-                width: 102px;
-                background-image: url('../../../assets/images/btyBtn.png');
-            }
-        }
-    }
-    >section.records{
-        width: 100%;
-        // overflow-x: hidden;
-        background-color: #fff;
-        height: 276px;
-        margin-top: 30px;
-        border-top-left-radius: 50px;
-        border-top-right-radius: 50px;
         position: relative;
-        >ul{
-            margin: 0px 58px 0px 55px;
-            padding: 17px 0 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size:16px;
-            font-family:MicrosoftYaHei;
-            font-weight:400;
-            li{
-                color:rgba(33,123,244,1);
-                cursor: pointer;
-            }
-            
+
+        p {
+          padding: 5px 24px 6px 23px;
+          background: rgba(255, 255, 255, 1);
+          border-radius: 10px;
+          font-size: 14px;
+          font-family: MicrosoftYaHei;
+          font-weight: 400;
+          color: rgba(22, 42, 84, 1);
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        >div.line{
-            width:25px;
-            height:3px;
-            // background:linear-gradient(90deg,rgba(115,248,253,1),rgba(128,164,253,1));
-            background: #F5B947;
-            position: absolute;
-            top: 43px;
-            left: 55px;
-            transition: all 0.3s linear;
+        img {
+          width: 22px;
+          height: 22px;
+          position: absolute;
+          left: 245px;
+          cursor: pointer;
         }
-        >div.history{
-            overflow-y: auto;
-            max-height: 219px;
-            margin: 0px 21px 0 20px;
-            /* 设置滚动条的样式 */
-            &::-webkit-scrollbar {
-              width: 0px;
-              height: 0px;
-              background: transparent;
-            }
-            // /* 滚动槽 */
-            // &::-webkit-scrollbar-track {
-            // //   border-radius: $--border-radius-base;
-            //   background: transparent;
-            // }
-            // /* 滚动条滑块 */
-            &::-webkit-scrollbar-thumb {
-              background:red;
-              border-radius:2px;
-              opacity: 0.2;
-            }
-            // &::-webkit-scrollbar-thumb:window-inactive {
-            //   background:rgba(74,125,180,.2);
-            // //   border-radius:4px;
-            //   opacity: 0.2;
-            // }
-        }
-        
+      }
     }
-    .ani-enter{
-        transform: translateX(-100%);
+  }
+  > section.btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -5px;
+    p {
+      height: 38px;
+      text-align: center;
+      background-size: 100% 100%;
+      font-size: 16px;
+      font-family: MicrosoftYaHei;
+      font-weight: 400;
+      // background-image: url('../../../assets/images/transferBtnBg.png');
+      background-size: 100% 100%;
+      padding-top: 8px;
+      a {
+        width: 100%;
+        display: inline-block;
+        color: rgba(255, 255, 255, 1);
+        cursor: pointer;
+      }
     }
-    .ani-enter-to{
-        transform: translateX(0%);
+    &.game {
+      margin: 0 43px;
+      p {
+        width: 76px;
+        background-image: url("../../../assets/images/gameBtn.png");
+      }
     }
-    .ani-enter-active,.ani-leave-active{
-        transition: transform .3s ease;
+    &.bty {
+      margin: 0 46px;
+      p {
+        width: 102px;
+        background-image: url("../../../assets/images/btyBtn.png");
+      }
     }
-    .ani-leave{
-        transform: translateX(0%);
+  }
+  > section.records {
+    width: 100%;
+    // overflow-x: hidden;
+    background-color: #fff;
+    height: 276px;
+    margin-top: 30px;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    position: relative;
+    > ul {
+      margin: 0px 58px 0px 55px;
+      padding: 17px 0 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      font-family: MicrosoftYaHei;
+      font-weight: 400;
+      li {
+        color: rgba(33, 123, 244, 1);
+        cursor: pointer;
+      }
     }
-    .ani-leave-to{
-        transform: translateX(100%);
+    > div.line {
+      width: 25px;
+      height: 3px;
+      // background:linear-gradient(90deg,rgba(115,248,253,1),rgba(128,164,253,1));
+      background: #f5b947;
+      position: absolute;
+      top: 43px;
+      left: 55px;
+      transition: all 0.3s linear;
     }
+    > div.history {
+      overflow-y: auto;
+      max-height: 219px;
+      margin: 0px 21px 0 20px;
+      /* 设置滚动条的样式 */
+      &::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        background: transparent;
+      }
+      // /* 滚动槽 */
+      // &::-webkit-scrollbar-track {
+      // //   border-radius: $--border-radius-base;
+      //   background: transparent;
+      // }
+      // /* 滚动条滑块 */
+      &::-webkit-scrollbar-thumb {
+        background: red;
+        border-radius: 2px;
+        opacity: 0.2;
+      }
+      // &::-webkit-scrollbar-thumb:window-inactive {
+      //   background:rgba(74,125,180,.2);
+      // //   border-radius:4px;
+      //   opacity: 0.2;
+      // }
+    }
+  }
+  .ani-enter {
+    transform: translateX(-100%);
+  }
+  .ani-enter-to {
+    transform: translateX(0%);
+  }
+  .ani-enter-active,
+  .ani-leave-active {
+    transition: transform 0.3s ease;
+  }
+  .ani-leave {
+    transform: translateX(0%);
+  }
+  .ani-leave-to {
+    transform: translateX(100%);
+  }
 }
 </style>
