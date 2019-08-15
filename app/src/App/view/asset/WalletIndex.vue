@@ -13,18 +13,18 @@
             <p>BTY</p>
           </div>
           <div class="right">
-            <p>{{ BTYAsset.num }}</p>
-            <p>≈￥{{ BTYAsset.num * BTYAsset.price }}</p>
+            <p>{{ mainAsset.amt }}</p>
+            <p>≈￥{{ mainAsset.amt * mainAsset.price }}</p>
           </div>
         </li>
         <li @click="toGame">
           <div class="left">
             <img src="../../../assets/images/gameLogo.png" alt />
-            <p>{{ GameAsset.name }}</p>
+            <p>{{ parallelAsset.name }}</p>
           </div>
           <div class="right">
-            <p>{{ GameAsset.num }}</p>
-            <p>≈￥{{ GameAsset.num * GameAsset.price }}</p>
+            <p>{{ parallelAsset.amt }}</p>
+            <p>≈￥{{ parallelAsset.amt * parallelAsset.price }}</p>
           </div>
         </li>
       </ul>
@@ -48,8 +48,7 @@ export default {
   components: { HomeHeader },
   data() {
     return {
-      BTYAsset: { num: 1, price: 10 },
-      GameAsset: { name: "GAME", num: 1, price: 10 }
+
     };
   },
   computed: {
@@ -57,7 +56,9 @@ export default {
       "accountMap",
       "currentAccount",
       "currentMain",
-      "currentParallel"
+      "currentParallel",
+      "mainAsset",
+      "parallelAsset"
     ])
   },
   methods: {
@@ -68,29 +69,11 @@ export default {
       this.$router.push({ path: "/coin?coin=game" });
     },
     init() {
-      console.log(this.currentAccount)
-      if (this.currentAccount) {
-        const addr = this.currentAccount.address;
-        if (this.currentMain) {
-          this.getAddrBalance(addr, "coins", this.currentMain).then(result => {
-            console.log(result)
-            this.BTYAsset.num = result[0].balance / 1e8;
-          });
-        }
-        if (this.currentParallel) {
-          this.getAddrBalance(addr, "coins", this.currentParallel).then(
-            result => {
-              console.log(result)
-              this.GameAsset.num = result[0].balance / 1e8;
-            }
-          );
-        }
-      }
     }
   },
   mounted() {
-    console.log(this.currentAccount)
-    this.init();
+    this.refreshMainAsset();
+    this.refreshParallelAsset();
   }
 };
 </script>

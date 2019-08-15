@@ -1,5 +1,8 @@
 import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
+import { createNamespacedHelpers } from "vuex";
+
+const { mapState } = createNamespacedHelpers("Account");
 
 let isDev = process.env.NODE_ENV === 'development'
 // console.log({isDev})
@@ -19,6 +22,13 @@ function getBackgroundPage() {
 
 export default {
   mixins: [chain33API],
+  computed: {
+    ...mapState([
+      "currentAccount",
+      "currentMain",
+      "currentParallel",
+    ])
+  },
   methods: {
     getChromeStorage(keys) {
       return new Promise(resolve => {
@@ -140,6 +150,28 @@ export default {
     },
 
     /* 交易相关 -- end */
+
+
+    /* 资产相关 -- start */
+    refreshMainAsset() {
+      let addr = this.currentAccount.address
+      let url = this.currentMain
+      this.getAddrBalance(addr, 'coins', url).then(res => {
+        let payload = { amt: res[0].balance / 1e8 }
+        this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
+      })
+    },
+
+    refreshParallelAsset() {
+      let addr = this.currentAccount.address
+      let url = this.currentParallel
+      this.getAddrBalance(addr, 'coins', url).then(res => {
+        let payload = { amt: res[0].balance / 1e8 }
+        
+        this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
+      })
+    }
+    /* 资产相关 -- end */
 
   }
 }

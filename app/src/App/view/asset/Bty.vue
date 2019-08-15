@@ -1,42 +1,56 @@
 <template>
-    <div class="bty_container">
-        <home-header></home-header>
-        <section class="header">
-            <router-link :to="{ name: 'WalletIndex'}"><img src="../../../assets/images/back.png" alt=""></router-link>
-            <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p>
-        </section>
-        <section class="balance">
-            <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt="">
-            <img v-else src="../../../assets/images/btyLogo.png" alt="">
-            <div class="balance">
-                <p>0.00</p>
-                <p>≈￥0.00</p>
-            </div>
-            <div class="address">
-                <p>fdsfdsfdsfssfsfsdfsdffsfsfsffsfsfsfsdsf</p>
-                <img @click="copyHandle($event, 'currentAccount.address')" src="../../../assets/images/copy.png" alt="">
-                <!-- <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt=""> -->
-            </div>
-        </section>
-        <section :class="coin=='bty'?'btn bty':'btn game'">
-            <p><router-link :to="{ name: 'transfer'}">转账</router-link></p>
-            <p><router-link :to="{ name: 'receipt'}">收款</router-link></p>
-            <p v-if="coin=='game'"><router-link :to="{ name: 'convert'}">兑换</router-link></p>
-        </section>
-        <section class="records" >
-            <!-- <div class="bg"></div> -->
-            <ul>
-                <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
-                <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
-            </ul>
-            <div class="line" ref="line" :style="{left:toLeft}"></div>
-            <div ref="txListWrap" class="history">
-                <transition name="ani" mode="out-in">
-                    <component :is="view"></component>
-                </transition>
-            </div>
-        </section>
-    </div>
+  <div class="bty_container">
+    <home-header></home-header>
+    <section class="header">
+      <router-link :to="{ name: 'WalletIndex'}">
+        <img src="../../../assets/images/back.png" alt />
+      </router-link>
+      <p v-if="coin=='game'">
+        <router-link :to="{ name: 'node'}">节点设置</router-link>
+      </p>
+    </section>
+    <section class="balance">
+      <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt />
+      <img v-else src="../../../assets/images/btyLogo.png" alt />
+      <div class="balance">
+        <p>0.00</p>
+        <p>≈￥0.00</p>
+      </div>
+      <div class="address">
+        <p>{{currentAccount.address}}</p>
+        <img
+          @click="copyHandle($event, 'currentAccount.address')"
+          src="../../../assets/images/copy.png"
+          alt
+        />
+        <!-- <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt=""> -->
+      </div>
+    </section>
+    <section :class="coin=='bty'?'btn bty':'btn game'">
+      <p>
+        <router-link :to="{ name: 'transfer'}">转账</router-link>
+      </p>
+      <p>
+        <router-link :to="{ name: 'receipt'}">收款</router-link>
+      </p>
+      <p v-if="coin=='game'">
+        <router-link :to="{ name: 'convert'}">兑换</router-link>
+      </p>
+    </section>
+    <section class="records">
+      <!-- <div class="bg"></div> -->
+      <ul>
+        <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
+        <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
+      </ul>
+      <div class="line" ref="line" :style="{left:toLeft}"></div>
+      <div ref="txListWrap" class="history">
+        <transition name="ani" mode="out-in">
+          <component :is="view"></component>
+        </transition>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -52,7 +66,6 @@ import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
 
 const { mapState } = createNamespacedHelpers("Account");
-
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
@@ -78,13 +91,13 @@ export default {
       "accountMap",
       "currentAccount",
       "currentMain",
-      "currentParallel"
+      "currentParallel",
+      "mainAsset",
+      "parallelAsset"
     ])
   },
   methods: {
-    init(){
-
-    },
+    init() {},
     tabChange(item, i) {
       this.view = item.com;
       let length,
