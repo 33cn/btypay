@@ -6,7 +6,7 @@
                 <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt="">
                 <img v-else src="../../../assets/images/gameLogo.png" alt="">
                 <p class="coin">{{convert=='B2G'?'BTY':'GAME'}}</p>
-                <input v-model="exportVal" @input.prevent="inputHandle" data-type='111' type="number" placeholder="转出数量">
+                <input :class="isInput?'error':''" v-model="exportVal" @input.prevent="inputHandle" data-type='111' type="number" placeholder="转出数量">
                 <p class="balance">余额0.00{{convert=='B2G'?'BTY':'GAME'}}</p>
             </div>
             <img @click="convert=='B2G'?convert='G2B':convert='B2G'" src="../../../assets/images/exchange.png" alt="">
@@ -14,7 +14,7 @@
                 <img v-if="convert=='B2G'" src="../../../assets/images/gameLogo.png" alt="">
                 <img v-else src="../../../assets/images/btyLogo.png" alt="">
                 <p class="coin">{{convert=='G2B'?'BTY':'GAME'}}</p>
-                <input v-model="receiptVal" @input.prevent="inputHandle" type="number" placeholder="收到数量">
+                <input :class="isInput?'error':''" v-model="receiptVal" @input.prevent="inputHandle" type="number" placeholder="收到数量">
             </div>
         </section>
         <section class="desc">
@@ -41,22 +41,33 @@ export default {
             convert:'B2G',
             exportVal:null,
             receiptVal:null,
+            isInput:false,
             rate:2,//待删
         }
     },
     methods:{
         inputHandle(e){
-            console.log(e)
+            // console.log(e)
+            this.isInput = false;
             this.exportVal = e.target.value;
             this.receiptVal = e.target.value;
         },
         convertHandle(){
-            this.$alert('请关注收款地址的资金变动。', '兑换成功', {
-                confirmButtonText: '确认',
-                closeOnClickModal:true,
-                center:true,
-                showClose:false,
-            });
+            if(this.exportVal){
+                this.$alert('请关注收款地址的资金变动。', '兑换成功', {
+                    confirmButtonText: '确认',
+                    closeOnClickModal:true,
+                    center:true,
+                    showClose:false,
+                });
+            }else{
+                this.isInput = true;
+                setTimeout(() => {
+                    this.isInput = false;
+                }, 3000);
+                this.$message.error('请输入兑换数量')
+            }
+            
         }
     }
 }
@@ -107,6 +118,9 @@ export default {
                 // ::focus{
                 //     border: 1px solid red;
                 // }
+                &.error{
+                    border:1px solid red;
+                }
             }
             p.balance{
                 font-size:12px;

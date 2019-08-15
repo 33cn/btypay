@@ -35,8 +35,10 @@ export default {
     },
     mounted(){
         this.getChromeStorage('address').then(res=>{
-            console.log(res)
-            this.addresses = res.address;
+            // console.log(res)
+            if(res.address){
+                this.addresses = res.address;
+            }
         })
     }
 }

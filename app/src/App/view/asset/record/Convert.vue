@@ -3,51 +3,27 @@
         <ul>
             <li v-for="item in list" :key="item.time" @click="toDetail(item)">
                 <div>
-                    <img src="../../../../assets/images/convertLogo.png" alt="">
+                    <!-- <img v-if="item.type==1" src="../../../../assets/images/transferLogo.png" alt=""> -->
+                    <!-- <img src="../../../../assets/images/receiptLogo.png" alt=""> -->
+                    <img style="width:27px;height:28px" src="../../../../assets/images/convertLogo.png" alt="">
                     <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
                     <div>
-                        <p>{{item.address}}</p>
-                        <p>{{item.time}}</p>
+                        <p>{{item.address.substring(0,5)}}...{{item.address.substring(item.address.length-5)}}</p>
+                        <p>{{item.time}} &nbsp; 兑换</p>
                     </div>
                 </div>
-                <p :class="item.type==1?'transfer':'receipt'">{{item.type==2?'+':'-'}}{{item.value}}</p>
+                <p :class="item.type==1?'transfer':'receipt'">{{item.type==1?'-':'+'}}{{item.value}}</p>
             </li>
         </ul>
     </div>
 </template>
 
 <script>
-import {createNamespacedHelpers} from 'vuex'
-const {mapState} = createNamespacedHelpers('Records')
+// import {createNamespacedHelpers} from 'vuex'
+// const {mapState} = createNamespacedHelpers('Records')
+import records from "@/mixins/records.js";
 export default {
-    data(){
-        return{
-            list:[
-                {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
-                {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/01 10:23:23'},
-                {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/02 10:23:23'},
-            ]
-        }
-    },
-    methods:{
-        toDetail(val){
-            this.$router.push({name:'convertDetail',params:{id:val.time}})
-        }
-    },
-    computed:{
-        ...mapState(['loadingData'])
-    },
-    watch:{
-        'loadingData':function(val){
-            console.log(val instanceof Array)
-            if(val instanceof Array){
-                this.list = this.list.concat(val)
-            }
-        }
-    },
-    mounted(){
-        console.log(this.$store.state.Records.loadingData)
-    }
+    mixins:[records],
 }
 </script>
 
@@ -55,24 +31,22 @@ export default {
 .convertD_Container{
     ul{
         li{
-            // width: calc(100% - 0px);
-            // background-image: url('../../../../assets/images/txBg.png');
-            // background-size: 100% 100%;
             background:rgba(243,246,251,1);
-            box-shadow:6px 5px 10px #d6d4d4;
+            box-shadow: 0px 10px 10px -5px #d6d4d4;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            // margin: 0 10px 0 16px;
-            padding: 12px 37px 29px 35px;
+            padding: 12px 37px 9px 35px;
+            margin-bottom: 20px;
+            border-radius: 10px;
             cursor: pointer;
             >div{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 img{
-                    width: 27px;
-                    height: 28px;
+                    width: 28px;
+                    height: 25px;
                     margin-right: 18px;
                 }
                 div{

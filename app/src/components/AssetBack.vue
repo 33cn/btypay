@@ -16,12 +16,17 @@ export default {
     methods:{
         backHandle(){
             if(this.title == 'BTY转账'){
+                if(this.$store.state.Records.assetType == 'bty'){
+                    this.$router.push({ path: "/coin?coin=bty" });
+                }else{
+                    this.$router.push({ path: "/coin?coin=game" });
+                }
                 // this.$router.push({name:'bty'})
-                // return
+                return
             }
             this.$router.go(-1)
         }
-    }
+    },
 }
 </script>
 

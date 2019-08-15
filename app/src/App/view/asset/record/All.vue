@@ -19,38 +19,40 @@
 </template>
 
 <script>
-import {createNamespacedHelpers} from 'vuex'
-const {mapState} = createNamespacedHelpers('Records')
+// import {createNamespacedHelpers} from 'vuex'
+// const {mapState} = createNamespacedHelpers('Records')
+import records from "@/mixins/records.js";
 export default {
+    mixins:[records],
     data(){
         return{
-            list:[
-                {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
-                {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:200,time:'2019/09/01 10:23:23'},
-                {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/02 10:23:23'},
-                {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/03 10:23:23'},
-            ]
+            // list:[
+            //     {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
+            //     {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:200,time:'2019/09/01 10:23:23'},
+            //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/02 10:23:23'},
+            //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/03 10:23:23'},
+            // ]
         }
     },
-    methods:{
-        toDetail(val){
-            this.$router.push({name:'detail',params:{id:val.time}})
-        }
-    },
-    computed:{
-        ...mapState(['loadingData'])
-    },
-    watch:{
-        'loadingData':function(val){
-            console.log(val instanceof Array)
-            if(val instanceof Array){
-                this.list = this.list.concat(val)
-            }
-        }
-    },
-    mounted(){
-        console.log(this.$store.state.Records.loadingData)
-    }
+    // methods:{
+    //     toDetail(val){
+    //         this.$router.push({name:'detail',params:{id:val.time}})
+    //     }
+    // },
+    // computed:{
+    //     ...mapState(['loadingData'])
+    // },
+    // watch:{
+    //     'loadingData':function(val){
+    //         console.log(val instanceof Array)
+    //         if(val instanceof Array){
+    //             this.list = this.list.concat(val)
+    //         }
+    //     }
+    // },
+    // mounted(){
+    //     console.log(this.$store.state.Records.loadingData)
+    // }
 }
 </script>
 
@@ -62,12 +64,14 @@ export default {
             // background-image: url('../../../../assets/images/txBg.png');
             // background-size: 100% 100%;
             background:rgba(243,246,251,1);
-            box-shadow:6px 5px 10px #d6d4d4;
+            box-shadow: 0px 10px 10px -5px #d6d4d4;
+            // box-shadow:6px 5px 10px #d6d4d4;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px 37px 9px 35px;
             margin-bottom: 20px;
+            border-radius: 10px;
             cursor: pointer;
             >div{
                 display: flex;

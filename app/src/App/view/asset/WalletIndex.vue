@@ -29,9 +29,9 @@
         </li>
       </ul>
     </section>
-    <section class="btn">
+    <!-- <section class="btn">
       <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
-    </section>
+    </section> -->
   </div>
 </template>
 
@@ -62,9 +62,11 @@ export default {
   },
   methods: {
     toBty() {
+      this.$store.commit('Records/ASSET_TYPE','bty')
       this.$router.push({ path: "/coin?coin=bty" });
     },
     toGame() {
+      this.$store.commit('Records/ASSET_TYPE','game')
       this.$router.push({ path: "/coin?coin=game" });
     },
     init() {

@@ -9,7 +9,7 @@
     >
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
-        <p class="balance">余额0.00BTY</p>
+        <p class="balance">余额{{balance}}BTY</p>
         <p class="mentionAll">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
@@ -79,7 +79,7 @@ export default {
         address: [{ required: true, message: "请输入转账地址", trigger: "blur" }],
         // comment: [{ validator: checkComment, trigger: "blur" }]
       },
-      balance:0,
+      balance:0.00,
     };
   },
   methods: {
@@ -100,11 +100,11 @@ export default {
         if (valid) {
           console.log("submit!");
           this.sendToAddr({
-            fee: dMinFee * 1e8,
             privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
+            amount: this.form.num,
+            fee: dMinFee * 1e8,
             note: this.form.comment,
-            amount: this.form.num * 1e8,
           }).then(res => {
             console.log(res)
             this.$serverSucNotify('发送成功，等区块链确认后，等待列表中刷新!')

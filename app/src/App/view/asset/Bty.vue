@@ -3,17 +3,17 @@
         <home-header></home-header>
         <section class="header">
             <router-link :to="{ name: 'WalletIndex'}"><img src="../../../assets/images/back.png" alt=""></router-link>
-            <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p>
+            <!-- <p v-if="coin=='game'"><router-link :to="{ name: 'node'}">节点设置</router-link></p> -->
         </section>
         <section class="balance">
             <img v-if="coin=='game'" src="../../../assets/images/gameLogo.png" alt="">
             <img v-else src="../../../assets/images/btyLogo.png" alt="">
             <div class="balance">
-                <p>0.00</p>
-                <p>≈￥0.00</p>
+                <p>{{asset.balance}}</p>
+                <p>≈￥{{asset.balance}}</p>
             </div>
             <div class="address">
-                <p>fdsfdsfdsfssfsfsdfsdffsfsfsffsfsfsfsdsf</p>
+                <p>{{asset.addr}}</p>
                 <img @click="copyHandle($event, 'currentAccount.address')" src="../../../assets/images/copy.png" alt="">
                 <!-- <img class="copy" data-clipboard-action="copy"  data-clipboard-target=".copy" src="../../../assets/images/copy.png" alt=""> -->
             </div>
@@ -46,8 +46,22 @@ import Transfer from '@/App/view/asset/record/Transfer.vue'
 import Receipt from '@/App/view/asset/record/Receipt.vue'
 import Convert from '@/App/view/asset/record/Convert.vue'
 import {clip} from '@/libs/clip.js'
+import walletAPI from "@/mixins/walletAPI.js";
+import chain33API from "@/mixins/chain33API.js";
+import { createNamespacedHelpers } from "vuex";
+
+const { mapState } = createNamespacedHelpers("Account");
+
 export default {
     components:{All,Transfer,Receipt,Convert,HomeHeader},
+    computed: {
+    ...mapState([
+            "accountMap",
+            "currentAccount",
+            "currentMain",
+            "currentParallel"
+        ])
+    },
     data(){
         return{
             tab:[{name:'全部',com:'All'},{name:'转账',com:'Transfer'},{name:'收款',com:'Receipt'}],
@@ -58,6 +72,10 @@ export default {
             loadingData:[],
             coin:'',
             toLeft: null,
+            asset:{
+                balance:0.00,
+                addr:'gffdfdddddddddddddddddddddddddddddddddd'
+            }
         }
     },
     methods:{
@@ -102,12 +120,33 @@ export default {
                   this.$message.success(msg)
                 }
             })
+        },
+        getBalance(){
+            // let chain = this.coin=='bty'?this.currentMain:this.currentParallel;
+            if (this.currentAccount) {
+                const addr = this.currentAccount.address;
+                if (this.coin=='bty' && this.currentMain) {
+                  this.getAddrBalance(addr, "coins", this.currentMain).then(result => {
+                    console.log(result)
+                    this.asset = result[0];
+                  });
+                }
+                if (this.coin=='game' && this.currentParallel) {
+                  this.getAddrBalance(addr, "coins", this.currentParallel).then(
+                    result => {
+                      console.log(result)
+                      this.asset = result[0];
+                    }
+                  );
+                }
+            }
         }
     },
     mounted () {
         this.coin = this.$route.query.coin;
         this.$refs['txListWrap'].addEventListener('scroll', this.onScroll)
         // console.log(this.$route.query.coin)
+        this.getBalance();
     },
     beforeDestroy(){
         this.$refs['txListWrap'].removeEventListener('scroll', this.onScroll)
@@ -182,7 +221,9 @@ export default {
                 position: relative;
                 
                 p{
+                    width: 100%;
                     padding: 5px 24px 6px 23px;
+                    height: 25px;
                     background:rgba(255,255,255,1);
                     border-radius:10px;
                     font-size:14px;

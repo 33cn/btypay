@@ -46,10 +46,15 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log("submit!");
+          // console.log("submit!");
           this.getChromeStorage('address').then(res=>{
-            console.log(res)
-            let arr = res.address.concat(this.ruleForm);
+            // console.log(res)
+            let arr = [];
+            if(res.address){
+              arr = res.address.concat(this.ruleForm);
+            }else{
+              arr = [this.ruleForm]
+            }
             this.setChromeStorage('address',arr).then(res=>{
               if(res=='success'){
                 this.$router.go(-1)

@@ -129,10 +129,10 @@ export default {
     },
 
     sendToAddr({ privateKey, to, amount, fee, note }) {
-      // console.log(privateKey)
+      console.log({ privateKey, to, amount, fee, note })
       return this.createRawTransaction(to, amount, fee, note)
         .then(tx => {
-          // console.log(tx)
+          console.log(tx)
           return sign.signRawTransaction(tx, privateKey)
         }).then(signedTx => {
           return this.sendTransation(signedTx)
