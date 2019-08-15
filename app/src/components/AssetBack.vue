@@ -16,8 +16,8 @@ export default {
     methods:{
         backHandle(){
             if(this.title == 'BTY转账'){
-                this.$router.push({name:'bty'})
-                return
+                // this.$router.push({name:'bty'})
+                // return
             }
             this.$router.go(-1)
         }

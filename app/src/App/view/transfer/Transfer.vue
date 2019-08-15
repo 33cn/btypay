@@ -101,7 +101,7 @@ export default {
           console.log("submit!");
           this.sendToAddr({
             fee: dMinFee * 1e8,
-            privateKey: this.accountMap[0].hexPrivateKey,
+            privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
             note: this.form.comment,
             amount: this.form.num * 1e8,
@@ -132,7 +132,7 @@ export default {
   },
   mounted(){
     this.form.address = this.$route.query.address || '';
-    console.log(this.accountMap)
+    console.log(this.currentAccount)
     if (this.currentAccount) {
       this.getBalance(this.currentAccount.address)
     }

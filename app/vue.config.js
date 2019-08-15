@@ -2,7 +2,7 @@
 module.exports = {
   outputDir: '../BTY Wallet/dist',
   publicPath: 'dist',
-  // productionSourceMap: false,
+  productionSourceMap: true,
   css: {
     loaderOptions: {
       sass: {
