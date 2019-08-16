@@ -126,7 +126,7 @@ export default {
       setTimeout(() => {
         this.preIndex = i;
       }, 300);
-      console.log(item)
+    //   console.log(item)
     },
 
     onScroll() {
@@ -243,7 +243,7 @@ export default {
     this.$chain33Sdk.httpProvider.setUrl(url);
 
     this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
-    console.log(this.mainAsset)
+    // console.log(this.mainAsset)
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);
@@ -299,6 +299,7 @@ export default {
         align-items: center;
         p {
           font-size: 19px;
+        //   height: 18px;
           font-family: MicrosoftYaHei;
           font-weight: 400;
           color: rgba(22, 42, 84, 1);

@@ -115,26 +115,38 @@ export default {
             if(this.exportVal){
                 this.isOperatoring = false;//待删
                 if(this.currentAccount){
-                    // this.mainCoins2Paracross(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal),0).then(res=>{
-                        //     console.log(res)
-                    // }).catch(err=>{
-                        //     console.log(err)
-                    // })
                     // B2G
-                    this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal)).then(res=>{
-                        console.log(res)
-                        this.isOperatoring = false;
-                        // this.$alert('请关注收款地址的资金变动。', '兑换成功', {
-                        //     confirmButtonText: '确认',
-                        //     closeOnClickModal:true,
-                        //     center:true,
-                        //     showClose:false,
-                        // });
-                    }).catch(err=>{
-                        this.isOperatoring = false;
-                        console.log(err)
-                        this.$message.error('发生错误')
-                    })
+                    if(this.convert == 'B2G'){
+                        this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal)).then(res=>{
+                            console.log(res)
+                            this.isOperatoring = false;
+                            this.$alert('请关注收款地址的资金变动。', '兑换成功', {
+                                confirmButtonText: '确认',
+                                closeOnClickModal:true,
+                                center:true,
+                                showClose:false,
+                            });
+                        }).catch(err=>{
+                            this.isOperatoring = false;
+                            console.log(err)
+                            this.$message.error('发生错误')
+                        })
+                    }else if(this.convert == 'G2B'){
+                        this.transferGameCoin2BTY1(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal)).then(res=>{
+                            console.log(res)
+                            this.isOperatoring = false;
+                            this.$alert('请关注收款地址的资金变动。', '兑换成功', {
+                                confirmButtonText: '确认',
+                                closeOnClickModal:true,
+                                center:true,
+                                showClose:false,
+                            });
+                        }).catch(err=>{
+                            this.isOperatoring = false;
+                            console.log(err)
+                            this.$message.error('发生错误')
+                        })
+                    }
                 }else{
                     this.isOperatoring = false;
                 }
