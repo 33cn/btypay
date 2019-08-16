@@ -12,9 +12,9 @@
                 <div class="main">
                     <section class="up">
                         <!-- <p class="name">敢么（GMT）</p> -->
-                        <div v-for="(item,i) in mainNodeList" :key="i">
+                        <div v-for="(item,i) in mainNodeList" :key="i" @click="setNode(item,'main')">
                             <p>{{item.addr}}</p>
-                            <img v-if="item.addr==currentMain" src="../../../assets/images/selected.png" alt="">
+                            <img v-if="item.addr==currentMainNode" src="../../../assets/images/selected.png" alt="">
                             <p class="line"></p>
                         </div>
                     </section>
@@ -25,10 +25,10 @@
                 <p>平行链节点设置</p>
                 <div class="parallel">
                     <section class="up">
-                        <div v-for="(item,i) in paraNodeList" :key="i">
+                        <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')">
                             <p class="name">{{item.name}}（{{item.coin}}）</p>
                             <p>{{item.addr}}</p>
-                            <img v-if="item.addr==currentParallel" src="../../../assets/images/selected.png" alt="">
+                            <img v-if="item.addr==currentParaNode" src="../../../assets/images/selected.png" alt="">
                             <p class="line"></p>
                         </div>
                     </section>
@@ -95,6 +95,8 @@ export default {
             mainIsInput:false,
             mainNodeList:[],
             paraNodeList:[],
+            currentMainNode:'',
+            currentParaNode:'',
             form:{
                 name:'',
                 coin:'',
@@ -115,7 +117,7 @@ export default {
                   let obj = JSON.parse(JSON.stringify(this.form))
                   this.$store.commit("Account/UPDATE_PARALLEL_NODE", obj);
                 //   let arr = this.paraNodeList.concat([obj])
-                  this.setChromeStorage('parallelNode',this.parallelNode).then(res=>{
+                  this.setChromeStorage('parallelNodeList',this.parallelNode).then(res=>{
                     if(res=='success'){
                         // this.paraNodeList = this.mainNode;
                         this.$message.success('平行链节点添加成功');
@@ -150,6 +152,30 @@ export default {
             this.mainDialog = false;
             this.mainData = '';
         },
+        setNode(val,target){
+            if(target == 'main'){
+                this.$store.commit('Account/UPDATE_CURRENT_MAIN',val.addr)
+                this.setChromeStorage('mainNode',val.addr).then(res=>{
+                  if(res=='success'){
+                    this.$message.success('默认节点设置成功')
+                    this.getMainNode();//更新视图
+                  }
+                }).catch(err=>{
+                    console.log(err)
+                })
+            }else if(target == 'para'){
+                this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',val.addr)
+                this.setChromeStorage('paraNode',val.addr).then(res=>{
+                  if(res=='success'){
+                    this.$message.success('默认节点设置成功')
+                    this.getParaNode();//更新视图
+                  }
+                }).catch(err=>{
+                    console.log(err)
+                })
+            }
+            
+        },
         getMainNode(){
             this.getChromeStorage('mainNodeList').then(res=>{
                 console.log(res)
@@ -157,13 +183,25 @@ export default {
                     this.mainNodeList = res.mainNodeList;
                 }
             })
+            this.getChromeStorage('mainNode').then(res=>{
+                console.log(res)
+                if(res.mainNode){
+                    this.currentMainNode = res.mainNode;
+                }
+            })
             
         },
         getParaNode(){
-            this.getChromeStorage('parallelNode').then(res=>{
+            this.getChromeStorage('parallelNodeList').then(res=>{
                 console.log(res)
-                if(res.parallelNode){
-                    this.paraNodeList = res.parallelNode;
+                if(res.parallelNodeList){
+                    this.paraNodeList = res.parallelNodeList;
+                }
+            })
+            this.getChromeStorage('paraNode').then(res=>{
+                console.log(res)
+                if(res.paraNode){
+                    this.currentParaNode = res.paraNode;
                 }
             })
         }

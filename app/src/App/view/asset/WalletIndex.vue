@@ -13,8 +13,8 @@
             <p>BTY</p>
           </div>
           <div class="right">
-            <p>{{ mainAsset.amt }}</p>
-            <p>≈￥{{ mainAsset.amt * mainAsset.price }}</p>
+            <p>{{ mainAsset.amt | numFilter}}</p>
+            <p>≈￥{{ mainAsset.amt * mainAsset.price | numFilter}}</p>
           </div>
         </li>
         <li @click="toGame">
@@ -23,8 +23,8 @@
             <p>{{ parallelAsset.name }}</p>
           </div>
           <div class="right">
-            <p>{{ parallelAsset.amt }}</p>
-            <p>≈￥{{ parallelAsset.amt * parallelAsset.price }}</p>
+            <p>{{ parallelAsset.amt | numFilter}}</p>
+            <p>≈￥{{ parallelAsset.amt * parallelAsset.price | numFilter}}</p>
           </div>
         </li>
       </ul>

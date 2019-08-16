@@ -11,8 +11,8 @@
     <section class="balance" v-if="coin=='bty'">
       <img src="../../../assets/images/btyLogo.png" alt />
       <div class="balance">
-        <p>{{mainAsset.amt}}</p>
-        <p>≈￥{{mainAsset.amt * mainAsset.price}}</p>
+        <p>{{mainAsset.amt| numFilter}}</p>
+        <p>≈￥{{mainAsset.amt * mainAsset.price| numFilter}}</p>
       </div>
       <div class="address">
         <p>{{currentAccount.address}}</p>
@@ -27,8 +27,8 @@
     <section class="balance" v-else>
       <img src="../../../assets/images/gameLogo.png" alt />
       <div class="balance">
-        <p>{{parallelAsset.amt}}</p>
-        <p>≈￥{{parallelAsset.amt * parallelAsset.price}}</p>
+        <p>{{parallelAsset.amt| numFilter}}</p>
+        <p>≈￥{{parallelAsset.amt * parallelAsset.price| numFilter}}</p>
       </div>
       <div class="address">
         <p>{{currentAccount.address}}</p>
@@ -243,19 +243,19 @@ export default {
         }
       });
     },
-    getBalance() {
-      if (this.coin == "bty") {
-        this.refreshMainAsset();
-        setTimeout(() => {
-          this.asset = this.mainAsset;
-        }, 0);
-      } else if (this.coin == "game") {
-        this.refreshParallelAsset();
-        setTimeout(() => {
-          this.asset = this.parallelAsset;
-        }, 0);
-      }
-    }
+    // getBalance(){
+    //     if(this.coin == 'bty'){
+    //         this.refreshMainAsset();
+    //         setTimeout(() => {
+    //             this.asset = this.mainAsset;
+    //         }, 0);
+    //     }else if(this.coin == 'game'){
+    //         this.refreshParallelAsset();
+    //         setTimeout(() => {
+    //             this.asset = this.parallelAsset
+    //         }, 0);
+    //     }
+    // }
   },
   mounted() {
     this.coin = this.$route.query.coin;
@@ -358,58 +358,6 @@ export default {
           cursor: pointer;
         }
       }
-      > section.btn {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-
-        p {
-          width: 100%;
-          padding: 5px 24px 6px 23px;
-          height: 25px;
-          background: rgba(255, 255, 255, 1);
-          border-radius: 10px;
-          font-size: 14px;
-          font-family: MicrosoftYaHei;
-          font-weight: 400;
-          color: rgba(22, 42, 84, 1);
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        img {
-          width: 22px;
-          height: 22px;
-          position: absolute;
-          left: 245px;
-          cursor: pointer;
-        }
-      }
-    }
-  }
-  > section.btn {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-
-    p {
-      padding: 5px 24px 6px 23px;
-      background: rgba(255, 255, 255, 1);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: MicrosoftYaHei;
-      font-weight: 400;
-      color: rgba(22, 42, 84, 1);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    img {
-      width: 22px;
-      height: 22px;
-      position: absolute;
-      left: 245px;
-      cursor: pointer;
     }
   }
   > section.btn {
