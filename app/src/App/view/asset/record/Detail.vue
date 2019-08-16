@@ -2,35 +2,35 @@
     <div class="detail_container">
         <asset-back title='订单详情'></asset-back>
         <section class="status">
-            <!-- <img src="../../../../assets/images/success.png" alt=""> -->
-            <img src="../../../../assets/images/fail.png" alt="">
-            <p>转账失败</p>
-            <p>2019/02/21 10:12:12</p>
+            <img v-if="recordDetail.typeTy==8" src="../../../../assets/images/fail.png" alt="">
+            <img v-else src="../../../../assets/images/success.png" alt="">
+            <p>{{recordDetail.typeTy==8?'转账失败':'转账成功'}}</p>
+            <p>{{recordDetail.strTimeData}}</p>
         </section>
         <ul>
             <li>
                 <p>金额</p>
-                <p>100 BTY</p>
+                <p>{{recordDetail.strAmount}} BTY</p>
             </li>
             <li>
                 <p>矿工费</p>
-                <p>100 BTY</p>
+                <p>{{recordDetail.fee}} BTY</p>
             </li>
             <li>
                 <p>付款地址</p>
-                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img @click="copyHandle($event, 'currentAccount.payAddress')" src="../../../../assets/images/copy.png"></p>
+                <p>{{recordDetail.strFromAddress}}<img @click="copyHandle($event, recordDetail.strFromAddress)" src="../../../../assets/images/copy.png"></p>
             </li>
             <li>
                 <p>收款地址</p>
-                <p>1NkjfHkiqodnHjKjfjfkfkIICDINN46Jjf<img @click="copyHandle($event, 'currentAccount.receiptAddress')" src="../../../../assets/images/copy.png"></p>
+                <p>{{recordDetail.strToAddress}}<img @click="copyHandle($event, recordDetail.strToAddress)" src="../../../../assets/images/copy.png"></p>
             </li>
             <li>
                 <p>区块</p>
-                <p>325254</p>
+                <p>{{recordDetail.height}}</p>
             </li>
             <li>
                 <p>交易哈希</p>
-                <p>1NkjfHkiqodnHjKjfjfkknknkljbkbbjhbhbjbhbhbufkIIfgxggfgfCDINN46Jjf<img @click="copyHandle($event, 'currentAccount.hash')" src="../../../../assets/images/copy.png"></p>
+                <p>{{recordDetail.hash}}<img @click="copyHandle($event, recordDetail.hash)" src="../../../../assets/images/copy.png"></p>
             </li>
         </ul>
     </div>
@@ -39,8 +39,21 @@
 <script>
 import AssetBack from '@/components/AssetBack.vue'
 import {clip} from '@/libs/clip.js'
+// import chain33API from "@/mixins/chain33API.js";
+// import { TransactionsListEntry, formatTxType } from '@/libs/bitcoinAmount.js'
+import { createNamespacedHelpers } from 'vuex'
+const { mapState } = createNamespacedHelpers('Records')
 export default {
+    // mixins: [chain33API],
     components:{AssetBack},
+    computed: {
+        ...mapState(['recordDetail'])
+    },
+    // data(){
+    //     return{
+    //         detail:{}
+    //     }
+    // },
     methods:{
         copyHandle(event,text){
             clip({
@@ -57,7 +70,14 @@ export default {
         }
     },
     mounted(){
-        console.log(this.$route.params)
+        console.log(this.recordDetail)
+        // if(this.$route.params.hash){
+        //     this.queryTransaction(this.$route.params.hash).then(res=>{
+        //         console.log(res)
+        //         this.detail = res;
+        //     })
+        // }
+        // console.log(this.$route.params)
     }
 }
 </script>

@@ -2,10 +2,10 @@
     <div class="convertDetail_container">
         <asset-back title='订单详情'></asset-back>
         <section class="status">
-            <img src="../../../../assets/images/success.png" alt="">
-            <!-- <img src="../../../../assets/images/fail.png" alt=""> -->
-            <p>兑换成功</p>
-            <p>2019/02/21 10:12:12</p>
+            <img v-if="recordDetail.typeTy==8" src="../../../../assets/images/fail.png" alt="">
+            <img v-else src="../../../../assets/images/success.png" alt="">
+            <p>{{recordDetail.typeTy==8?'兑换失败':'兑换成功'}}</p>
+            <p>{{recordDetail.strTimeData}}</p>
         </section>
         <ul>
             <li>
@@ -22,15 +22,15 @@
             </li>
             <li>
                 <p>矿工费</p>
-                <p>0.1BTY</p>
+                <p>{{recordDetail.fee}}BTY</p>
             </li>
             <li>
                 <p>区块</p>
-                <p>325254</p>
+                <p>{{recordDetail.height}}</p>
             </li>
             <li>
                 <p>交易哈希</p>
-                <p>1NkjfHkiqodnHjKjfjfkknknkljbkbfbjhbhbjbhbfgfCDINN46Jjf<img @click="copyHandle($event, 'currentAccount.hash')" src="../../../../assets/images/copy.png"></p>
+                <p>{{recordDetail.hash}}<img @click="copyHandle($event, recordDetail.hash)" src="../../../../assets/images/copy.png"></p>
             </li>
         </ul>
     </div>
@@ -39,8 +39,13 @@
 <script>
 import AssetBack from '@/components/AssetBack.vue'
 import {clip} from '@/libs/clip.js'
+import { createNamespacedHelpers } from 'vuex'
+const { mapState } = createNamespacedHelpers('Records')
 export default {
     components:{AssetBack},
+    computed: {
+        ...mapState(['recordDetail'])
+    },
     methods:{
         copyHandle(event,text){
             clip({
@@ -57,7 +62,7 @@ export default {
         }
     },
     mounted(){
-        console.log(this.$route.params);
+        // console.log(this.$route.params);
     }
 }
 </script>

@@ -1,5 +1,6 @@
 const state = {
   loadingData: [],
+  recordDetail:{},
   assetType: ''
 }
 
@@ -9,6 +10,9 @@ const mutations = {
   },
   ASSET_TYPE(state, payload) {
     state.assetType = payload;
+  },
+  RECORD_DETAIL(state,payload){
+    state.recordDetail = payload;
   }
 }
 

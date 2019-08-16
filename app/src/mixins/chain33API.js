@@ -56,6 +56,13 @@ export default {
         index,
         flag,
       }, url)
+    },
+
+    queryTransaction(hash, url){
+      if (url) {
+        eventBus.$emit('node-change', url)
+      }
+      return this.$chain33Sdk.queryTransaction(hash, url)
     }
   }
 }

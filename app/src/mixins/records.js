@@ -1,5 +1,6 @@
 import { createNamespacedHelpers } from 'vuex'
 const { mapState } = createNamespacedHelpers('Records')
+
 export default {
     data() {
         return {
@@ -14,7 +15,8 @@ export default {
     },
     methods: {
         toDetail(val) {
-            this.$router.push({ name: 'detail', params: { id: val.time } })
+            this.$store.commit('Records/RECORD_DETAIL',val);
+            this.$router.push({ name: 'detail', params: { hash: val.hash } })
         }
     },
     computed: {
@@ -22,12 +24,16 @@ export default {
     },
     watch: {
         'loadingData': function (val) {
+            console.log('watch')
             if (val instanceof Array) {
                 this.list = this.list.concat(val)
+                console.log(this.list)
             }
         }
     },
     mounted() {
+        this.list = this.loadingData;
+        
         // console.log(this.$store.state.Records.loadingData)
     }
 }

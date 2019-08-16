@@ -152,13 +152,14 @@ export default {
       font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
-      padding: 12px 0 18px;
+      // padding: 12px 0 18px;
       >div {
         &:hover{
           cursor: pointer;
         }
         width: 100%;
         height: 100%;
+        padding-top: 10px;
         display: inline-block;
         color: rgba(255, 255, 255, 1) !important;
         // margin-top: 6px;

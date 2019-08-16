@@ -126,7 +126,25 @@ export default {
       setTimeout(() => {
         this.preIndex = i;
       }, 300);
-    //   console.log(item)
+      let flag = this.TX_FLAG.All;
+      switch (item.com) {
+        case "Transfer":
+          flag = this.TX_FLAG.SEND;
+          break;
+        case "Receipt":
+          flag = this.TX_FLAG.RECV;
+          break;
+        default:
+          break;
+      }
+      this.getNTxFirstTime(flag, 10).then(newTxList => {
+        console.log(newTxList)
+        if (newTxList) {
+          this.$store.commit("Records/LOADING_RECORDS", newTxList);
+        }else{
+            this.$store.commit("Records/LOADING_RECORDS", []);
+        }
+      });
     },
 
     onScroll() {
@@ -146,8 +164,13 @@ export default {
       this.pervScrollTop = scrollTop;
     },
 
+    getNTxFirstTime(flag, n) {
+      return this.getNTxFromTx(flag, n, 0, -1, 0).then(newTxList => {
+        return newTxList;
+      });
+    },
     getNTxFromTx(flag, n, direction, height, index) {
-      this.getAddrTx(
+      return this.getAddrTx(
         this.currentAccount.address,
         flag,
         n,
@@ -156,7 +179,7 @@ export default {
         index
       ).then(res => {
         if (res.txs) {
-          let arr = res.txs.map(_ => {
+          let newTxList = res.txs.map(_ => {
             let blockHeight = _.height;
             let txIndex = _.index;
             let amount = _.amount;
@@ -204,7 +227,7 @@ export default {
               strError
             );
           });
-          this.$store.commit("Records/LOADING_RECORDS", arr);
+          return newTxList;
         }
       });
     },
@@ -243,7 +266,7 @@ export default {
     this.$chain33Sdk.httpProvider.setUrl(url);
 
     this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
-    // console.log(this.mainAsset)
+    
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);
@@ -355,9 +378,10 @@ export default {
       font-weight: 400;
       // background-image: url('../../../assets/images/transferBtnBg.png');
       background-size: 100% 100%;
-      padding-top: 8px;
       a {
         width: 100%;
+        height: 100%;
+        padding-top: 8px;
         display: inline-block;
         color: rgba(255, 255, 255, 1);
         cursor: pointer;

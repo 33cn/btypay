@@ -70,11 +70,11 @@ export default new Router({
       name:'addAddress',
       component:() => import('./App/view/transfer/AddAddress')
     },{
-      path:'/coin/detail/:id',
+      path:'/coin/detail/:hash',
       name:'detail',
       component:() => import('./App/view/asset/record/Detail')
     },{
-      path:'/coin/convertDetail/:id',
+      path:'/coin/convertDetail/:hash',
       name:'convertDetail',
       component:() => import('./App/view/asset/record/ConvertDetail')
     },

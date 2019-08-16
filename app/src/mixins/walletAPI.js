@@ -173,14 +173,11 @@ export default {
   },
   filters: {
     numFilter(val){
-      if(val){
+      if(val || val == 0){
         let f = parseFloat(val)
         let result = Math.floor(f*100)/100;
         return parseFloat(result).toFixed(2)
-      }else{
-        return parseFloat(0).toFixed(2)
       }
-      
     }
   }
 }
