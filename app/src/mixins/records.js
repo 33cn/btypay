@@ -8,8 +8,7 @@ export default {
                 SEND: 2,
                 EXCHANGE: 3
             },
-            list: [
-            ]
+            list: []
         }
     },
     methods: {
@@ -27,7 +26,9 @@ export default {
             }
         }
     },
+
     mounted() {
+        this.list = this.loadingData
         // console.log(this.$store.state.Records.loadingData)
     }
 }
