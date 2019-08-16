@@ -98,7 +98,11 @@ export default {
       nextIsLoading: false,
       loadingData: [],
       coin: "",
-      toLeft: null
+      toLeft: null,
+
+      noMoreTx: false,
+      lastTx: {},
+      currentTab: { name: "全部", com: "All" }
     };
   },
   computed: {
@@ -109,7 +113,17 @@ export default {
       "currentParallel",
       "mainAsset",
       "parallelAsset"
-    ])
+    ]),
+    currentFlag() {
+      switch (this.currentTab.com) {
+        case "Transfer":
+          return this.TX_FLAG.SEND;
+        case "Receipt":
+          return this.TX_FLAG.RECV;
+        default:
+          return this.TX_FLAG.All;
+      }
+    }
   },
   methods: {
     init() {},
@@ -126,25 +140,8 @@ export default {
       setTimeout(() => {
         this.preIndex = i;
       }, 300);
-      let flag = this.TX_FLAG.All;
-      switch (item.com) {
-        case "Transfer":
-          flag = this.TX_FLAG.SEND;
-          break;
-        case "Receipt":
-          flag = this.TX_FLAG.RECV;
-          break;
-        default:
-          break;
-      }
-      this.getNTxFirstTime(flag, 10).then(newTxList => {
-        console.log(newTxList)
-        if (newTxList) {
-          this.$store.commit("Records/LOADING_RECORDS", newTxList);
-        }else{
-            this.$store.commit("Records/LOADING_RECORDS", []);
-        }
-      });
+      this.currentTab = item;
+      this.getNTxFirstTime(10);
     },
 
     onScroll() {
@@ -157,22 +154,44 @@ export default {
         // near the bottom
         if (scrollBottom <= 0 && !this.nextIsLoading) {
           // do something
-          let arr = [];
-          // this.$store.commit("Records/LOADING_RECORDS", arr);
+          this.getNtxAfterLast(10);
         }
       }
       this.pervScrollTop = scrollTop;
     },
 
-    getNTxFirstTime(flag, n) {
-      return this.getNTxFromTx(flag, n, 0, -1, 0).then(newTxList => {
-        return newTxList;
+    getNtxAfterLast(n) {
+      if (this.noMoreTx) return;
+      if (!this.lastTx) return;
+      this.nextIsLoading = true;
+      this.getNTxFromTx(n, 0, this.lastTx.height, this.lastTx.txIndex)
+        .then(newTxList => {
+          this.nextIsLoading = false;
+          if (newTxList.length == 0) return;
+          this.$store.commit(
+            "Records/LOADING_RECORDS",
+            newTxList ? newTxList : []
+          );
+        })
+        .catch(err => {
+          this.nextIsLoading = false;
+          if (err.error === "ErrTxNotExist") {
+            this.noMoreTx = true;
+          }
+        });
+    },
+    getNTxFirstTime(n) {
+      return this.getNTxFromTx(n, 0, -1, 0).then(newTxList => {
+        this.$store.commit(
+          "Records/LOADING_RECORDS",
+          newTxList ? newTxList : []
+        );
       });
     },
-    getNTxFromTx(flag, n, direction, height, index) {
+    getNTxFromTx(n, direction, height, index) {
       return this.getAddrTx(
         this.currentAccount.address,
-        flag,
+        this.currentFlag,
         n,
         direction,
         height,
@@ -227,6 +246,7 @@ export default {
               strError
             );
           });
+          this.lastTx = newTxList[newTxList.length - 1];
           return newTxList;
         }
       });
@@ -244,26 +264,14 @@ export default {
           this.$message.success(msg);
         }
       });
-    },
-    // getBalance(){
-    //     if(this.coin == 'bty'){
-    //         this.refreshMainAsset();
-    //         setTimeout(() => {
-    //             this.asset = this.mainAsset;
-    //         }, 0);
-    //     }else if(this.coin == 'game'){
-    //         this.refreshParallelAsset();
-    //         setTimeout(() => {
-    //             this.asset = this.parallelAsset
-    //         }, 0);
-    //     }
-    // }
+    }
   },
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url = this.coin == "bty" ? this.currentMain : this.currentParallel;
     this.$chain33Sdk.httpProvider.setUrl(url);
+    this.getNTxFirstTime(10);
 
     this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     
@@ -441,7 +449,7 @@ export default {
       margin: 0px 21px 0 20px;
       /* 设置滚动条的样式 */
       &::-webkit-scrollbar {
-        width: 0px;
+        width: 2px;
         height: 0px;
         background: transparent;
       }
