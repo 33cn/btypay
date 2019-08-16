@@ -98,11 +98,7 @@ export default {
       nextIsLoading: false,
       loadingData: [],
       coin: "",
-      toLeft: null,
-      asset: {
-        balance: 0,
-        addr: "xxxxxxxxxxxxxxxx"
-      }
+      toLeft: null
     };
   },
   computed: {
@@ -130,6 +126,7 @@ export default {
       setTimeout(() => {
         this.preIndex = i;
       }, 300);
+      console.log(item)
     },
 
     onScroll() {
@@ -142,20 +139,7 @@ export default {
         // near the bottom
         if (scrollBottom <= 0 && !this.nextIsLoading) {
           // do something
-          let arr = [
-            {
-              type: 3,
-              address: "sdgsdhfsdhsdhfdsgfsdgfdsf",
-              value: 300,
-              time: "2019/09/04 10:23:23"
-            },
-            {
-              type: 3,
-              address: "sdgsdhfsdhsdhfdsgfsdgfdsf",
-              value: 300,
-              time: "2019/09/05 10:23:23"
-            }
-          ];
+          let arr = [];
           // this.$store.commit("Records/LOADING_RECORDS", arr);
         }
       }
@@ -171,57 +155,57 @@ export default {
         height,
         index
       ).then(res => {
-        console.log(res.txs);
-        let arr = res.txs.map(_ => {
-          let blockHeight = _.height;
-          let txIndex = _.index;
-          let amount = _.amount;
-          let strToAddr = _.tx.to;
-          let strFromAddr = _.fromAddr;
-          let strTxHash = _.txHash;
-          let nTime = _.blockTime;
-          let nFee = _.tx.fee;
-          let strExecer = _.tx.execer;
-          let strActionname = _.actionName;
-          let nTy = _.receipt.ty;
+        if (res.txs) {
+          let arr = res.txs.map(_ => {
+            let blockHeight = _.height;
+            let txIndex = _.index;
+            let amount = _.amount;
+            let strToAddr = _.tx.to;
+            let strFromAddr = _.fromAddr;
+            let strTxHash = _.txHash;
+            let nTime = _.blockTime;
+            let nFee = _.tx.fee;
+            let strExecer = _.tx.execer;
+            let strActionname = _.actionName;
+            let nTy = _.receipt.ty;
 
-          let strNote = "";
-          if (_.tx && _.tx.payload && _.tx.Value && _.tx.Value.Transfer) {
-            strNote = _.tx.payload.Value.Transfer.note;
-          }
+            let strNote = "";
+            if (_.tx && _.tx.payload && _.tx.Value && _.tx.Value.Transfer) {
+              strNote = _.tx.payload.Value.Transfer.note;
+            }
 
-          let strError = "unKnow";
-          if (nTy === 1) {
-            let errors = _.receipt.logs;
-            if (errors) {
-              for (let err of errors) {
-                if (err.ty === 1) {
-                  strError = err.log;
-                  break;
+            let strError = "unKnow";
+            if (nTy === 1) {
+              let errors = _.receipt.logs;
+              if (errors) {
+                for (let err of errors) {
+                  if (err.ty === 1) {
+                    strError = err.log;
+                    break;
+                  }
                 }
               }
             }
-          }
 
-          return new TransactionsListEntry(
-            this.currentAccount.address,
-            blockHeight,
-            txIndex,
-            nTime,
-            strToAddr,
-            strFromAddr,
-            strTxHash,
-            amount,
-            nFee,
-            strExecer,
-            strActionname,
-            nTy,
-            strNote,
-            strError
-          );
-        });
-        console.log(arr)
-        // this.$store.commit("Records/LOADING_RECORDS", arr);
+            return new TransactionsListEntry(
+              this.currentAccount.address,
+              blockHeight,
+              txIndex,
+              nTime,
+              strToAddr,
+              strFromAddr,
+              strTxHash,
+              amount,
+              nFee,
+              strExecer,
+              strActionname,
+              nTy,
+              strNote,
+              strError
+            );
+          });
+          this.$store.commit("Records/LOADING_RECORDS", arr);
+        }
       });
     },
 
@@ -255,8 +239,9 @@ export default {
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    let url = this.coin == "BTY" ? this.currentMain : this.currentParallel;
+    let url = this.coin == "bty" ? this.currentMain : this.currentParallel;
     this.$chain33Sdk.httpProvider.setUrl(url);
+
     this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     console.log(this.mainAsset)
   },

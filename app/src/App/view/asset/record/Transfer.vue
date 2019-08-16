@@ -8,11 +8,13 @@
                     <img v-if="item.type==3" style="width:27px;height:28px" src="../../../../assets/images/convertLogo.png" alt=""> -->
                     <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
                     <div>
-                        <p>{{item.address.substring(0,5)}}...{{item.address.substring(item.address.length-5)}}</p>
-                        <p>{{item.time}} &nbsp; 转账</p>
+                        <p>{{item.hashShort}}</p>
+                        <p>{{item.strTimeData}} &nbsp; 转账</p>
                     </div>
                 </div>
-                <p :class="item.type==1?'transfer':'receipt'">{{item.type==1?'-':'+'}}{{item.value}}</p>
+                <p
+          :class="item.amountChangeType == 'decrease' ?'transfer':'receipt'"
+        >{{item.type=='decrease'?'-':'+'}}{{item.strAmount}}</p>
             </li>
         </ul>
     </div>

@@ -3,9 +3,12 @@
     <asset-back title style="padding-top:0"></asset-back>
     <section class="content">
       <div class="words">
-        <p>请输入您12位钱包助记词</p>
-        <div class="seed-ui__word-group_zh">
+        <p>请输入您12位钱包助记词，用空格分隔！</p>
+        <!-- <div class="seed-ui__word-group_zh">
           <one-box-one-word :box-num="15" v-model="seedStringInput"></one-box-one-word>
+        </div>-->
+        <div class="seed-ui__word-group_en">
+          <textarea  v-model="seedStringInput" @keydown.enter="$event.preventDefault()"></textarea>
         </div>
       </div>
       <el-form
@@ -22,9 +25,9 @@
           <el-input v-model="createForm.confirmPwd" type="password"></el-input>
         </el-form-item>
       </el-form>
-      <p class="btn">
-        <router-link :to="{ name: 'WalletIndex'}">导入</router-link>
-      </p>
+      <div class="btn">
+        <div @click="importWallet">导入</div>
+      </div>
     </section>
   </div>
 </template>
@@ -32,6 +35,7 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import OneBoxOneWord from "@/components/OneBoxOneWord.vue";
+import { encrypt } from "@/libs/crypto.js";
 export default {
   components: { AssetBack, OneBoxOneWord },
   data() {
@@ -51,6 +55,24 @@ export default {
         ]
       }
     };
+  },
+  methods: {
+    importWallet(){
+      this.saveSeed(this.seedStringInput, this.createForm.pwd)
+      setTimeout(() => {
+        this.$router.push({ name: 'WalletIndex' })
+      }, 500)
+    },
+    saveSeed (seedString, password) {
+      const walletObj = this.createHDWallet(seedString)
+      // 加密助记词 
+      let ciphertext = encrypt(seedString, password)
+      // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
+        // console.log('ciphertext is set to ' + ciphertext);
+      // })
+      this.newAccount('创世地址')
+      return walletObj
+    },
   }
 };
 </script>
@@ -69,9 +91,9 @@ export default {
         margin-bottom: 7px;
       }
       > div {
-        height: 150px;
+        height: 120px;
         background: #ffffff;
-        padding: 10px 40px 15px 40px;
+        padding: 15px 30px 15px 30px;
         border-radius: 10px;
         box-shadow: 2px 2px 5px 3px #ffffff;
       }
@@ -87,6 +109,19 @@ export default {
           }
         }
       }
+      .seed-ui__word-group_en {
+        > textarea {
+          width: 100%;
+          height: 100%;
+          display: block;
+          border: none;
+          outline: none;
+          font-size: 16px;
+          resize: none;
+          color: #FF6A8B;
+          font-family: MicrosoftYaHei;
+        }
+      }
     }
     .password {
       .el-form-item {
@@ -97,8 +132,8 @@ export default {
         color: #ffffff;
         padding: 0;
         line-height: 30px;
-        &::before{
-          content:'';
+        &::before {
+          content: "";
         }
       }
       input {
@@ -118,8 +153,12 @@ export default {
       font-family: MicrosoftYaHei;
       font-weight: 400;
       padding: 12px 0 18px;
-      a {
+      >div {
+        &:hover{
+          cursor: pointer;
+        }
         width: 100%;
+        height: 100%;
         display: inline-block;
         color: rgba(255, 255, 255, 1) !important;
         // margin-top: 6px;

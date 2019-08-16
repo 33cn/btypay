@@ -3,21 +3,32 @@
     <ul>
       <li v-for="item in list" :key="item.time" @click="toDetail(item)">
         <div>
-          <img v-if="item.type==TX_TYPE.OUT" src="../../../../assets/images/transferLogo.png" alt />
-          <img v-if="item.type==TX_TYPE.IN" src="../../../../assets/images/receiptLogo.png" alt />
           <img
-            v-if="item.type==TX_TYPE.EXCHANGE"
+            v-if="item.typeTy==TX_TYPE.SendToAddress"
+            src="../../../../assets/images/transferLogo.png"
+            alt
+          />
+          <img
+            v-if="item.typeTy==TX_TYPE.RecvWithAddress"
+            src="../../../../assets/images/receiptLogo.png"
+            alt
+          />
+          <img
+            v-if="item.typeTy==TX_TYPE.SendToSelf"
             style="width:27px;height:28px"
             src="../../../../assets/images/convertLogo.png"
             alt
           />
           <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
           <div>
-            <p>{{item.address.substring(0,5)}}...{{item.address.substring(item.address.length-5)}}</p>
-            <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p>
+            <p>{{item.hashShort}}</p>
+            <!-- <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p> -->
+            <p>{{item.strTimeData}} &nbsp; 转账</p>
           </div>
         </div>
-        <p :class="item.type==1?'transfer':'receipt'">{{item.type==1?'-':'+'}}{{item.value}}</p>
+        <p
+          :class="item.amountChangeType == 'decrease' ?'transfer':'receipt'"
+        >{{item.type=='decrease'?'-':'+'}}{{item.strAmount}}</p>
       </li>
     </ul>
   </div>
@@ -26,11 +37,13 @@
 <script>
 // import {createNamespacedHelpers} from 'vuex'
 // const {mapState} = createNamespacedHelpers('Records')
+import { TransactionsType } from "@/libs/bitcoinAmount";
 import records from "@/mixins/records.js";
 export default {
   mixins: [records],
   data() {
     return {
+      TX_TYPE: TransactionsType
       // list:[
       //     {type:1,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:100,time:'2019/09/09 10:23:23'},
       //     {type:2,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:200,time:'2019/09/01 10:23:23'},
@@ -38,7 +51,7 @@ export default {
       //     {type:3,address:'sdgsdhfsdhsdhfdsgfsdgfdsf',value:300,time:'2019/09/03 10:23:23'},
       // ]
     };
-  }
+  },
   // methods:{
   //     toDetail(val){
   //         this.$router.push({name:'detail',params:{id:val.time}})
@@ -55,9 +68,8 @@ export default {
   //         }
   //     }
   // },
-  // mounted(){
-  //     console.log(this.$store.state.Records.loadingData)
-  // }
+  mounted() {
+  }
 };
 </script>
 
