@@ -90,8 +90,6 @@ export default {
                 return this.parallelMarketSell(amount, fee)
             }).then(() => {
                 return this.parallelTrade2Coins(privateKey, to, amount, fee)
-            }).then(()=>{
-                return this.parallelCoins2Dice(privateKey, to, amount, fee)
             })
         },
 
@@ -175,9 +173,7 @@ export default {
         transferGameCoin2BTY1(privateKey, amount){
             const fee = 0
             const to = this.currentAccount.address
-            return this.parallelDice2Coins(privateKey, to, amount, fee).then(() => {
-                return this.parallelCoins2Trade(privateKey, to, amount, fee)
-            }).then(() => {
+            return this.parallelCoins2Trade(privateKey, to, amount, fee).then(() => {
                 return this.parallelMarketBuy(amount, fee)
             }).then(() => {
                 return this.parallelTrade2Paracross(privateKey, to, amount)

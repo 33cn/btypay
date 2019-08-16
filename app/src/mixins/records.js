@@ -23,10 +23,8 @@ export default {
     },
     watch: {
         'loadingData': function (val) {
-            console.log('watch')
             if (val instanceof Array) {
                 this.list = this.list.concat(val)
-                console.log(this.list)
             }
         }
     },
