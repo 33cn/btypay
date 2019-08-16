@@ -170,5 +170,15 @@ export default {
     }
     /* 资产相关 -- end */
 
+  },
+  filters: {
+    numFilter(val){
+      if(val){
+        let f = parseFloat(val)
+        let result = Math.floor(f*100)/100;
+        return parseFloat(result).toFixed(2)
+      }
+      
+    }
   }
 }

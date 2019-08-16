@@ -15,6 +15,7 @@ export default {
         // 主链bty从coins执行器转移到paracross执行器
         mainCoins2Paracross(privateKey, amount, fee, note = '') {
             const to = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
+            // const to = '1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT'
             return this.createRawTransaction(to, amount, fee, note).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
             }).then(signedTx => {
@@ -67,6 +68,16 @@ export default {
                 return this.sendTransation(signedTx);
             })
         },
+        // 余额从coins执行器转到dice合约,游戏币充值完成
+        parallelCoins2Dice(privateKey, to, amount, fee) {
+            const execName = "user.p.fzmtest.user.wasm.dice"
+            const isWithdraw = false
+            return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
+                return sign.signRawTransaction(tx, privateKey)
+            }).then(signedTx => {
+                return this.sendTransation(signedTx)
+            })
+        },
 
         transferBTY2GameCoin(privateKey, amount) {
             const fee = 0
@@ -79,34 +90,75 @@ export default {
                 return this.parallelMarketSell(amount, fee)
             }).then(() => {
                 return this.parallelTrade2Coins(privateKey, to, amount, fee)
+            }).then(()=>{
+                return this.parallelCoins2Dice(privateKey, to, amount, fee)
             })
         },
-        // 余额从coins执行器转到dice合约,游戏币充值完成
-        parallelCoins2Dice(privateKey, to, amount, fee) {
-            const execName = "user.p.fzmtest.user.wasm.dice"
+
+
+
+
+
+        mainParacross2Coins(privateKey, amount, fee, note = '') {
+            const to = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
+            // const to = '1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT'
+            return this.createRawTransaction(to, amount, fee, note).then(tx => {
+                return sign.signRawTransaction(tx, privateKey)
+            }).then(signedTx => {
+                return this.sendTransation(signedTx)
+            })
+        },
+        parallel2Main(privateKey, to, amount) {
+            const execer = "user.p.fzmtest.paracross"
+            const actionName = "ParacrossAssetTransfer"
+            const payload = {
+                execName: "user.p.fzmtest.paracross",
+                to: to,
+                amount: amount
+            }
+            return this.createTransaction(execer, actionName, payload).then(tx => {
+                return sign.signRawTransaction(tx, privateKey)
+            }).then(signedTx => {
+                return this.sendTransation(signedTx)
+            })
+        },
+        parallelTrade2Paracross(privateKey, to, amount) {
+            const execer = "user.p.fzmtest.paracross"
+            const actionName = "Withdraw"
+            const payload = {
+                execName: "user.p.fzmtest.trade",
+                to: to,
+                amount: amount,
+                cointoken: "coins.bty"
+            }
+            return this.createTransaction(execer, actionName, payload).then(tx => {
+                return sign.signRawTransaction(tx, privateKey)
+            }).then(signedTx => {
+                return this.sendTransation(signedTx)
+            })
+        },
+        parallelMarketBuy(boardlotCnt, fee) {
+            const buyID = ""
+            return this.createRawTradeSellMarketTx(buyID, boardlotCnt, fee);
+        },
+        parallelCoins2Trade(privateKey, to, amount, fee) {
+            const execName = "user.p.fzmtest.trade"
             const isWithdraw = false
+            return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
+                return sign.signRawTransaction(tx, privateKey);
+            }).then(signedTx => {
+                return this.sendTransation(signedTx);
+            })
+        },
+        parallelDice2Coins(privateKey, to, amount, fee) {
+            const execName = "user.p.fzmtest.user.wasm.dice"
+            const isWithdraw = true
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)
             }).then(signedTx => {
                 return this.sendTransation(signedTx)
             })
         },
-
-
-
-
-
-        mainParacross2Coins() {
-        },
-        parallel2Main() {
-        },
-        parallelTrade2Paracross() {
-        },
-        parallelMarketBuy() {
-        },
-        parallelCoins2Trade() {
-        },
-
         transferGameCoin2BTY(privateKey, amount) {
             const fee = 0
             const to = this.currentAccount.address
@@ -120,11 +172,21 @@ export default {
                 return this.mainParacross2Coins()
             })
         },
-
-        parallelDice2Coins(privateKey, to, amount, fee) {
-
+        transferGameCoin2BTY1(privateKey, amount){
+            const fee = 0
+            const to = this.currentAccount.address
+            return this.parallelDice2Coins(privateKey, to, amount, fee).then(() => {
+                return this.parallelCoins2Trade(privateKey, to, amount, fee)
+            }).then(() => {
+                return this.parallelMarketBuy(amount, fee)
+            }).then(() => {
+                return this.parallelTrade2Paracross(privateKey, to, amount)
+            }).then(() => {
+                return this.parallel2Main(privateKey, to, amount)
+            }).then(()=>{
+                return this.mainParacross2Coins(privateKey, amount, fee)
+            })
         }
-
 
     }
 }

@@ -7,7 +7,7 @@
                 <img v-else src="../../../assets/images/gameLogo.png" alt="">
                 <p class="coin">{{convert=='B2G'?'BTY':'GAME'}}</p>
                 <input :class="isInput?'error':''" v-model="exportVal" @input.prevent="inputHandle($event,'from')" type="number" placeholder="转出数量">
-                <p class="balance">余额{{asset.amt}}{{convert=='B2G'?'BTY':'GAME'}}</p>
+                <p class="balance">余额{{asset.amt| numFilter}}{{convert=='B2G'?'BTY':'GAME'}}</p>
             </div>
             <img @click="exchangeHandle" src="../../../assets/images/exchange.png" alt="">
             <div class="right">
@@ -20,34 +20,35 @@
         <section class="desc">
             <div>
                 <p>汇率</p>
-                <p>1{{convert=='B2G'?'BTY':'GAME'}}=1{{convert=='G2B'?'BTY':'GAME'}}</p>
+                <p>1{{convert=='B2G'?'BTY':'GAME'}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':'GAME'}}</p>
             </div>
             <div>
                 <p>手续费</p>
                 <p>0%</p>
             </div>
-            <p>温馨提示：跨链兑换支持使用GAME兑换BTY，也可将GAME兑换成BTY。</p>
+            <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
         </section>
-        <p @click="convertHandle">跨链兑换</p>
+        <p @click="convertHandle">跨链兑换{{isOperatoring?'...':''}}</p>
     </div>
 </template>
 
 <script>
 import AssetBack from '@/components/AssetBack.vue'
 import walletAPI from '@/mixins/walletAPI.js'
+import parallelAPI from '@/mixins/parallelAPI.js'
 import { createNamespacedHelpers } from "vuex";
 
 const { mapState } = createNamespacedHelpers("Account");
 
 export default {
-    mixins: [walletAPI],
+    mixins: [walletAPI,parallelAPI],
     components:{AssetBack},
     computed: {
         ...mapState([
         //   "accountMap",
-        //   "currentAccount",
-        //   "currentMain",
-        //   "currentParallel",
+          "currentAccount",
+          "currentMain",
+          "currentParallel",
           "mainAsset",
           "parallelAsset",
         //   "mainNode",
@@ -60,41 +61,38 @@ export default {
             exportVal:null,
             receiptVal:null,
             isInput:false,
+            isOperatoring:false,
             asset:{
                 amt:10.00
             },
-            rate:2,//待删
+            rate:10,//待删
         }
     },
     methods:{
         inputHandle(e,v){
-            console.log(e.target.value)
-            console.log(v)
+            // console.log(e.target.value)
+            // console.log(v)
             this.isInput = false;
-            if(e.target.value < 0){
+            if(!e.target.value || e.target.value < 0){
                 this.exportVal = null;
                 this.receiptVal = null;
                 return
-            }
-            if(e.target.value == null || e.target.value == 0){
-                this.receiptVal = null;
-                this.exportVal = null
             }
             let val = null;
             if(v == 'to'){
                 if(this.convert == 'B2G'){
                     val = this.asset.amt*this.rate;
                     console.log(val)
-                    this.exportVal = this.receiptVal/2
+                    this.exportVal = this.receiptVal/this.rate
                 }else{
                     val = this.asset.amt/this.rate;
-                    this.exportVal = this.receiptVal*2
+                    this.exportVal = this.receiptVal*this.rate
                 }
             }else{
                 if(this.convert == 'B2G'){
-                    this.receiptVal = this.exportVal*2;
+                    this.receiptVal = this.exportVal*this.rate;
                 }else{
-                    this.receiptVal = this.exportVal/2;
+                    this.receiptVal = this.exportVal/this.rate;
                 }
                 val = this.asset.amt;
                 
@@ -107,20 +105,42 @@ export default {
                     this.receiptVal = null;
                     this.isInput = false;
                 }, 500);
-            }else{
-                // this.exportVal = e.target.value;
-                // this.receiptVal = e.target.value;
             }
         },
         convertHandle(){
+            if(this.isOperatoring){
+                return
+            }
+            this.isOperatoring = true;
             if(this.exportVal){
-                this.$alert('请关注收款地址的资金变动。', '兑换成功', {
-                    confirmButtonText: '确认',
-                    closeOnClickModal:true,
-                    center:true,
-                    showClose:false,
-                });
+                this.isOperatoring = false;//待删
+                if(this.currentAccount){
+                    // this.mainCoins2Paracross(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal),0).then(res=>{
+                        //     console.log(res)
+                    // }).catch(err=>{
+                        //     console.log(err)
+                    // })
+                    // B2G
+                    this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal)).then(res=>{
+                        console.log(res)
+                        this.isOperatoring = false;
+                        // this.$alert('请关注收款地址的资金变动。', '兑换成功', {
+                        //     confirmButtonText: '确认',
+                        //     closeOnClickModal:true,
+                        //     center:true,
+                        //     showClose:false,
+                        // });
+                    }).catch(err=>{
+                        this.isOperatoring = false;
+                        console.log(err)
+                        this.$message.error('发生错误')
+                    })
+                }else{
+                    this.isOperatoring = false;
+                }
+
             }else{
+                this.isOperatoring = false;
                 this.isInput = true;
                 setTimeout(() => {
                     this.isInput = false;
@@ -131,20 +151,21 @@ export default {
         exchangeHandle(){
             if(this.convert == 'B2G'){
                 this.convert = 'G2B';
-                // this.asset = this.parallelAsset;
-                return
+                this.asset = this.parallelAsset;
             }else{
                 this.convert = 'B2G'
-                // this.asset = this.mainAsset;
+                this.asset = this.mainAsset;
             }
+            this.exportVal = null;
+            this.receiptVal = null;
         }
     },
     mounted(){
-        // this.refreshMainAsset();
-        // this.refreshParallelAsset();
-        // setTimeout(() => {
-        //     this.asset = this.mainAsset;
-        // }, 0);
+        this.refreshMainAsset();
+        this.refreshParallelAsset();
+        setTimeout(() => {
+            this.asset = this.mainAsset;
+        }, 0);
     }
 }
 </script>

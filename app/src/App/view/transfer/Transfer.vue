@@ -9,7 +9,7 @@
     >
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
-        <p class="balance">余额{{mainAsset.amt}}BTY</p>
+        <p class="balance">余额{{mainAsset.amt| numFilter}}BTY</p>
         <p class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
@@ -26,7 +26,7 @@
         </div>
       </el-form-item>
     </el-form>
-    <p @click="submitForm('ruleForm')">创建</p>
+    <p @click="submitForm('ruleForm')">创建{{isCreating?'...':''}}</p>
   </div>
 </template>
 
@@ -54,7 +54,8 @@ export default {
         return callback(new Error("转账金额不能为空"));
       }
       setTimeout(() => {
-        if (!Number.isInteger(parseFloat(value))) {
+        // console.log(!Number.isInteger(parseFloat(value)))
+        if (isNaN(parseFloat(value))) {
           callback(new Error("请输入数字值"));
         } else {
           if (parseFloat(value) < 0) {
@@ -69,6 +70,7 @@ export default {
       return callback()
     }
     return {
+      isCreating:false,
       form: {
         num: null,
         address: "",
@@ -90,17 +92,22 @@ export default {
       //   center:true,
       //   showClose:false,
       // });
+      if(this.isCreating){
+        return
+      }
+      this.isCreating = true;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log("submit!");
           this.sendToAddr({
             privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
-            amount: this.form.num * 1e1,
-            fee: dMinFee * 1e3,
+            amount: this.form.num * 1e8,
+            fee: dMinFee * 1e8,
             note: this.form.comment,
           }).then(res => {
             console.log(res)
+            this.isCreating = false;
             this.$alert('请关注您的资金变动。', '转账成功', {
               confirmButtonText: '知道了',
               closeOnClickModal:true,
@@ -109,10 +116,12 @@ export default {
             });
             this.replyBackground(res)
           }).catch(err=>{
+            this.isCreating = false;
             console.log(err)
             this.$message.error('发生错误');
           })
         } else {
+          this.isCreating = false;
           console.log("error submit!!");
           return false;
         }

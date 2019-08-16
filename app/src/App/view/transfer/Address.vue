@@ -68,6 +68,7 @@ export default {
         }
         li{
             margin: 0 0px 33px 0;
+            cursor: pointer;
             p{
                 line-height:1; 
                 font-weight:400;
