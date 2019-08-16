@@ -69,7 +69,6 @@ export default {
   //     }
   // },
   mounted() {
-    console.log(TransactionsType);
   }
 };
 </script>

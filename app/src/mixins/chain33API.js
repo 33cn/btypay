@@ -4,8 +4,8 @@ export default {
     return{
       TX_FLAG: {
         ALL: 0,
-        OUT: 1,
-        IN: 2
+        SEND: 1,
+        RECV: 2
       },
       TX_DIRECTION: {
         REAR: 0,
