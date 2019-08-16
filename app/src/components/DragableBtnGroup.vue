@@ -42,7 +42,7 @@ export default {
 <style scoped lang="scss">
 .dragable-btn-group {
   width: 100%;
-  padding: 0 20px;
+  padding: 0 25px;
   background: white;
   min-height: 100px;
   display: flex;

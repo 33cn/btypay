@@ -1,6 +1,6 @@
 const state = {
   password: '11111111',
-  seed: 'film,finger,voyage,during,alter,chat,sentence,hundred,connect,riot,doctor,cash,sing,nut,chat',//助记词
+  seed: 'film finger voyage during alter chat sentence hundred connect riot doctor cash sing nut chat',//助记词
   accountMap: {},
   currentAccount: {
     address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT", //15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J  
@@ -12,11 +12,11 @@ const state = {
 
 
   // string url
-  mainNode: [{addr:'http://172.16.103.18:8801'}],
+  mainNode: [{ addr: 'http://172.16.103.18:8801' }],
   currentMain: "http://172.16.103.18:8801",
 
   // { string name, string coinName, string url }
-  parallelNode: [{name:'金比特',coin:"GBT",addr:"http://172.16.103.24:8801"}],
+  parallelNode: [{ name: '金比特', coin: "GBT", addr: "http://172.16.103.24:8801" }],
   currentParallel: "http://172.16.103.24:8801",
 
   mainAsset: {
@@ -57,22 +57,22 @@ const mutations = {
     state.currentParallel = payload
   },
 
-  UPDATE_MAIN_ASSET(state, {amt, price}) {
-    if(amt || amt == 0){
+  UPDATE_MAIN_ASSET(state, { amt, price }) {
+    if (amt || amt == 0) {
       state.mainAsset.amt = amt
     }
-    if(price){
+    if (price) {
       state.mainAsset.price = price
     }
   },
-  UPDATE_PARALLEL_ASSET(state, {name, amt, price}) {
-    if(name){
+  UPDATE_PARALLEL_ASSET(state, { name, amt, price }) {
+    if (name) {
       state.parallelAsset.name = name
     }
-    if(amt || amt == 0){
+    if (amt || amt == 0) {
       state.parallelAsset.amt = amt
     }
-    if(price){
+    if (price) {
       state.parallelAsset.price = price
     }
   }

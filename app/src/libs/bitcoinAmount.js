@@ -1,4 +1,4 @@
-import {timeFormat} from '@/libs/common'
+import { timeFormat } from '@/libs/common'
 // import {MY_ADDRESS, Address} from '@/controllers/address'
 
 export const dMinFee = 0.001 // 最小矿工费
@@ -54,6 +54,7 @@ export class TransactionsListEntry {
     this.height = blockHeight
     this.txIndex = txIndex
     this.hash = strHash
+    this.hashShort = `${strHash.slice(0, 5)}****${strHash.slice(-5)}`
     this.strTimeData = timeFormat(nTimeData, 'yyyy-MM-dd hh:mm:ss')
     this.strAmount = Number(nAmount).divide(Math.pow(10, 8)).toFixed(4)
     this.strToAddress = strToAddress
@@ -67,64 +68,64 @@ export class TransactionsListEntry {
     this.strError = strError
 
 
-        let npos = strExecer.indexOf('user.')
-        if (nReceiptTy !== 2 && strExecer !== 'none' && npos !== 0) {
-          this.typeTy = TransactionsType.TyFailure
-        } else if (strExecer !== 'coins' && strExecer !== 'ticket') {
-          this.typeTy = TransactionsType.Other
-        } else if (strExecer === 'ticket' && strActionname === 'withdraw') {
-          this.typeTy = TransactionsType.RecvFromMining
-        } else if (strExecer === 'ticket' && strActionname === 'miner') {
-          this.typeTy = TransactionsType.Generated
-        } else if (strExecer === 'ticket' && strActionname === 'open') {
-          this.typeTy = TransactionsType.OpenTicket
-        } else if (strExecer === 'ticket' && strActionname === 'close') {
-          this.typeTy = TransactionsType.CloseTicket
-        } else if (strExecer === 'coins' && strActionname === 'transfer' && strToAddress === MiningAddr) {
-          this.typeTy = TransactionsType.SendToMining
-        } else if (this.strToAddrLabel && this.strFromAddrLabel) {
-          this.typeTy = TransactionsType.SendToSelf
-        } else if (myAddress === strFromAddress) {
-          this.typeTy = TransactionsType.SendToAddress
-        } else if (myAddress === strToAddress) {
-          this.typeTy = TransactionsType.RecvWithAddress
-        } else {
-          this.typeTy = TransactionsType.Other
-        }
+    let npos = strExecer.indexOf('user.')
+    if (nReceiptTy !== 2 && strExecer !== 'none' && npos !== 0) {
+      this.typeTy = TransactionsType.TyFailure
+    } else if (strExecer !== 'coins' && strExecer !== 'ticket') {
+      this.typeTy = TransactionsType.Other
+    } else if (strExecer === 'ticket' && strActionname === 'withdraw') {
+      this.typeTy = TransactionsType.RecvFromMining
+    } else if (strExecer === 'ticket' && strActionname === 'miner') {
+      this.typeTy = TransactionsType.Generated
+    } else if (strExecer === 'ticket' && strActionname === 'open') {
+      this.typeTy = TransactionsType.OpenTicket
+    } else if (strExecer === 'ticket' && strActionname === 'close') {
+      this.typeTy = TransactionsType.CloseTicket
+    } else if (strExecer === 'coins' && strActionname === 'transfer' && strToAddress === MiningAddr) {
+      this.typeTy = TransactionsType.SendToMining
+    } else if (this.strToAddrLabel && this.strFromAddrLabel) {
+      this.typeTy = TransactionsType.SendToSelf
+    } else if (myAddress === strFromAddress) {
+      this.typeTy = TransactionsType.SendToAddress
+    } else if (myAddress === strToAddress) {
+      this.typeTy = TransactionsType.RecvWithAddress
+    } else {
+      this.typeTy = TransactionsType.Other
+    }
 
-        if (this.typeTy === TransactionsType.Generated ||
-            this.typeTy === TransactionsType.RecvWithAddress ||
-            this.typeTy === TransactionsType.SendToSelf ||
-            this.typeTy === TransactionsType.RecvFromMining) {
-          this.strAmount = `${this.strAmount}`
-          this.amountChangeType = 'increase'
-        } else {
-          this.strAmount = `${this.strAmount}`
-          this.amountChangeType = 'decrease'
-        }
+    if (this.typeTy === TransactionsType.Generated ||
+      this.typeTy === TransactionsType.RecvWithAddress ||
+      this.typeTy === TransactionsType.SendToSelf ||
+      this.typeTy === TransactionsType.RecvFromMining) {
+      this.strAmount = `${this.strAmount}`
+      this.amountChangeType = 'increase'
+    } else {
+      this.strAmount = `${this.strAmount}`
+      this.amountChangeType = 'decrease'
+    }
 
-        if (this.typeTy === TransactionsType.RecvWithAddress ||
-          this.typeTy === TransactionsType.SendToSelf) {
-          this.recordType = 'recv'
-        } else if (this.typeTy === TransactionsType.SendToAddress) {
-          this.recordType = 'send'
-        } else if (this.typeTy === TransactionsType.Generated ||
-          this.typeTy === TransactionsType.OpenTicket ||
-          this.typeTy === TransactionsType.CloseTicket ||
-          this.typeTy === TransactionsType.SendToMining ||
-          this.typeTy === TransactionsType.RecvFromMining) {
-          this.recordType = 'mining'
-        } else {
-          this.recordType = 'error'
-        }
+    if (this.typeTy === TransactionsType.RecvWithAddress ||
+      this.typeTy === TransactionsType.SendToSelf) {
+      this.recordType = 'recv'
+    } else if (this.typeTy === TransactionsType.SendToAddress) {
+      this.recordType = 'send'
+    } else if (this.typeTy === TransactionsType.Generated ||
+      this.typeTy === TransactionsType.OpenTicket ||
+      this.typeTy === TransactionsType.CloseTicket ||
+      this.typeTy === TransactionsType.SendToMining ||
+      this.typeTy === TransactionsType.RecvFromMining) {
+      this.recordType = 'mining'
+    } else {
+      this.recordType = 'error'
+    }
 
-        if (strToAddress === MiningAddr) {
-          this.strToAddress = `(合约)${strToAddress}`
-        }
-        if (strFromAddress === MiningAddr) {
-          this.strFromAddress = `(合约)${strFromAddress}`
-        }
-      }
+    if (strToAddress === MiningAddr) {
+      this.strToAddress = `(合约)${strToAddress}`
+    }
+    if (strFromAddress === MiningAddr) {
+      this.strFromAddress = `(合约)${strFromAddress}`
+    }
+  }
 }
 
 export function formatTxType(type) {

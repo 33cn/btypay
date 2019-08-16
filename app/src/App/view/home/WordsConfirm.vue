@@ -155,20 +155,17 @@ export default {
     .word-btn:active {
       color: #ffffff;
       background: #ff89a3;
-      opacity: 1;
     }
   }
   .mnemonic-select {
     margin-top: 15px;
-    padding: 0;
+    padding: 0 25px;
     .word-btn.el-button--primary {
-      background: #ff6a8b;
-      opacity: 1;
+      background: #FF6A8B;
       &:hover,
       &:active,
       &:focus {
-        background: #ff6a8b;
-        opacity: 1;
+        background: #FF6A8B;
       }
     }
   }
@@ -176,24 +173,25 @@ export default {
     margin-bottom: 10px;
   }
   .word-btn {
-    width: auto;
-    border-radius: 10px;
-    padding: 6px 6px;
-    font-size: 18px;
+    width: 61px;
+    line-height: 21px;
+    border-radius: 4px;
+    padding: 0;
+    font-size: 12px;
     border: none;
     font-family: MicrosoftYaHei;
     margin-bottom: 5px;
     margin-top: 5px;
-    margin-left: 10px;
+    margin-left: 16px;
     color: #ffffff;
-    background: #ff89a3;
-    opacity: 0.71;
+    background: #F8A7BC;
     &:hover {
       color: #ffffff;
-      background: #ff89a3;
-      opacity: 1;
+      background: #F8A7BC;
     }
-    
+    &:nth-child(4n + 1){
+      margin-left: 0;
+    }
   }
 }
 </style>

@@ -171,7 +171,6 @@ export default {
         height,
         index
       ).then(res => {
-        console.log(res.txs);
         let arr = res.txs.map(_ => {
           let blockHeight = _.height;
           let txIndex = _.index;
@@ -221,7 +220,7 @@ export default {
           );
         });
         console.log(arr)
-        // this.$store.commit("Records/LOADING_RECORDS", arr);
+        this.$store.commit("Records/LOADING_RECORDS", arr);
       });
     },
 

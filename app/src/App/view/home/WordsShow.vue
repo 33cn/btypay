@@ -87,14 +87,25 @@ export default {
       align-items: center;
       justify-content: center;
       .mnemonic {
-        width: 270px;
+        width: 300px;
         > span {
-          font-size: 18px;
-          line-height: 30px;
+          font-size: 12px;
+          line-height: 21px;
+          width: 61px;
           color: #ff6a8b;
           display: inline-block;
           text-align: center;
-          margin-right: 10px;
+          margin-right: 15px;
+          margin-top: 16px;
+          background: #334654;
+          border-radius: 4px;
+
+          &:nth-child(-n + 4){
+            margin-top: 0;
+          }
+          &:nth-child(4n){
+            margin-right: 0;
+          }
         }
       }
     }
