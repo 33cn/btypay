@@ -182,6 +182,7 @@ export default {
     },
     getNTxFirstTime(n) {
       return this.getNTxFromTx(n, 0, -1, 0).then(newTxList => {
+          console.log(newTxList)
         this.$store.commit(
           "Records/LOADING_RECORDS",
           newTxList ? newTxList : []
