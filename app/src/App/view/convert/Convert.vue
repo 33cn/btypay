@@ -53,7 +53,14 @@ export default {
           "parallelAsset",
         //   "mainNode",
         //   "parallelNode"
-        ])
+        ]),
+        percentFee(val){
+            // let value = parseFloat(val)
+            // let str=Number(value*100).toFixed(1);
+            // console.log(str)
+            // str+="%";
+            // return str;
+        },
     },
     data(){
         return{
@@ -66,6 +73,7 @@ export default {
                 amt:10.00
             },
             rate:10,//待删
+            fee:0.01,
         }
     },
     methods:{
@@ -117,9 +125,10 @@ export default {
                 if(this.currentAccount){
                     // B2G
                     if(this.convert == 'B2G'){
-                        this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal)).then(res=>{
+                        this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal*1e8)).then(res=>{
                             console.log(res)
                             this.isOperatoring = false;
+                            this.exportVal == 0;
                             this.$alert('请关注收款地址的资金变动。', '兑换成功', {
                                 confirmButtonText: '确认',
                                 closeOnClickModal:true,
@@ -129,10 +138,12 @@ export default {
                         }).catch(err=>{
                             this.isOperatoring = false;
                             console.log(err)
+                            // console.log(err.id)
+                            // console.log(typeof err)
                             this.$message.error('发生错误')
                         })
                     }else if(this.convert == 'G2B'){
-                        this.transferGameCoin2BTY1(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal)).then(res=>{
+                        this.transferGameCoin2BTY1(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal*1e8)).then(res=>{
                             console.log(res)
                             this.isOperatoring = false;
                             this.$alert('请关注收款地址的资金变动。', '兑换成功', {

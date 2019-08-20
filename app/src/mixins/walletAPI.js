@@ -156,6 +156,7 @@ export default {
       let url = this.currentMain.url
       this.getAddrBalance(addr, 'coins', url).then(res => {
         let payload = { amt: res[0].balance / 1e8 }
+        // console.log(payload)
         this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
       })
     },
@@ -165,6 +166,7 @@ export default {
       let url = this.currentParallel.url
       this.getAddrBalance(addr, 'coins', url).then(res => {
         let payload = { amt: res[0].balance / 1e8 }
+        // console.log(payload)
         this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
       })
     },

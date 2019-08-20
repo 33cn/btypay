@@ -76,6 +76,7 @@ export default {
   mounted() {
     this.refreshMainAsset();
     this.refreshParallelAsset();
+    this.$store.commit("Records/LOADING_RECORDS", []);//清空记录
   }
 };
 </script>

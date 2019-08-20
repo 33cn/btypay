@@ -59,12 +59,16 @@ export default {
         flag,
       }, url)
     },
-
-    queryTransaction(hash, url){
-      if (url) {
-        eventBus.$emit('node-change', url)
-      }
-      return this.$chain33Sdk.queryTransaction(hash, url)
+    // 构造交易组
+    CreateRawTxGroup(txs){
+      return this.$chain33Sdk.createRawTxGroup(txs)
     }
+
+    // queryTransaction(hash, url){
+    //   if (url) {
+    //     eventBus.$emit('node-change', url)
+    //   }
+    //   return this.$chain33Sdk.queryTransaction(hash, url)
+    // }
   }
 }

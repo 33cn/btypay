@@ -23,12 +23,12 @@
           <div>
             <p>{{item.hashShort}}</p>
             <!-- <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p> -->
-            <p>{{item.strTimeData}} &nbsp; 转账</p>
+            <p>{{item.strTimeData}} &nbsp; {{item.typeTy==TX_TYPE.SendToAddress?'转账':item.typeTy==TX_TYPE.RecvWithAddress?'收款':item.typeTy==TX_TYPE.convertLogo?'兑换':''}}</p>
           </div>
         </div>
         <p
           :class="item.amountChangeType == 'decrease' ?'transfer':'receipt'"
-        >{{item.type=='decrease'?'-':'+'}}{{item.strAmount}}</p>
+        >{{item.type=='decrease'?'-':'+'}}{{item.strAmount | numFilter}}</p>
       </li>
     </ul>
   </div>
@@ -68,7 +68,9 @@ export default {
   //         }
   //     }
   // },
-  mounted() {}
+  mounted() {
+    console.log(this.list)
+  }
 };
 </script>
 
