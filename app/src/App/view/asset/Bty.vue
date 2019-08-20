@@ -76,6 +76,7 @@ import Convert from "@/App/view/asset/record/Convert.vue";
 import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
+import txDataAPI from "@/mixins/txDataAPI.js";
 import { createNamespacedHelpers } from "vuex";
 import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
 import { timeFormat } from "@/libs/common";
@@ -84,7 +85,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
-  mixins: [walletAPI, chain33API],
+  mixins: [walletAPI, chain33API, txDataAPI],
   data() {
     return {
       tab: [
@@ -275,6 +276,9 @@ export default {
     let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
     this.getNTxFirstTime(1000);
+
+
+    this.loadDB()
 
     // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     
