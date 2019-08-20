@@ -13,8 +13,8 @@
                     <section class="up">
                         <!-- <p class="name">敢么（GMT）</p> -->
                         <div v-for="(item,i) in mainNodeList" :key="i" @click="setNode(item,'main')">
-                            <p>{{item.addr}}</p>
-                            <img v-if="item.addr==currentMainNode" src="../../../assets/images/selected.png" alt="">
+                            <p>{{item.url}}</p>
+                            <img v-if="item.url==currentMainNode.url" src="../../../assets/images/selected.png" alt="">
                             <p class="line"></p>
                         </div>
                     </section>
@@ -27,8 +27,8 @@
                     <section class="up">
                         <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')">
                             <p class="name">{{item.name}}（{{item.coin}}）</p>
-                            <p>{{item.addr}}</p>
-                            <img v-if="item.addr==currentParaNode" src="../../../assets/images/selected.png" alt="">
+                            <p>{{item.url}}</p>
+                            <img v-if="item.url==currentParaNode.url" src="../../../assets/images/selected.png" alt="">
                             <p class="line"></p>
                         </div>
                     </section>
@@ -53,8 +53,8 @@
                 <el-form-item label="代币名称" prop="coin">
                     <el-input v-model="form.coin" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="节点地址" prop="addr">
-                    <el-input v-model="form.addr" autocomplete="off"></el-input>
+                <el-form-item label="节点地址" prop="url">
+                    <el-input v-model="form.url" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -100,12 +100,12 @@ export default {
             form:{
                 name:'',
                 coin:'',
-                addr:''
+                url:''
             },
             rules:{
                 name: [{ required: true, message: "请输入平行链名称", trigger: "blur" }],
                 coin: [{ required: true, message: "请输入代币名称", trigger: "blur" }],
-                addr: [{ required: true, message: "请输入节点地址", trigger: "blur" }],
+                url: [{ required: true, message: "请输入节点地址", trigger: "blur" }],
             }
         }
     },
@@ -154,7 +154,7 @@ export default {
         },
         setNode(val,target){
             if(target == 'main'){
-                this.$store.commit('Account/UPDATE_CURRENT_MAIN',val.addr)
+                this.$store.commit('Account/UPDATE_CURRENT_MAIN',{url: val.url})
                 this.setChromeStorage('mainNode',val.addr).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
@@ -164,7 +164,7 @@ export default {
                     console.log(err)
                 })
             }else if(target == 'para'){
-                this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',val.addr)
+                this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',{url: val.url})
                 this.setChromeStorage('paraNode',val.addr).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')

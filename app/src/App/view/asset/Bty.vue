@@ -160,6 +160,9 @@ export default {
       this.pervScrollTop = scrollTop;
     },
 
+    getNewTx(){
+
+    },
     getNtxAfterLast(n) {
       if (this.noMoreTx) return;
       if (!this.lastTx) return;
@@ -181,7 +184,7 @@ export default {
         });
     },
     getNTxFirstTime(n) {
-      return this.getNTxFromTx(n, 0, -1, 0).then(newTxList => {
+      return this.getNTxFromTx(n, this.TX_DIRECTION.REAR, -1, 0).then(newTxList => {
         this.$store.commit(
           "Records/LOADING_RECORDS",
           newTxList ? newTxList : []
@@ -269,11 +272,11 @@ export default {
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    let url = this.coin == "bty" ? this.currentMain : this.currentParallel;
+    let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
-    this.getNTxFirstTime(10);
+    this.getNTxFirstTime(1000);
 
-    this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
+    // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     
   },
   beforeDestroy() {

@@ -3,21 +3,14 @@ const state = {
   seed: 'film finger voyage during alter chat sentence hundred connect riot doctor cash sing nut chat',//助记词
   accountMap: {},
   currentAccount: {
-    address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb", //15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J  // 1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT
+    // address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb", //15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J  // 1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT
+    address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",
     base58PrivateKey: "xprvA3b4zNsRHPgvzSydbftV9acbtKhNui8P69E7B7UNmJCKfWJZ5biLtcnHC9gYWRdGufyhehMcFcaPYpCgNRYznSCBv1gxxGd3xUYAABibgxQ",
     hexPrivateKey: "910010376d40528ef943df150f419f28d311e5d90751031f9951f1b6cfb5f8d3",
     index: 0,
     name: "创世地址"
   },
 
-
-  // string url
-  mainNode: [{ addr: 'http://172.16.103.18:8801' }],
-  currentMain: "http://172.16.103.18:8801",
-
-  // { string name, string coinName, string url }
-  parallelNode: [{ name: '金比特', coin: "GBT", addr: "http://172.16.103.24:8801" }],
-  currentParallel: "http://172.16.103.24:8801",
 
   mainAsset: {
     amt: 1,
@@ -28,6 +21,20 @@ const state = {
     amt: 1,
     price: 10
   },
+
+
+  // {string url, num height, num index}
+  mainNode: [{ url: 'http://172.16.103.18:8801' }],
+  // { string url, num height, num index }
+  currentMain: {url: "http://172.16.103.18:8801"},
+
+  // { string name, string coinName, string url, num height, num index }
+  parallelNode: [{ name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801" }],
+  // { string name, string coinName, string url, num height, num index }
+  currentParallel: {url: "http://172.16.103.24:8801"},
+
+  // libs.bitcoinAmount.TransactionsListEntry
+  TXS: []
 }
 
 const mutations = {
@@ -75,7 +82,9 @@ const mutations = {
     if (price) {
       state.parallelAsset.price = price
     }
-  }
+  },
+
+  
 }
 
 export default {
