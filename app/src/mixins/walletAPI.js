@@ -153,7 +153,7 @@ export default {
     /* 资产相关 -- start */
     refreshMainAsset() {
       let addr = this.currentAccount.address
-      let url = this.currentMain
+      let url = this.currentMain.url
       this.getAddrBalance(addr, 'coins', url).then(res => {
         let payload = { amt: res[0].balance / 1e8 }
         // console.log(payload)
@@ -163,14 +163,27 @@ export default {
 
     refreshParallelAsset() {
       let addr = this.currentAccount.address
-      let url = this.currentParallel
+      let url = this.currentParallel.url
       this.getAddrBalance(addr, 'coins', url).then(res => {
         let payload = { amt: res[0].balance / 1e8 }
         // console.log(payload)
         this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
       })
-    }
+    },
     /* 资产相关 -- end */
+
+    /* 交易记录相关 --start */
+    getTxList(name, index, n){
+      let keyName = "TXS." + name
+      this.getChromeStorage(keyName).then(res => {
+        
+      })
+    },
+
+    refreshTxList(){
+
+    }
+    /* 交易记录相关 --end */
 
   },
   filters: {

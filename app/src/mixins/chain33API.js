@@ -34,6 +34,8 @@ export default {
       return this.$chain33Sdk.sendTransaction(signedTx)
     },
 
+    
+
     getAddrBalance(addr, execer, url) {
       return this.$chain33Sdk.getAddrBalance([addr], execer, url)
     },

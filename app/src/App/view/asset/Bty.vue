@@ -76,6 +76,7 @@ import Convert from "@/App/view/asset/record/Convert.vue";
 import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
+import txDataAPI from "@/mixins/txDataAPI.js";
 import { createNamespacedHelpers } from "vuex";
 import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
 import { timeFormat } from "@/libs/common";
@@ -84,7 +85,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
-  mixins: [walletAPI, chain33API],
+  mixins: [walletAPI, chain33API, txDataAPI],
   data() {
     return {
       tab: [
@@ -160,6 +161,9 @@ export default {
       this.pervScrollTop = scrollTop;
     },
 
+    getNewTx(){
+
+    },
     getNtxAfterLast(n) {
       if (this.noMoreTx) return;
       if (!this.lastTx) return;
@@ -181,8 +185,7 @@ export default {
         });
     },
     getNTxFirstTime(n) {
-      return this.getNTxFromTx(n, 0, -1, 0).then(newTxList => {
-          console.log(newTxList)
+      return this.getNTxFromTx(n, this.TX_DIRECTION.REAR, -1, 0).then(newTxList => {
         this.$store.commit(
           "Records/LOADING_RECORDS",
           newTxList ? newTxList : []
@@ -270,11 +273,14 @@ export default {
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    let url = this.coin == "bty" ? this.currentMain : this.currentParallel;
+    let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
-    this.getNTxFirstTime(10);
+    this.getNTxFirstTime(1000);
 
-    this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
+
+    this.loadDB()
+
+    // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     
   },
   beforeDestroy() {
