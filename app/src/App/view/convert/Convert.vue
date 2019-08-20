@@ -128,7 +128,7 @@ export default {
                         this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal*1e8)).then(res=>{
                             console.log(res)
                             this.isOperatoring = false;
-                            this.exportVal == 0;
+                            this.exportVal = 0;
                             this.$alert('请关注收款地址的资金变动。', '兑换成功', {
                                 confirmButtonText: '确认',
                                 closeOnClickModal:true,
@@ -146,6 +146,7 @@ export default {
                         this.transferGameCoin2BTY1(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal*1e8)).then(res=>{
                             console.log(res)
                             this.isOperatoring = false;
+                            this.exportVal = 0;
                             this.$alert('请关注收款地址的资金变动。', '兑换成功', {
                                 confirmButtonText: '确认',
                                 closeOnClickModal:true,

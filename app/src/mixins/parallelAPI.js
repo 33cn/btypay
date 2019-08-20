@@ -69,7 +69,7 @@ export default {
         },
 
         transferBTY2GameCoin(privateKey, amount) {
-            const fee = 0
+            const fee = 0;
             const to = this.currentAccount.address
             let arr = [];
             return this.mainCoins2Paracross(privateKey, amount, fee).then(() => {
@@ -110,20 +110,20 @@ export default {
             })
         },
         parallel2Main(privateKey, to, amount) {
-            const execer = "user.p.fzmtest.paracross"
+            const execer = "user.p.gbttest.paracross"
             const actionName = "ParacrossAssetTransfer"
             const payload = {
-                execName: "user.p.fzmtest.paracross",
+                execName: "user.p.gbttest.paracross",
                 to: to,
                 amount: amount
             }
             return this.createTransaction(execer, actionName, payload)
         },
         parallelTrade2Paracross(privateKey, to, amount) {
-            const execer = "user.p.fzmtest.paracross"
+            const execer = "user.p.gbttest.paracross"
             const actionName = "Withdraw"
             const payload = {
-                execName: "user.p.fzmtest.trade",
+                execName: "user.p.gbttest.trade",
                 to: to,
                 amount: amount,
                 cointoken: "coins.bty"
@@ -135,12 +135,12 @@ export default {
             return this.createRawTradeSellMarketTx(buyID, boardlotCnt, fee);
         },
         parallelCoins2Trade(privateKey, to, amount, fee) {
-            const execName = "user.p.fzmtest.trade"
+            const execName = "user.p.gbttest.trade"
             const isWithdraw = false
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw)
         },
         parallelDice2Coins(privateKey, to, amount, fee) {
-            const execName = "user.p.fzmtest.user.wasm.dice"
+            const execName = "user.p.gbttest.user.wasm.dice"
             const isWithdraw = true
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
                 return sign.signRawTransaction(tx, privateKey)

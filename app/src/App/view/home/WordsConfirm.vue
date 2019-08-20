@@ -17,7 +17,7 @@
       </div>
 
       <div class="btn">
-        <div @click="createWallet">下一步</div>
+        <div @click="createWallet">确认</div>
       </div>
     </section>
   </div>
@@ -34,7 +34,7 @@ export default {
     return {
       seedCharts: [],
       seedChartsRandom: [],
-
+      isCreating:false,
       seedChartsSelected: []
     };
   },
