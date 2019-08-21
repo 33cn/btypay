@@ -9,7 +9,7 @@ export class DBHelper {
     TableName = ""
 
     constructor(dbName, tableName, tableData) {
-        this.delDB(dbName)
+        // this.delDB(dbName)
         this.DBName = dbName
         this.TableName = tableName
         let request = window.indexedDB.open(dbName)
@@ -33,8 +33,10 @@ export class DBHelper {
     createTable(tableName, tableData) {
         if (this.DB && !this.DB.objectStoreNames.contains(tableName) && tableData.keyPath) {
             let objectStore = this.DB.createObjectStore(tableName, tableData.keyPath)
-            for (let index of tableData.index) {
-                objectStore.createIndex(index.name, index.name, index.payload)
+            if (tableData.index) {
+                for (let index of tableData.index) {
+                    objectStore.createIndex(index.name, index.name, index.payload)
+                }
             }
             console.log("table create success")
         }
@@ -63,11 +65,13 @@ export class DBHelper {
         let request = objectStore.openCursor(boundKeyRange, "prev")
         request.onsuccess = e => {
             let cursor = e.target.result
+            let list = []
             if (cursor && num !== 0) {
-                callback(cursor.value)
+                list.push(cursor.value)
                 cursor.continue()
                 num--
             } else {
+                callback(list)
                 console.log("end")
             }
         }

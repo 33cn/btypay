@@ -8,16 +8,16 @@ const { mapState } = createNamespacedHelpers("Account");
 let isDev = process.env.NODE_ENV === 'development'
 
 const DB_NAME = "WalletDB"
-const TABLE_NAME = "txs"
+const TABLE_NAME = "txs.main"
 const TABLE_DATA = {
   keyPath: { 
     keyPath: 'id',
     autoIncrement: true
   },
-  index: [
-    {name: "name", payload: { unique: false }},
-    {name: "email", payload: { unique: true }},
-  ]
+  // index: [
+  //   {name: "name", payload: { unique: false }},
+  //   {name: "email", payload: { unique: true }},
+  // ]
 }
 const dbHelper = new DBHelper(DB_NAME, TABLE_NAME, TABLE_DATA)
 
@@ -186,15 +186,18 @@ export default {
     /* 资产相关 -- end */
 
     /* 交易记录相关 --start */
-    getTxList(id, num){
+    getTxList(id, num, coin){
       // dbHelper.insert({ name: '张三', age: 24, email: 'wangwu@example.com' })
+      let tableName = coin == "bty"? this.currentMain.tableName : this.currentParallel.tableName
+      dbHelper.TableName = tableName
+      dbHelper.createTable(tableName, TABLE_DATA)
       dbHelper.selectByPage(id, num, res => {
         console.log(res)
       })
     },
 
     refreshTxList(){
-      
+
     }
     /* 交易记录相关 --end */
 

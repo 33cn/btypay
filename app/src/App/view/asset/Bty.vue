@@ -276,7 +276,7 @@ export default {
     this.$chain33Sdk.httpProvider.setUrl(url);
     this.getNTxFirstTime(1000);
 
-    this.getTxList(2, 10)
+    this.getTxList(2, 10, this.coin)
 
     // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     
