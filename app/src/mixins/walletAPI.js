@@ -1,12 +1,25 @@
 import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
 import { createNamespacedHelpers } from "vuex";
+import { DBHelper } from "@/libs/dbHelper"
 
 const { mapState } = createNamespacedHelpers("Account");
 
 let isDev = process.env.NODE_ENV === 'development'
-// console.log({isDev})
 
+const DB_NAME = "WalletDB"
+const TABLE_NAME = "txs"
+const TABLE_DATA = {
+  keyPath: { 
+    keyPath: 'id',
+    autoIncrement: true
+  },
+  index: [
+    {name: "name", payload: { unique: false }},
+    {name: "email", payload: { unique: true }},
+  ]
+}
+const dbHelper = new DBHelper(DB_NAME, TABLE_NAME, TABLE_DATA)
 
 function getBackgroundPage() {
   return new Promise((resolve) => {
@@ -175,8 +188,9 @@ export default {
     /* 交易记录相关 --start */
     getTxList(name, index, n){
       let keyName = "TXS." + name
-      this.getChromeStorage(keyName).then(res => {
-        
+      // dbHelper.insert({ name: '张三', age: 24, email: 'wangwu@example.com' })
+      dbHelper.select( res => {
+        console.log(res)
       })
     },
 
