@@ -85,7 +85,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
-  mixins: [walletAPI, chain33API, txDataAPI],
+  mixins: [walletAPI, chain33API],
   data() {
     return {
       tab: [
@@ -278,7 +278,7 @@ export default {
     this.getNTxFirstTime(1000);
 
 
-    this.loadDB()
+    // this.loadDB()
 
     // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
     

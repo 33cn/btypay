@@ -138,7 +138,7 @@ export default {
                 this.mainIsInput = true;
                 return
             }
-            this.$store.commit("Account/UPDATE_MAIN_NODE", {'addr':this.mainData});
+            this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData});
             // let arr = this.mainNodeList.concat([{'addr':this.mainData}])
             this.setChromeStorage('mainNodeList',this.mainNode).then(res=>{
               if(res=='success'){
@@ -155,7 +155,7 @@ export default {
         setNode(val,target){
             if(target == 'main'){
                 this.$store.commit('Account/UPDATE_CURRENT_MAIN',{url: val.url})
-                this.setChromeStorage('mainNode',val.addr).then(res=>{
+                this.setChromeStorage('mainNode',{url:val.url}).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getMainNode();//更新视图
@@ -165,7 +165,7 @@ export default {
                 })
             }else if(target == 'para'){
                 this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',{url: val.url})
-                this.setChromeStorage('paraNode',val.addr).then(res=>{
+                this.setChromeStorage('paraNode',{url:val.url}).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getParaNode();//更新视图

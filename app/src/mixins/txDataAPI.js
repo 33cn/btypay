@@ -1,5 +1,5 @@
 import { createNamespacedHelpers } from "vuex";
-import sq3 from "sqlite3";
+// import sq3 from "sqlite3";
 
 const { mapState } = createNamespacedHelpers("Account");
 
