@@ -186,16 +186,15 @@ export default {
     /* 资产相关 -- end */
 
     /* 交易记录相关 --start */
-    getTxList(name, index, n){
-      let keyName = "TXS." + name
+    getTxList(id, num){
       // dbHelper.insert({ name: '张三', age: 24, email: 'wangwu@example.com' })
-      dbHelper.select( res => {
+      dbHelper.selectByPage(id, num, res => {
         console.log(res)
       })
     },
 
     refreshTxList(){
-
+      
     }
     /* 交易记录相关 --end */
 

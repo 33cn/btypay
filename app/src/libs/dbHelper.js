@@ -9,7 +9,7 @@ export class DBHelper {
     TableName = ""
 
     constructor(dbName, tableName, tableData) {
-        // this.delDB(dbName)
+        this.delDB(dbName)
         this.DBName = dbName
         this.TableName = tableName
         let request = window.indexedDB.open(dbName)
@@ -54,16 +54,26 @@ export class DBHelper {
         }
     }
 
-    select(callback) {
+    selectByPage(id, num, callback) {
+        let boundKeyRange = null
+        if (id !== 0) {
+            boundKeyRange = IDBKeyRange.upperBound(id);
+        }
         let objectStore = this.DB.transaction([this.TableName]).objectStore(this.TableName)
-        let request = objectStore.get(3)
-
+        let request = objectStore.openCursor(boundKeyRange, "prev")
         request.onsuccess = e => {
-            callback(request.result)
+            let cursor = e.target.result
+            if (cursor && num !== 0) {
+                callback(cursor.value)
+                cursor.continue()
+                num--
+            } else {
+                console.log("end")
+            }
         }
 
         request.onerror = e => {
-            console.log("select error")
+            console.log("cursor error")
         }
     }
 
