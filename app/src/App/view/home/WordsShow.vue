@@ -118,12 +118,13 @@ export default {
       font-size: 16.8px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
-      padding-top: 4px;
+      // padding-top: 4px;
       a {
         width: 100%;
+        height: 100%;
         display: inline-block;
         color: rgba(255, 255, 255, 1) !important;
-        margin-top: 3px;
+        padding-top: 11px;
       }
     }
   }

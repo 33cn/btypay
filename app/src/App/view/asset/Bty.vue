@@ -17,7 +17,7 @@
       <div class="address">
         <p>{{currentAccount.address}}</p>
         <img
-          @click="copyHandle($event, 'currentAccount.address')"
+          @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
           alt
         />
@@ -33,7 +33,7 @@
       <div class="address">
         <p>{{currentAccount.address}}</p>
         <img
-          @click="copyHandle($event, 'currentAccount.address')"
+          @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
           alt
         />

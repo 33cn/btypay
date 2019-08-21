@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(()=>{
-  // // alert('Hello, World!')
+  // // alert('BTY钱包插件安装好啦！')
   // console.log('hello')
   chrome.storage.local.set({['key']: 'fanrui'}, () => {
     // console.log('value')
