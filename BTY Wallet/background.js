@@ -1,6 +1,12 @@
 chrome.runtime.onInstalled.addListener(()=>{
   // // alert('BTY钱包插件安装好啦！')
   // console.log('hello')
+  chrome.notifications.create(null, {
+    type: 'basic',
+    iconUrl: 'icons/logo.png',
+    title: 'BTY钱包插件',
+    message: 'BTY钱包插件安装成功，快去使用吧！'
+  });
   chrome.storage.local.set({['key']: 'fanrui'}, () => {
     // console.log('value')
   })
