@@ -186,13 +186,13 @@ export default {
     /* 资产相关 -- end */
 
     /* 交易记录相关 --start */
-    getTxCursor(flag, callback) {
-      let cNode = this.currentNode(coin)
-      let symbol = cNode.coin
-      dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
+    getTxCursor(coin, flag, callback) {
+      // let cNode = this.currentNode(coin)
+      // let symbol = cNode.coin
+      // dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
     },
 
-    refreshTxList(coin) {
+    refreshTxList(coin, flag, callback) {
       let cNode = this.currentNode(coin)
       let symbol = cNode.coin
 
@@ -207,8 +207,8 @@ export default {
       ).then(res => {
 
         if (res.txs) {
-          for (let tx of res.txs) {
 
+          for (let tx of res.txs) {
             // 过滤
             if (tx.tx.execer == "coins") {
               let symbol = symbol
@@ -266,6 +266,8 @@ export default {
               continue
             }
           }
+
+          dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
         }
       })
 

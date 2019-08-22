@@ -53,20 +53,20 @@ const mutations = {
   UPDATE_MAIN_NODE(state, payload) {
     state.mainNode.push(payload);
   },
-  UPDATE_CURRENT_MAIN(state, {url, height, index, tableName}) {
+  UPDATE_CURRENT_MAIN(state, {url, height, index, coin}) {
     url && (state.currentMain.url = url)
     height && (state.currentMain.height = height)
     index && (state.currentMain.index = index)
-    tableName && (state.currentMain.tableName = tableName)
+    coin && (state.currentMain.coin = coin)
   },
   UPDATE_PARALLEL_NODE(state, payload) {
     state.parallelNode.push(payload)
   },
-  UPDATE_CURRENT_PARALLEL(state, {url, height, index, tableName}) {
+  UPDATE_CURRENT_PARALLEL(state, {url, height, index, coin}) {
     url && (state.currentMain.url = url)
     height && (state.currentMain.height = height)
     index && (state.currentMain.index = index)
-    tableName && (state.currentMain.tableName = tableName)
+    coin && (state.currentMain.coin = coin)
   },
 
   UPDATE_MAIN_ASSET(state, { amt, price }) {

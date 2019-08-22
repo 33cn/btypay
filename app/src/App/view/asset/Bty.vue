@@ -291,7 +291,9 @@ export default {
     // this.getNTxFirstTime(0);
 
     // this.getTxList(2, 10, this.coin)
-    // this.refreshTxList(this.coin)
+    // this.refreshTxList(this.coin, 2, cursor => {
+
+    // })
 
     // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
   },
