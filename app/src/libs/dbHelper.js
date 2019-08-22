@@ -35,16 +35,16 @@ export class DBHelper {
             let objectStore = this.DB.createObjectStore(tableName, tableData.keyPath)
             if (tableData.index) {
                 for (let index of tableData.index) {
-                    objectStore.createIndex(index.name, index.name, index.payload)
+                    objectStore.createIndex(index.name, index.key, index.payload)
                 }
             }
             console.log("table create success")
         }
     }
 
-    insert(data) {
+    insert(tableName, data) {
         if (this.DB) {
-            let request = this.DB.transaction([this.TableName], 'readwrite').objectStore(this.TableName).add(data)
+            let request = this.DB.transaction([tableName], 'readwrite').objectStore(tableName).add(data)
 
             request.onsuccess = e => {
                 console.log("insert success")
@@ -56,12 +56,12 @@ export class DBHelper {
         }
     }
 
-    selectByPage(id, num, callback) {
+    selectByPage(tableName, id, num, callback) {
         let boundKeyRange = null
         if (id !== 0) {
             boundKeyRange = IDBKeyRange.upperBound(id);
         }
-        let objectStore = this.DB.transaction([this.TableName]).objectStore(this.TableName)
+        let objectStore = this.DB.transaction([tableName]).objectStore(tableName)
         let request = objectStore.openCursor(boundKeyRange, "prev")
         request.onsuccess = e => {
             let cursor = e.target.result
@@ -78,6 +78,20 @@ export class DBHelper {
 
         request.onerror = e => {
             console.log("cursor error")
+        }
+    }
+
+    getCursorByIndex(tableName, indexName, indexVal, callback) {
+        let objectStore = this.DB.transaction([tableName]).objectStore(tableName)
+        let index = objectStore.index(indexName)
+        if (index) {
+            let request = index.openCursor(IDBKeyRange.only(indexVal), "prev")
+            request.onsuccess = e => {
+                let cursor = e.target.result
+                if (cursor) {
+                    callback(cursor)
+                }
+            }
         }
     }
 
