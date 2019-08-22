@@ -42,10 +42,10 @@
 
     <section :class="coin=='bty'?'btn bty':'btn game'">
       <p>
-        <router-link :to="{ name: 'transfer'}">转账</router-link>
+        <router-link :to="{ path: '/coin/transfer?coin='+coin}">转账</router-link>
       </p>
       <p>
-        <router-link :to="{ name: 'receipt'}">收款</router-link>
+        <router-link :to="{ path: '/coin/receipt?coin='+coin}">收款</router-link>
       </p>
       <p v-if="coin=='game'">
         <router-link :to="{ name: 'convert'}">兑换</router-link>

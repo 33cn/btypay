@@ -1,13 +1,13 @@
 <template>
     <div class="receipt_container">
-        <asset-back title='BTY收款'></asset-back>
+        <asset-back :title='coin=="bty"?"BTY收款":"GAME收款"'></asset-back>
         <section class="content">
             <canvas id="qrcode"></canvas>
             <div>
                 <p class="copy" >{{currentAccount.address}}</p>
                 <img @click="copyHandle($event, currentAccount.address)" src="../../../assets/images/copy.png" alt="">
             </div>
-            <p>注意：该地址仅支持BTY收款，请勿向该地址充值其他币种。</p>
+            <p>注意：该地址仅支持{{coin=='bty'?'BTY':'GAME'}}收款，请勿向该地址充值其他币种。</p>
         </section>
     </div>
 </template>
@@ -22,6 +22,9 @@ export default {
     components:{AssetBack},
     computed:{
         ...mapState(['accountMap', 'currentAccount']),
+    },
+    data(){
+        coin:""
     },
     methods:{
         copyHandle(event,text){
@@ -39,6 +42,7 @@ export default {
         }
     },
     mounted(){
+        this.coin = this.$route.query.coin;
         let value = this.currentAccount?this.currentAccount.address:'出错了';
         new QRious({
             element: document.querySelector('#qrcode'),

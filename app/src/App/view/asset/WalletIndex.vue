@@ -32,7 +32,13 @@
     <!-- <section class="btn">
       <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
     </section> -->
-  </div>
+    <!-- <div @contextmenu="showMenu" style="width: 100px;height: 100px;margin: 20px;background: red;">
+      <vue-context-menu :contextMenuData="contextMenuData"
+          @savedata="savedata"
+          @newdata="newdata"></vue-context-menu>
+      </div> -->
+    
+    </div>
 </template>
 
 <script>
@@ -48,7 +54,11 @@ export default {
   components: { HomeHeader },
   data() {
     return {
-
+      delMenu:{
+        left:0,
+        top:0
+      },
+      menuIsShow:false
     };
   },
   computed: {
@@ -70,7 +80,18 @@ export default {
       this.$store.commit('Records/ASSET_TYPE','game')
       this.$router.push({ path: "/coin?coin=game" });
     },
+    delHandle(){
+      this.menuIsShow = false
+    },
     init() {
+    },
+    
+    show1(e){
+      console.log(e)
+      this.delMenu.left = e.offsetX;
+      this.delMenu.top = document.documentElement.scrollTop + e.clientY;
+      this.menuIsShow = true;
+      // alert(1)
     }
   },
   mounted() {
@@ -172,5 +193,6 @@ export default {
       margin-top: 9px;
     }
   }
+  
 }
 </style>

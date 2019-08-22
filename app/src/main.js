@@ -13,9 +13,11 @@ import SvgIcon from './components/SvgIcon'
 import walletAPI from './mixins/walletAPI'
 import BtyBaseSdk from '@33cn/chain33-rpc-api'
 import('./libs/prototype')
+import VueContextMenu from 'vue-contextmenu'
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
+Vue.use(VueContextMenu)
 
 Vue.use({
   install: (Vue) => {

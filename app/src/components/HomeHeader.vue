@@ -2,12 +2,12 @@
     <div class="homeHeader_container">
         <p><img src="../assets/images/logo.png" alt=""></p>
         <p>比特元钱包</p>
+        <!-- <input type="button" value="按钮1" @contextmenu.prevent="show1()">  -->
     </div>
 </template>
 
 <script>
 export default {
-
 }
 </script>
 

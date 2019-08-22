@@ -60,7 +60,7 @@ export default {
               if(res=='success'){
                 this.$router.go(-1)
               }
-          })
+            })
           })
         } else {
           console.log("error submit!!");

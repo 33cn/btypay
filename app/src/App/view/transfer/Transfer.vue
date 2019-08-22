@@ -1,6 +1,6 @@
 <template>
   <div class="transfer_container">
-    <asset-back title="BTY转账"></asset-back>
+    <asset-back :title="coin=='bty'?'BTY转账':'GAME转账'"></asset-back>
     <el-form
       :model="form"
       :rules="rules"
@@ -9,24 +9,24 @@
     >
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
-        <p class="balance">余额{{mainAsset.amt| numFilter}}BTY</p>
+        <p class="balance">余额{{mainAsset.amt| numFilter}}{{coin=='bty'?'BTY':'GAME'}}</p>
         <p class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="form.address" placeholder='请输入BTY地址' auto-complete="off"></el-input>
-        <img src="../../../assets/images/scan.png" alt="" class="scan">
-        <p class="line"></p>
+        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入GAME地址"' auto-complete="off"></el-input>
+        <!-- <img src="../../../assets/images/scan.png" alt="" class="scan">
+        <p class="line"></p> -->
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
       </el-form-item>
       <el-form-item label="备注" prop="comment">
         <el-input v-model.number="form.comment" placeholder='选填'></el-input>
         <div class="fee">
             <p>矿工费</p>
-            <p>0.001BTY</p>
+            <p>0.001{{coin=='bty'?'BTY':'GAME'}}</p>
         </div>
       </el-form-item>
     </el-form>
-    <p @click="submitForm('ruleForm')">创建{{isCreating?'...':''}}</p>
+    <p @click="submitForm('ruleForm')">转账{{isCreating?'...':''}}</p>
   </div>
 </template>
 
@@ -71,6 +71,7 @@ export default {
     }
     return {
       isCreating:false,
+      coin:'',
       form: {
         num: null,
         address: "",
@@ -142,8 +143,9 @@ export default {
     ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset"]),
   },
   mounted(){
+    this.coin = this.$route.query.coin;
     this.form.address = this.$route.query.address || '';
-    console.log(this.currentAccount)
+    // console.log(this.currentAccount)
     this.refreshMainAsset();
     // if (this.currentAccount) {
     //   this.getBalance(this.currentAccount.address)
@@ -180,10 +182,10 @@ export default {
                   border:1px solid rgba(232, 235, 249, 1);
                   border-radius:10px;
                   font-size:14px;
-                    font-family:MicrosoftYaHei;
-                    font-weight:400;
-                    // color:rgba(206,213,232,1);
-                    line-height:1;
+                  font-family:MicrosoftYaHei;
+                  font-weight:400;
+                  // color:rgba(206,213,232,1);
+                  line-height:1;
                   ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
 		                color:rgba(206,213,232,1);
 		              }
@@ -248,6 +250,11 @@ export default {
                     }
                   }
               }
+          }
+          &:nth-of-type(2){
+            input{
+              padding-right: 45px;
+            }
           }
       }
   }
