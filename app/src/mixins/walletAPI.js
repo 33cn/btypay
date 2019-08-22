@@ -2,22 +2,22 @@ import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
 import { createNamespacedHelpers } from "vuex";
 import { DBHelper } from "@/libs/dbHelper"
+import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
 
 const { mapState } = createNamespacedHelpers("Account");
 
 let isDev = process.env.NODE_ENV === 'development'
 
 const DB_NAME = "WalletDB"
-const TABLE_NAME = "txs.main"
+const TABLE_NAME = "txs"
 const TABLE_DATA = {
-  keyPath: { 
+  keyPath: {
     keyPath: 'id',
     autoIncrement: true
   },
-  // index: [
-  //   {name: "name", payload: { unique: false }},
-  //   {name: "email", payload: { unique: true }},
-  // ]
+  index: [
+    { name: "symbol_typeTy", key: ['symbol', 'typeTy'], payload: { unique: false } },
+  ]
 }
 const dbHelper = new DBHelper(DB_NAME, TABLE_NAME, TABLE_DATA)
 
@@ -186,19 +186,95 @@ export default {
     /* 资产相关 -- end */
 
     /* 交易记录相关 --start */
-    getTxList(id, num, coin){
-      // dbHelper.insert({ name: '张三', age: 24, email: 'wangwu@example.com' })
-      let tableName = coin == "bty"? this.currentMain.tableName : this.currentParallel.tableName
-      dbHelper.TableName = tableName
-      dbHelper.createTable(tableName, TABLE_DATA)
-      dbHelper.selectByPage(id, num, res => {
-        console.log(res)
-      })
+    getTxCursor(flag, callback) {
+      let cNode = this.currentNode(coin)
+      let symbol = cNode.coin
+      dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
     },
 
-    refreshTxList(){
+    refreshTxList(coin) {
+      let cNode = this.currentNode(coin)
+      let symbol = cNode.coin
 
-    }
+      // 拉取数据
+      this.getAddrTx(
+        this.currentAccount.address,
+        this.TX_FLAG.ALL,
+        0,
+        this.TX_DIRECTION.REAR,
+        cNode.height,
+        cNode.index
+      ).then(res => {
+
+        if (res.txs) {
+          for (let tx of res.txs) {
+
+            // 过滤
+            if (tx.tx.execer == "coins") {
+              let symbol = symbol
+              let blockHeight = tx.height;
+              let txIndex = tx.index;
+              let amount = tx.amount;
+              let strToAddr = tx.tx.to;
+              let strFromAddr = tx.fromAddr;
+              let strTxHash = tx.txHash;
+              let nTime = tx.blockTime;
+              let nFee = tx.tx.fee;
+              let strExecer = tx.tx.execer;
+              let strActionname = tx.actionName;
+              let nTy = tx.receipt.ty;
+
+              let strNote = "";
+              if (tx.tx && tx.tx.payload && tx.tx.Value && tx.tx.Value.Transfer) {
+                strNote = tx.tx.payload.Value.Transfer.note;
+              }
+
+              let strError = "unKnow";
+              if (nTy === 1) {
+                let errors = tx.receipt.logs;
+                if (errors) {
+                  for (let err of errors) {
+                    if (err.ty === 1) {
+                      strError = err.log;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              let txEntry = new TransactionsListEntry(
+                symbol,
+                this.currentAccount.address,
+                blockHeight,
+                txIndex,
+                nTime,
+                strToAddr,
+                strFromAddr,
+                strTxHash,
+                amount,
+                nFee,
+                strExecer,
+                strActionname,
+                nTy,
+                strNote,
+                strError
+              )
+
+              // 存储
+              dbHelper.insert(TABLE_NAME, txEntry)
+            } else {
+              continue
+            }
+          }
+        }
+      })
+
+
+
+    },
+    currentNode(coin) {
+      return coin == "bty" ? this.currentMain : this.currentParallel
+    },
     /* 交易记录相关 --end */
 
   },

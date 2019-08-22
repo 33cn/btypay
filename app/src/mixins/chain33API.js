@@ -8,8 +8,8 @@ export default {
         RECV: 2
       },
       TX_DIRECTION: {
-        REAR: 0,
-        FRONT: 1
+        FRONT: 0,
+        REAR: 1
       }
     }
   },
@@ -64,11 +64,5 @@ export default {
       return this.$chain33Sdk.createRawTxGroup(txs)
     }
 
-    // queryTransaction(hash, url){
-    //   if (url) {
-    //     eventBus.$emit('node-change', url)
-    //   }
-    //   return this.$chain33Sdk.queryTransaction(hash, url)
-    // }
   }
 }

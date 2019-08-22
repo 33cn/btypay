@@ -1,6 +1,7 @@
 <template>
   <div class="bty_container">
     <home-header></home-header>
+    <el-button @click="showDbData">读取数据</el-button>
     <section class="header">
       <router-link :to="{ name: 'WalletIndex'}">
         <img src="../../../assets/images/back.png" alt />
@@ -154,20 +155,23 @@ export default {
         // near the bottom
         if (scrollBottom <= 0 && !this.nextIsLoading) {
           // do something
-          this.getNtxAfterLast(10);
+          // this.getNtxAfterLast(10);
         }
       }
       this.pervScrollTop = scrollTop;
     },
 
-    getNewTx(){
-
-    },
+    getNewTx() {},
     getNtxAfterLast(n) {
       if (this.noMoreTx) return;
       if (!this.lastTx) return;
       this.nextIsLoading = true;
-      this.getNTxFromTx(n, 0, this.lastTx.height, this.lastTx.txIndex)
+      this.getNTxFromTx(
+        n,
+        this.TX_DIRECTION.REAR,
+        this.lastTx.height,
+        this.lastTx.txIndex
+      )
         .then(newTxList => {
           this.nextIsLoading = false;
           if (newTxList.length == 0) return;
@@ -184,12 +188,14 @@ export default {
         });
     },
     getNTxFirstTime(n) {
-      return this.getNTxFromTx(n, this.TX_DIRECTION.REAR, -1, 0).then(newTxList => {
-        this.$store.commit(
-          "Records/LOADING_RECORDS",
-          newTxList ? newTxList : []
-        );
-      });
+      return this.getNTxFromTx(n, this.TX_DIRECTION.REAR, 0, 0).then(
+        newTxList => {
+          this.$store.commit(
+            "Records/LOADING_RECORDS",
+            newTxList ? newTxList : []
+          );
+        }
+      );
     },
     getNTxFromTx(n, direction, height, index) {
       return this.getAddrTx(
@@ -267,19 +273,27 @@ export default {
           this.$message.success(msg);
         }
       });
+    },
+
+    showDbData(){
+      this.getTxCursor(2, cursor => {
+        console.log(cursor.value);
+        cursor.continue();
+      });
     }
   },
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
+    let url =
+      this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
-    this.getNTxFirstTime(1000);
+    // this.getNTxFirstTime(0);
 
-    this.getTxList(2, 10, this.coin)
+    // this.getTxList(2, 10, this.coin)
+    // this.refreshTxList(this.coin)
 
     // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
-    
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);
@@ -335,7 +349,7 @@ export default {
         align-items: center;
         p {
           font-size: 19px;
-        //   height: 18px;
+          //   height: 18px;
           font-family: MicrosoftYaHei;
           font-weight: 400;
           color: rgba(22, 42, 84, 1);

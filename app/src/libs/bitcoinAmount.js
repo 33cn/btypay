@@ -14,7 +14,13 @@ export const TransactionsType = {
   BackDecl: 7,
   TyFailure: 8,
   OpenTicket: 9,
-  CloseTicket: 10
+  CloseTicket: 10,
+}
+
+export const TransactionFlag = {
+  Send: 1,
+  Recv: 2,
+  Exchange: 3,
 }
 
 // 挖矿合约地址
@@ -48,9 +54,10 @@ export class TransactionsListEntry {
   amountChangeType = 'decrease'
   strToAddrLabel = ''
   strFromAddrLabel = ''
-  constructor(myAddress, blockHeight, txIndex, nTimeData, strToAddress, strFromAddress, strHash, nAmount, nFee,
+  constructor(symbol, myAddress, blockHeight, txIndex, nTimeData, strToAddress, strFromAddress, strHash, nAmount, nFee,
     strExecer, strActionname, nReceiptTy, strNote, strError) {
     //
+    this.symbol = symbol
     this.height = blockHeight
     this.txIndex = txIndex
     this.hash = strHash
@@ -66,7 +73,6 @@ export class TransactionsListEntry {
     this.actionName = strActionname
     this.fee = Number(nFee).divide(Math.pow(10, 8)).toFixed(4)
     this.strError = strError
-
 
     let npos = strExecer.indexOf('user.')
     if (nReceiptTy !== 2 && strExecer !== 'none' && npos !== 0) {
