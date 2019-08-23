@@ -20,7 +20,7 @@ const state = {
     price: 10
   },
   parallelAsset: {
-    name: "GAME",
+    name: "GBT",
     amt: 1,
     price: 10
   },

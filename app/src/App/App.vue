@@ -12,7 +12,7 @@ export default {
   mounted() {
     eventBus.$on('node-change', (val) => {
       this.$chain33Sdk.httpProvider.setUrl(val) 
-      eventBus.$emit('provider-changed')
+      // eventBus.$emit('provider-changed')
     })
     window.chrome.storage.local.set({ 'mainNodeList': [{url:'http://172.16.103.18:8801'}] }, () => {})
     window.chrome.storage.local.set({ 'parallelNodeList': [{name:'金比特',coin:"GBT",url:"http://172.16.103.24:8801"}] }, () => {})

@@ -32,11 +32,6 @@
     <!-- <section class="btn">
       <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
     </section> -->
-    <!-- <div @contextmenu="showMenu" style="width: 100px;height: 100px;margin: 20px;background: red;">
-      <vue-context-menu :contextMenuData="contextMenuData"
-          @savedata="savedata"
-          @newdata="newdata"></vue-context-menu>
-      </div> -->
     
     </div>
 </template>
@@ -46,6 +41,7 @@ import HomeHeader from "@/components/HomeHeader.vue";
 import { createNamespacedHelpers } from "vuex";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
+import {eventBus} from '@/libs/eventBus'
 
 const { mapState } = createNamespacedHelpers("Account");
 
@@ -74,10 +70,18 @@ export default {
   methods: {
     toBty() {
       this.$store.commit('Records/ASSET_TYPE','bty')
+      // if(this.currentMain && this.currentMain.url){
+      //   console.log(this.currentMain)
+      //   eventBus.$emit('node-change', this.currentMain.url)
+      // }
       this.$router.push({ path: "/coin?coin=bty" });
     },
     toGame() {
       this.$store.commit('Records/ASSET_TYPE','game')
+      // if(this.currentParallel && this.currentParallel.url){
+      //   console.log(this.currentParallel)
+      //   eventBus.$emit('node-change', this.currentParallel.url)
+      // }
       this.$router.push({ path: "/coin?coin=game" });
     },
     delHandle(){
@@ -85,14 +89,6 @@ export default {
     },
     init() {
     },
-    
-    show1(e){
-      console.log(e)
-      this.delMenu.left = e.offsetX;
-      this.delMenu.top = document.documentElement.scrollTop + e.clientY;
-      this.menuIsShow = true;
-      // alert(1)
-    }
   },
   mounted() {
     this.refreshMainAsset();

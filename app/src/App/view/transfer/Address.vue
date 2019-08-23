@@ -47,7 +47,7 @@ export default {
     selectedAddress(ad) {
       console.log(ad);
       // this.$router.push({ path: "/coin?coin=bty" });
-      this.$router.push({ path: "/coin/transfer?address=" + ad });
+      this.$router.push({ path: "/coin/transfer?address=" + ad});
     },
     mouseOverHandle() {
       console.log("rrrrrrr");
