@@ -69,6 +69,7 @@
 import HomeHeader from "@/components/HomeHeader.vue";
 import walletAPI from '@/mixins/walletAPI.js'
 import { createNamespacedHelpers } from "vuex";
+import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 
 const { mapState } = createNamespacedHelpers("Account");
 
@@ -117,7 +118,7 @@ export default {
                   let obj = JSON.parse(JSON.stringify(this.form))
                   this.$store.commit("Account/UPDATE_PARALLEL_NODE", obj);
                 //   let arr = this.paraNodeList.concat([obj])
-                  this.setChromeStorage('parallelNodeList',this.parallelNode).then(res=>{
+                  setChromeStorage('parallelNodeList',this.parallelNode).then(res=>{
                     if(res=='success'){
                         // this.paraNodeList = this.mainNode;
                         this.$message.success('平行链节点添加成功');
@@ -140,7 +141,7 @@ export default {
             }
             this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData});
             // let arr = this.mainNodeList.concat([{'addr':this.mainData}])
-            this.setChromeStorage('mainNodeList',this.mainNode).then(res=>{
+            setChromeStorage('mainNodeList',this.mainNode).then(res=>{
               if(res=='success'){
                 // this.mainNodeList = this.mainNode;
                 this.$message.success('主链节点添加成功');
@@ -155,7 +156,7 @@ export default {
         setNode(val,target){
             if(target == 'main'){
                 this.$store.commit('Account/UPDATE_CURRENT_MAIN',{url: val.url})
-                this.setChromeStorage('mainNode',{url:val.url}).then(res=>{
+                setChromeStorage('mainNode',{url:val.url}).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getMainNode();//更新视图
@@ -165,7 +166,7 @@ export default {
                 })
             }else if(target == 'para'){
                 this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',{url: val.url})
-                this.setChromeStorage('paraNode',{url:val.url}).then(res=>{
+                setChromeStorage('paraNode',{url:val.url}).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getParaNode();//更新视图
@@ -177,13 +178,13 @@ export default {
             
         },
         getMainNode(){
-            this.getChromeStorage('mainNodeList').then(res=>{
+            getChromeStorage('mainNodeList').then(res=>{
                 console.log(res)
                 if(res.mainNodeList){
                     this.mainNodeList = res.mainNodeList;
                 }
             })
-            this.getChromeStorage('mainNode').then(res=>{
+            getChromeStorage('mainNode').then(res=>{
                 console.log(res)
                 if(res.mainNode){
                     this.currentMainNode = res.mainNode;
@@ -192,13 +193,13 @@ export default {
             
         },
         getParaNode(){
-            this.getChromeStorage('parallelNodeList').then(res=>{
+            getChromeStorage('parallelNodeList').then(res=>{
                 console.log(res)
                 if(res.parallelNodeList){
                     this.paraNodeList = res.parallelNodeList;
                 }
             })
-            this.getChromeStorage('paraNode').then(res=>{
+            getChromeStorage('paraNode').then(res=>{
                 console.log(res)
                 if(res.paraNode){
                     this.currentParaNode = res.paraNode;

@@ -28,6 +28,7 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from '@/mixins/walletAPI.js'
+import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 export default {
   mixins: [walletAPI],
   components: { AssetBack },
@@ -48,7 +49,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log("submit!");
-          this.getChromeStorage('address').then(res=>{
+          getChromeStorage('address').then(res=>{
             // console.log(res)
             let arr = [];
             if(res.address){
@@ -56,7 +57,7 @@ export default {
             }else{
               arr = [this.ruleForm]
             }
-            this.setChromeStorage('address',arr).then(res=>{
+            setChromeStorage('address',arr).then(res=>{
               if(res=='success'){
                 this.$router.go(-1)
               }

@@ -2,7 +2,8 @@ import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
 import { createNamespacedHelpers } from "vuex";
 import { DBHelper } from "@/libs/dbHelper"
-import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
+import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount";
+import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 
 const { mapState } = createNamespacedHelpers("Account");
 
@@ -43,20 +44,20 @@ export default {
     ])
   },
   methods: {
-    getChromeStorage(keys) {
-      return new Promise(resolve => {
-        window.chrome.storage.local.get(keys, (result) => {
-          resolve(result)
-        })
-      })
-    },
-    setChromeStorage(key, value) {
-      return new Promise(resolve => {
-        window.chrome.storage.local.set({ [key]: value }, () => {
-          resolve('success')
-        })
-      })
-    },
+    // getChromeStorage(keys) {
+    //   return new Promise(resolve => {
+    //     window.chrome.storage.local.get(keys, (result) => {
+    //       resolve(result)
+    //     })
+    //   })
+    // },
+    // setChromeStorage(key, value) {
+    //   return new Promise(resolve => {
+    //     window.chrome.storage.local.set({ [key]: value }, () => {
+    //       resolve('success')
+    //     })
+    //   })
+    // },
     /* 账户相关 -- start */
     newMnemonic(lang) {
       if (lang === 1) {
@@ -93,7 +94,7 @@ export default {
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
-        this.setChromeStorage('accountIndexList', wallet.accountIndexList)
+        setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
     },
 
@@ -105,7 +106,7 @@ export default {
           if (result.accountIndexList) {
             wallet.recoverAccount(result.accountIndexList)
             this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
-            this.getChromeStorage(['currentAccountIndex']).then(result => {
+            getChromeStorage(['currentAccountIndex']).then(result => {
               let currentAccount = wallet.accountMap[result['currentAccountIndex']]
               if (!currentAccount) {
                 currentAccount = wallet.firstAccount
@@ -124,7 +125,7 @@ export default {
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
         return account
       }).then(account => {
-        this.setChromeStorage('currentAccountIndex', account.index)
+        setChromeStorage('currentAccountIndex', account.index)
       })
     },
     getCurrentAccount() {
@@ -193,8 +194,8 @@ export default {
     },
 
     refreshTxList(coin, flag, callback) {
-      let cNode = this.currentNode(coin)
-      let symbol = cNode.coin
+      let cNode = coin === "bty" ? this.currentMain : this.currentParallel
+      let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
 
       // 拉取数据
       this.getAddrTx(
@@ -207,11 +208,10 @@ export default {
       ).then(res => {
 
         if (res.txs) {
-
+          let lastTx = null
           for (let tx of res.txs) {
             // 过滤
             if (tx.tx.execer == "coins") {
-              let symbol = symbol
               let blockHeight = tx.height;
               let txIndex = tx.index;
               let amount = tx.amount;
@@ -242,8 +242,8 @@ export default {
                 }
               }
 
-              let txEntry = new TransactionsListEntry(
-                symbol,
+              lastTx = new TransactionsListEntry(
+                cNode.coin,
                 this.currentAccount.address,
                 blockHeight,
                 txIndex,
@@ -261,21 +261,19 @@ export default {
               )
 
               // 存储
-              dbHelper.insert(TABLE_NAME, txEntry)
+              dbHelper.insert(TABLE_NAME, lastTx)
             } else {
               continue
             }
           }
 
+          this.$store.commit(updateMethod, {height: lastTx.height, index: lastTx.index})
           dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
         }
       })
 
 
 
-    },
-    currentNode(coin) {
-      return coin == "bty" ? this.currentMain : this.currentParallel
     },
     /* 交易记录相关 --end */
 

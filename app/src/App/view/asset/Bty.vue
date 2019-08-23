@@ -285,17 +285,18 @@ export default {
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    let url =
-      this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
+    let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
     // this.getNTxFirstTime(0);
 
     // this.getTxList(2, 10, this.coin)
     // this.refreshTxList(this.coin, 2, cursor => {
-
+      
     // })
 
     // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
+
+    this.$store.commit("Account/UPDATE_CURRENT_MAIN", {})
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);

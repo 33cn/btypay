@@ -25,6 +25,7 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
+import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 export default {
   mixins: [walletAPI],
   components: { AssetBack },
@@ -53,7 +54,7 @@ export default {
     },
     delHandle() {
       this.addresses.splice(this.delIndex, 1);
-      this.setChromeStorage("address", this.addresses).then(res => {
+      setChromeStorage("address", this.addresses).then(res => {
         if (res == "success") {
           this.getAddress()
         }
@@ -70,7 +71,7 @@ export default {
       // alert(1)
     },
     getAddress(){
-        this.getChromeStorage("address").then(res => {
+        getChromeStorage("address").then(res => {
             // console.log(res)
             if (res.address) {
               this.addresses = res.address;
