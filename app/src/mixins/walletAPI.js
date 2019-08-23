@@ -196,6 +196,7 @@ export default {
     refreshTxList(coin, flag, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
+      let symbol = cNode.coin
 
       // 拉取数据
       this.getAddrTx(
@@ -203,10 +204,9 @@ export default {
         this.TX_FLAG.ALL,
         0,
         this.TX_DIRECTION.REAR,
-        cNode.height,
-        cNode.index
+        cNode.txHeight,
+        cNode.txIndex
       ).then(res => {
-
         if (res.txs) {
           let lastTx = null
           for (let tx of res.txs) {
@@ -243,7 +243,7 @@ export default {
               }
 
               lastTx = new TransactionsListEntry(
-                cNode.coin,
+                symbol,
                 this.currentAccount.address,
                 blockHeight,
                 txIndex,
@@ -267,9 +267,9 @@ export default {
             }
           }
 
-          this.$store.commit(updateMethod, {height: lastTx.height, index: lastTx.index})
-          dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
+          this.$store.commit(updateMethod, {txHeight: lastTx.height, txIndex: lastTx.index})
         }
+        dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
       })
 
 

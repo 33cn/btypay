@@ -26,15 +26,11 @@ const state = {
   },
 
 
-  // {string url, num height, num index}
-  mainNode: [{ url: 'http://172.16.103.18:8801', height: 0, index: 0, coin: "BTY" }],
-  // { string url, num height, num index }
-  currentMain: { url: 'http://172.16.103.18:8801', height: 0, index: 0, coin: "BTY" },
+  mainNode: [{ index: 0, url: 'http://172.16.103.18:8801', txHeight: 0, txIndex: 0, coin: "BTY" }],
+  currentMain: { index: 0, url: 'http://172.16.103.18:8801', txHeight: 0, txIndex: 0, coin: "BTY" },
 
-  // { string name, string coinName, string url, num height, num index }
-  parallelNode: [{ name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801" }],
-  // { string name, string coinName, string url, num height, num index }
-  currentParallel: { name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801" },
+  parallelNode: [{ index: 0, name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: 0, txIndex: 0 }],
+  currentParallel: { index: 0, name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: 0, txIndex: 0 },
 
 }
 
@@ -63,13 +59,14 @@ const mutations = {
     //   }
     // })
   },
-  UPDATE_CURRENT_MAIN(state, { url, height, index, coin }) {
+  UPDATE_CURRENT_MAIN(state, { index, url, txHeight, txIndex, coin }) {
     let backup = JSON.parse(JSON.stringify(state.mainNode))
-    let i = backup.indexOf(state.currentMain)
+    let i = state.currentMain.index
     // if (i !== -1) {
+    //   index && (state.mainNode[i].index = index)
     //   url && (backup[i].url = url)
-    //   height && (backup[i].height = height)
-    //   index && (backup[i].index = index)
+    //   txHeight && (backup[i].txHeight = txHeight)
+    //   txIndex && (backup[i].txIndex = txIndex)
     //   coin && (backup[i].coin = coin)
     //   setChromeStorage("mainNodeList", backup).then(res => {
     //     if (res == "success") {
@@ -78,40 +75,37 @@ const mutations = {
     //     }
     //   })
     // }
+    index && (state.mainNode[i].index = index)
+    url && (state.mainNode[i].url = url)
+    txHeight && (state.mainNode[i].txHeight = txHeight)
+    txIndex && (state.mainNode[i].txIndex = txIndex)
+    coin && (state.mainNode[i].coin = coin)
 
-    if (i != -1) {
-      url && (state.mainNode[i].url = url)
-      height && (state.mainNode[i].height = height)
-      index && (state.mainNode[i].index = index)
-      coin && (state.mainNode[i].coin = coin)
-
-      state.currentMain = state.mainNode[i]
-    }
+    state.currentMain = state.mainNode[i]
   },
   UPDATE_PARALLEL_NODE(state, payload) {
     let backup = JSON.parse(JSON.stringify(state.parallelNode))
     backup.push(payload)
     setChromeStorage("parallelNodeList", backup).then(res => {
-      if(res = "success"){
+      if (res = "success") {
         state.parallelNode = backup
       }
     })
   },
-  UPDATE_CURRENT_PARALLEL(state, { url, height, index, coin }) {
+  UPDATE_CURRENT_PARALLEL(state, { index, url, txHeight, txIndex, coin }) {
     let backup = JSON.parse(JSON.stringify(state.parallelNode))
-    let i = backup.indexOf(state.currentParallel)
-    if (i !== -1) {
-      url && (backup[i].url = url)
-      height && (backup[i].height = height)
-      index && (backup[i].index = index)
-      coin && (backup[i].coin = coin)
-      setChromeStorage("parallelNodeList", backup).then(res => {
-        if (res == "success") {
-          state.parallelNode = backup
-          state.currentParallel = backup[i]
-        }
-      })
-    }
+    let i = state.currentParallel.index
+    index && (backup[i].index = index)
+    url && (backup[i].url = url)
+    txHeight && (backup[i].txHeight = txHeight)
+    txIndex && (backup[i].txIndex = txIndex)
+    coin && (backup[i].coin = coin)
+    setChromeStorage("parallelNodeList", backup).then(res => {
+      if (res == "success") {
+        state.parallelNode = backup
+        state.currentParallel = backup[i]
+      }
+    })
   },
 
   UPDATE_MAIN_ASSET(state, { amt, price }) {

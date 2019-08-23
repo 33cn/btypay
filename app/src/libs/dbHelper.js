@@ -9,7 +9,7 @@ export class DBHelper {
     TableName = ""
 
     constructor(dbName, tableName, tableData) {
-        // this.delDB(dbName)
+        this.delDB(dbName)
         this.DBName = dbName
         this.TableName = tableName
         let request = window.indexedDB.open(dbName)
@@ -88,9 +88,7 @@ export class DBHelper {
             let request = index.openCursor(IDBKeyRange.only(indexVal), "prev")
             request.onsuccess = e => {
                 let cursor = e.target.result
-                if (cursor) {
-                    callback(cursor)
-                }
+                callback(cursor)
             }
         }
     }

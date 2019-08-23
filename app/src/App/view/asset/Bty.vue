@@ -1,7 +1,6 @@
 <template>
   <div class="bty_container">
     <home-header></home-header>
-    <el-button @click="showDbData">读取数据</el-button>
     <section class="header">
       <router-link :to="{ name: 'WalletIndex'}">
         <img src="../../../assets/images/back.png" alt />
@@ -103,7 +102,9 @@ export default {
 
       noMoreTx: false,
       lastTx: {},
-      currentTab: { name: "全部", com: "All" }
+      currentTab: { name: "全部", com: "All" },
+
+      cursor: null,
     };
   },
   computed: {
@@ -142,7 +143,6 @@ export default {
         this.preIndex = i;
       }, 300);
       this.currentTab = item;
-      this.getNTxFirstTime(10);
     },
 
     onScroll() {
@@ -155,110 +155,10 @@ export default {
         // near the bottom
         if (scrollBottom <= 0 && !this.nextIsLoading) {
           // do something
-          // this.getNtxAfterLast(10);
+          this.getNtxAfterLast(1)
         }
       }
       this.pervScrollTop = scrollTop;
-    },
-
-    getNewTx() {},
-    getNtxAfterLast(n) {
-      if (this.noMoreTx) return;
-      if (!this.lastTx) return;
-      this.nextIsLoading = true;
-      this.getNTxFromTx(
-        n,
-        this.TX_DIRECTION.REAR,
-        this.lastTx.height,
-        this.lastTx.txIndex
-      )
-        .then(newTxList => {
-          this.nextIsLoading = false;
-          if (newTxList.length == 0) return;
-          this.$store.commit(
-            "Records/LOADING_RECORDS",
-            newTxList ? newTxList : []
-          );
-        })
-        .catch(err => {
-          this.nextIsLoading = false;
-          if (err.error === "ErrTxNotExist") {
-            this.noMoreTx = true;
-          }
-        });
-    },
-    getNTxFirstTime(n) {
-      return this.getNTxFromTx(n, this.TX_DIRECTION.REAR, 0, 0).then(
-        newTxList => {
-          this.$store.commit(
-            "Records/LOADING_RECORDS",
-            newTxList ? newTxList : []
-          );
-        }
-      );
-    },
-    getNTxFromTx(n, direction, height, index) {
-      return this.getAddrTx(
-        this.currentAccount.address,
-        this.currentFlag,
-        n,
-        direction,
-        height,
-        index
-      ).then(res => {
-        if (res.txs) {
-          let newTxList = res.txs.map(_ => {
-            let blockHeight = _.height;
-            let txIndex = _.index;
-            let amount = _.amount;
-            let strToAddr = _.tx.to;
-            let strFromAddr = _.fromAddr;
-            let strTxHash = _.txHash;
-            let nTime = _.blockTime;
-            let nFee = _.tx.fee;
-            let strExecer = _.tx.execer;
-            let strActionname = _.actionName;
-            let nTy = _.receipt.ty;
-
-            let strNote = "";
-            if (_.tx && _.tx.payload && _.tx.Value && _.tx.Value.Transfer) {
-              strNote = _.tx.payload.Value.Transfer.note;
-            }
-
-            let strError = "unKnow";
-            if (nTy === 1) {
-              let errors = _.receipt.logs;
-              if (errors) {
-                for (let err of errors) {
-                  if (err.ty === 1) {
-                    strError = err.log;
-                    break;
-                  }
-                }
-              }
-            }
-
-            return new TransactionsListEntry(
-              this.currentAccount.address,
-              blockHeight,
-              txIndex,
-              nTime,
-              strToAddr,
-              strFromAddr,
-              strTxHash,
-              amount,
-              nFee,
-              strExecer,
-              strActionname,
-              nTy,
-              strNote,
-              strError
-            );
-          });
-          this.lastTx = newTxList[newTxList.length - 1];
-          return newTxList;
-        }
-      });
     },
 
     copyHandle(event, text) {
@@ -275,28 +175,41 @@ export default {
       });
     },
 
-    showDbData(){
-      this.getTxCursor(2, cursor => {
-        console.log(cursor.value);
-        cursor.continue();
-      });
-    }
+    getNTxFirstTime(flag, n){
+      let txList = []
+      this.refreshTxList(this.coin, flag, cursor => {
+        // this.cursor = cursor
+        // console.log(cursor)
+        // if(this.cursor && n !== 0){
+        //   txList.push(cursor.value)
+        //   n--
+        //   this.cursor.continue()
+        // } else if(!this.cursor || n === 0){
+        //   this.$store.commit("Records/LOADING_RECORDS", txList)
+        // }
+
+        if(cursor){
+          txList.push(cursor.value)
+          cursor.continue()
+        } else {
+          this.$store.commit("Records/LOADING_RECORDS", txList)
+        }
+
+      })
+    },
+    getNtxAfterLast(n){
+      // console.log(this.cursor)
+      // this.cursor.continue()
+    },
   },
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
-    // this.getNTxFirstTime(0);
-
-    // this.getTxList(2, 10, this.coin)
-    // this.refreshTxList(this.coin, 2, cursor => {
-      
-    // })
-
-    // this.getNTxFromTx(this.TX_FLAG.All, 10, this.TX_DIRECTION.REAR, -1, 0);
-
-    this.$store.commit("Account/UPDATE_CURRENT_MAIN", {})
+    
+    this.getNTxFirstTime(4, 5)
+    
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);
