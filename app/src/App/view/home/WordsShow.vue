@@ -97,7 +97,7 @@ export default {
           text-align: center;
           margin-right: 15px;
           margin-top: 16px;
-          background: #334654;
+          // background: #334654;
           border-radius: 4px;
 
           &:nth-child(-n + 4){

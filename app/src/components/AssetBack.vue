@@ -15,8 +15,8 @@ export default {
     },
     methods:{
         backHandle(){
-            if(this.title == 'BTY转账'){
-                console.log(this.$store.state.Records.assetType)
+            if(this.title.indexOf('转账') > -1){
+                // console.log(this.$store.state.Records.assetType)
                 if(this.$store.state.Records.assetType == 'bty'){
                     this.$router.push({ path: "/coin?coin=bty" });
                 }else{

@@ -18,7 +18,7 @@ const state = {
     price: 10
   },
   parallelAsset: {
-    name: "GAME",
+    name: "GBT",
     amt: 1,
     price: 10
   },
@@ -32,7 +32,7 @@ const state = {
   // { string name, string coinName, string url, num height, num index }
   parallelNode: [{ name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801" }],
   // { string name, string coinName, string url, num height, num index }
-  currentParallel: { url: "http://172.16.103.24:8801" },
+  currentParallel: {name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801" },
 
 }
 
@@ -62,11 +62,11 @@ const mutations = {
   UPDATE_PARALLEL_NODE(state, payload) {
     state.parallelNode.push(payload)
   },
-  UPDATE_CURRENT_PARALLEL(state, {url, height, index, coin}) {
-    url && (state.currentMain.url = url)
-    height && (state.currentMain.height = height)
-    index && (state.currentMain.index = index)
-    coin && (state.currentMain.coin = coin)
+  UPDATE_CURRENT_PARALLEL(state, {url, name, coin}) {
+    url && (state.currentParallel.url = url)
+    // height && (state.currentParallel.height = height)
+    name && (state.currentParallel.name = name)
+    coin && (state.currentParallel.coin = coin)
   },
 
   UPDATE_MAIN_ASSET(state, { amt, price }) {

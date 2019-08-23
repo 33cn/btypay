@@ -28,6 +28,7 @@ export default {
         &:nth-of-type(2){
             font-size:18px;
             font-family:MicrosoftYaHei;
+            // font-family: "Hiragino Sans GB";
             font-weight:400;
             color:rgba(255,255,255,1);
         }

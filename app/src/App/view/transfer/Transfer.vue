@@ -1,6 +1,6 @@
 <template>
   <div class="transfer_container">
-    <asset-back :title="coin=='bty'?'BTY转账':'GAME转账'"></asset-back>
+    <asset-back :title="coin=='bty'?'BTY转账':parallelAsset.name+'转账'"></asset-back>
     <el-form
       :model="form"
       :rules="rules"
@@ -9,11 +9,11 @@
     >
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
-        <p class="balance">余额{{mainAsset.amt| numFilter}}{{coin=='bty'?'BTY':'GAME'}}</p>
+        <p class="balance">余额{{mainAsset.amt| numFilter}}{{coin=='bty'?'BTY':parallelAsset.name}}</p>
         <p class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入GAME地址"' auto-complete="off"></el-input>
+        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+parallelAsset.name+"地址"' auto-complete="off"></el-input>
         <!-- <img src="../../../assets/images/scan.png" alt="" class="scan">
         <p class="line"></p> -->
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
@@ -22,7 +22,7 @@
         <el-input v-model.number="form.comment" placeholder='选填'></el-input>
         <div class="fee">
             <p>矿工费</p>
-            <p>0.001{{coin=='bty'?'BTY':'GAME'}}</p>
+            <p>0.001{{coin=='bty'?'BTY':parallelAsset.name}}</p>
         </div>
       </el-form-item>
     </el-form>
@@ -138,14 +138,16 @@ export default {
     //     this.balance = result[0].balance / 1e8
     //   })
     // }
-  },
+  }, 
   computed:{
     ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset"]),
   },
   mounted(){
-    this.coin = this.$route.query.coin;
+    if(this.$route.query.coin){
+      this.coin = this.$route.query.coin;
+    }
+    this.coin = this.$store.state.Records.assetType;
     this.form.address = this.$route.query.address || '';
-    // console.log(this.currentAccount)
     this.refreshMainAsset();
     // if (this.currentAccount) {
     //   this.getBalance(this.currentAccount.address)

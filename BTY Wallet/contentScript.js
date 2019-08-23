@@ -5,15 +5,15 @@ document.addEventListener('DOMContentLoaded', function()
     document.body.appendChild(installNode)
     installNode.id = 'bty-chrome-extension-installed';
     installNode.style.display = 'none';
-    // installNode.setAttribute('version', chrome.extensions.getManifest().version); // 把版本号放到属性里
+    // installNode.setAttribute('version', chrome.extension.getManifest().version); // 把版本号放到属性里
     installNode.innerText=JSON.stringify({key: 'BTY'}); // 把通信的data放到标签的html text里面
     // 创建一个事件，表示从Chrome发送消息给网页
-    var eventFromChrome = document.createEvent('Event');
-    eventFromChrome.initEvent('EventFromChrome', true, true);
+    // var eventFromChrome = document.createEvent('Event');
+    // eventFromChrome.initEvent('EventFromChrome', true, true);
     // 修改installNode的innerText把需要发送的消息内容放在里面
-    installNode.innerText = JSON.stringify({type: 'HELLO', msg: 'FMVP is nothing for me'});
+    // installNode.innerText = JSON.stringify({type: 'HELLO', msg: 'hello'});
     // 发出事件
-    installNode.dispatchEvent(eventFromChrome);
+    // installNode.dispatchEvent(eventFromChrome);
 });
 // script run in content script
 const inpageURL = chrome.runtime.getURL('inpage.js')
