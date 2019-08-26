@@ -1,11 +1,14 @@
 import { eventBus } from '@/libs/eventBus'
+import { TransactionsType } from "@/libs/bitcoinAmount.js";
+
 export default {
   data(){
     return{
       TX_FLAG: {
-        ALL: 0,
-        SEND: 1,
-        RECV: 2
+        ALL: { label: "全部", val: 0, name: "All" },
+        SEND: { label: "转账", val: 1, name: "Transfer" },
+        RECV: { label: "收款", val: 2, name: "Receipt" },
+        EXC: { label: "兑换", val: 3, name: "Convert", hideInMain: true },
       },
       TX_DIRECTION: {
         FRONT: 0,
@@ -14,6 +17,18 @@ export default {
     }
   },
   methods: {
+    castFlag2Typety(flag){
+      switch(flag){
+        case this.TX_FLAG.SEND.val:
+          return TransactionsType.SendToAddress
+        case this.TX_FLAG.RECV.val:
+          return TransactionsType.RecvWithAddress
+        case this.TX_FLAG.EXC.val: 
+          return TransactionsType
+        default: 
+          return -1
+      }
+    },
 
     createRawTradeSellMarketTx(buyID, boardlotCnt, fee) {
       return this.$chain33Sdk.createRawTradeSellMarketTx(buyID, boardlotCnt, fee)

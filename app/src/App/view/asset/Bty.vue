@@ -54,8 +54,16 @@
     <section class="records">
       <!-- <div class="bg"></div> -->
       <ul>
-        <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
-        <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>
+        <!-- <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
+        <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>-->
+
+        <template v-for="(item, key, i) in TX_FLAG">
+          <li
+            :key="key"
+            v-if="!(coin =='bty' && item.hideInMain)"
+            @click="tabChange(item,i)"
+          >{{item.label}}</li>
+        </template>
       </ul>
       <div class="line" ref="line" :style="{left:toLeft}"></div>
       <div ref="txListWrap" class="history">
@@ -87,11 +95,6 @@ export default {
   mixins: [walletAPI, chain33API],
   data() {
     return {
-      tab: [
-        { name: "全部", com: "All" },
-        { name: "转账", com: "Transfer" },
-        { name: "收款", com: "Receipt" }
-      ],
       view: "All",
       preIndex: 0,
       pervScrollTop: 0,
@@ -102,9 +105,9 @@ export default {
 
       noMoreTx: false,
       lastTx: {},
-      currentTab: { name: "全部", com: "All" },
+      currentTab: { label: "全部", val: 0 },
 
-      cursor: null,
+      recordLength: 0
     };
   },
   computed: {
@@ -116,21 +119,14 @@ export default {
       "mainAsset",
       "parallelAsset"
     ]),
-    currentFlag() {
-      switch (this.currentTab.com) {
-        case "Transfer":
-          return this.TX_FLAG.SEND;
-        case "Receipt":
-          return this.TX_FLAG.RECV;
-        default:
-          return this.TX_FLAG.All;
-      }
+    currentTypeTy() {
+      return this.castFlag2Typety(this.currentTab.val);
     }
   },
   methods: {
     init() {},
     tabChange(item, i) {
-      this.view = item.com;
+      this.view = item.name;
       let length,
         differ = i - this.preIndex;
       if (this.coin == "game") {
@@ -143,6 +139,7 @@ export default {
         this.preIndex = i;
       }, 300);
       this.currentTab = item;
+      this.getNTxFirstTime(this.currentTypeTy, 5);
     },
 
     onScroll() {
@@ -155,7 +152,7 @@ export default {
         // near the bottom
         if (scrollBottom <= 0 && !this.nextIsLoading) {
           // do something
-          this.getNtxAfterLast(1)
+          this.getNtxAfterLast(this.currentTypeTy, 5);
         }
       }
       this.pervScrollTop = scrollTop;
@@ -175,41 +172,48 @@ export default {
       });
     },
 
-    getNTxFirstTime(flag, n){
-      let txList = []
-      this.refreshTxList(this.coin, flag, cursor => {
-        // this.cursor = cursor
-        // console.log(cursor)
-        // if(this.cursor && n !== 0){
-        //   txList.push(cursor.value)
-        //   n--
-        //   this.cursor.continue()
-        // } else if(!this.cursor || n === 0){
-        //   this.$store.commit("Records/LOADING_RECORDS", txList)
-        // }
-
-        if(cursor){
-          txList.push(cursor.value)
-          cursor.continue()
-        } else {
-          this.$store.commit("Records/LOADING_RECORDS", txList)
+    getNTxFirstTime(typeTy, n) {
+      let txList = [];
+      this.recordLength = 0;
+      this.refreshTxList(this.coin, typeTy, cursor => {
+        if (cursor && n !== 0) {
+          txList.push(cursor.value);
+          n--;
+          this.recordLength++;
+          cursor.continue();
+        } else if (!cursor || n === 0) {
+          console.log(txList)
+          this.$store.commit("Records/UPDATE_RECORDS", txList);
         }
-
-      })
+      });
     },
-    getNtxAfterLast(n){
-      // console.log(this.cursor)
-      // this.cursor.continue()
-    },
+    getNtxAfterLast(typeTy, n) {
+      let txList = [];
+      let advancing = true;
+      this.refreshTxList(this.coin, typeTy, cursor => {
+        if (advancing) {
+          cursor.advance(this.recordLength);
+          advancing = false;
+        } else {
+          if (cursor && n !== 0) {
+            txList.push(cursor.value);
+            n--;
+            this.recordLength++;
+            cursor.continue();
+          } else if (!cursor || n === 0) {
+            this.$store.commit("Records/LOADING_RECORDS", txList);
+          }
+        }
+      });
+    }
   },
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
     this.$chain33Sdk.httpProvider.setUrl(url);
-    
-    this.getNTxFirstTime(4, 5)
-    
+
+    this.getNTxFirstTime(this.currentTypeTy, 5);
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);

@@ -15,6 +15,8 @@ export const TransactionsType = {
   TyFailure: 8,
   OpenTicket: 9,
   CloseTicket: 10,
+
+  Exchange: 11
 }
 
 export const TransactionFlag = {

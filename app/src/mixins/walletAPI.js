@@ -17,7 +17,8 @@ const TABLE_DATA = {
     autoIncrement: true
   },
   index: [
-    { name: "symbol_typeTy", key: ['symbol', 'typeTy'], payload: { unique: false } },
+    { name: "symbol", key: "symbol", payload: { unique: false } },
+    { name: "symbol_typeTy", key: ['symbol', 'typeTy'], payload: { unique: false } }
   ]
 }
 const dbHelper = new DBHelper(DB_NAME, TABLE_NAME, TABLE_DATA)
@@ -193,7 +194,7 @@ export default {
       // dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
     },
 
-    refreshTxList(coin, flag, callback) {
+    refreshTxList(coin, typeTy, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
       let symbol = cNode.coin
@@ -201,7 +202,7 @@ export default {
       // 拉取数据
       this.getAddrTx(
         this.currentAccount.address,
-        this.TX_FLAG.ALL,
+        this.TX_FLAG.ALL.val,
         0,
         this.TX_DIRECTION.REAR,
         cNode.txHeight,
@@ -267,9 +268,11 @@ export default {
             }
           }
 
-          this.$store.commit(updateMethod, {txHeight: lastTx.height, txIndex: lastTx.index})
+          this.$store.commit(updateMethod, { txHeight: lastTx.height, txIndex: lastTx.index })
         }
-        dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
+        let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
+        let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
+        dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, callback)
       })
 
 
