@@ -1,44 +1,62 @@
 import { eventBus } from '@/libs/eventBus'
+import { TransactionsType } from "@/libs/bitcoinAmount.js";
+
 export default {
   data(){
     return{
       TX_FLAG: {
-        ALL: 0,
-        SEND: 1,
-        RECV: 2
+        ALL: { label: "全部", val: 0, name: "All" },
+        SEND: { label: "转账", val: 1, name: "Transfer" },
+        RECV: { label: "收款", val: 2, name: "Receipt" },
+        EXC: { label: "兑换", val: 3, name: "Convert", hideInMain: true },
       },
       TX_DIRECTION: {
-        FRONT: 0,
-        REAR: 1
+        DESC: 0,
+        ASC: 1
       }
     }
   },
   methods: {
+    castFlag2Typety(flag){
+      switch(flag){
+        case this.TX_FLAG.SEND.val:
+          return TransactionsType.SendToAddress
+        case this.TX_FLAG.RECV.val:
+          return TransactionsType.RecvWithAddress
+        case this.TX_FLAG.EXC.val: 
+          return TransactionsType
+        default: 
+          return -1
+      }
+    },
 
-    createRawTradeSellMarketTx(buyID, boardlotCnt, fee) {
-      return this.$chain33Sdk.createRawTradeSellMarketTx(buyID, boardlotCnt, fee)
+    createRawTradeSellMarketTx(buyID, boardlotCnt, fee, url) {
+      return this.$chain33Sdk.createRawTradeSellMarketTx(buyID, boardlotCnt, fee, url)
+    },
+    createRawTradeBuyMarketTx(sellId, boardlotCnt, fee, url){
+      return this.$chain33Sdk.createRawTradeBuyTx(sellId, boardlotCnt, fee, url)
     },
     // 生成发布事件的交易（未签名）
-    createTransaction(execer, actionName, payload) {
-      return this.$chain33Sdk.createTransaction({ execer, actionName, payload })
-    },
-    createRawTransactionWithExec(to, amount, fee, execName, isWithdraw) {
-      return this.$chain33Sdk.createTransaction({ to, amount, fee, execName, isWithdraw })
+    createTransaction(params, url) {
+      return this.$chain33Sdk.createTransaction(params, url)
     },
     // 构造交易
-    createRawTransaction(to, amount, fee, note) {
-      return this.$chain33Sdk.createRawTransaction({ to, amount, fee, note })
+    createRawTransaction(params, url) {
+      return this.$chain33Sdk.createRawTransaction(params, url)
     },
     // 发送交易
-    sendTransation(signedTx) {
-      return this.$chain33Sdk.sendTransaction(signedTx)
+    sendTransation(signedTx, url) {
+      return this.$chain33Sdk.sendTransaction(signedTx, url)
     },
 
     
 
-    getAddrBalance(addr, execer, url) {
-      return this.$chain33Sdk.getAddrBalance([addr], execer, url)
+    getAddrBalance(addr, execer, url, asset_exec, asset_symbol) {
+      return this.$chain33Sdk.getAddrBalance([addr], execer, url, asset_exec, asset_symbol)
     },
+
+
+
     /*  根据地址获取交易信息
      *  addr      地址
      *  flag      0：addr 的所有交易；1：当 addr 为发送方时的交易；2：当 addr 为接收方时的交易
@@ -62,7 +80,10 @@ export default {
     // 构造交易组
     CreateRawTxGroup(txs){
       return this.$chain33Sdk.createRawTxGroup(txs)
+    },
+    // 获取最新的区块头
+    getLastHeader(url){
+      return this.$chain33Sdk.getLastHeader(url)
     }
-
   }
 }

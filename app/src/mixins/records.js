@@ -8,8 +8,7 @@ export default {
                 RECV: 1,
                 SEND: 2,
                 EXCHANGE: 3
-            },
-            list: []
+            }
         }
     },
     methods: {
@@ -19,18 +18,10 @@ export default {
         }
     },
     computed: {
-        ...mapState(['loadingData'])
-    },
-    watch: {
-        'loadingData': function (val) {
-            if (val instanceof Array) {
-                this.list = this.list.concat(val)
-            }
-        }
+        ...mapState(['recordData'])
     },
 
-    mounted() {
-        this.list = this.loadingData
-        // console.log(this.$store.state.Records.loadingData)
-    }
+    // mounted() {
+    //     this.list = this.loadingData
+    // }
 }

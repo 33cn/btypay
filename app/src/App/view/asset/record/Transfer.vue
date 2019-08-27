@@ -1,7 +1,7 @@
 <template>
     <div class="transferRecord_Container">
         <ul>
-            <li v-for="item in list" :key="item.time" @click="toDetail(item)">
+            <li v-for="item in recordData" :key="item.time" @click="toDetail(item)">
                 <div>
                     <img src="../../../../assets/images/transferLogo.png" alt="">
                     <!-- <img v-if="item.type==2" src="../../../../assets/images/receiptLogo.png" alt="">

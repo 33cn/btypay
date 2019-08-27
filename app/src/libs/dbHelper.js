@@ -81,14 +81,20 @@ export class DBHelper {
         }
     }
 
-    getCursorByIndex(tableName, indexName, indexVal, callback) {
+    getCursorByIndex(tableName, indexName, indexVal, advanceNum, callback) {
         let objectStore = this.DB.transaction([tableName]).objectStore(tableName)
         let index = objectStore.index(indexName)
         if (index) {
             let request = index.openCursor(IDBKeyRange.only(indexVal), "prev")
+            let advancing = true;
             request.onsuccess = e => {
                 let cursor = e.target.result
-                callback(cursor)
+                if (advancing && advanceNum) {
+                    cursor.advance(advanceNum)
+                    advancing = false
+                } else {
+                    callback(cursor)
+                }
             }
         }
     }

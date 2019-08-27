@@ -81,10 +81,15 @@ export default {
       console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
+<<<<<<< HEAD
       window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
         console.log('ciphertext is set to ' + ciphertext);
       })
       this.newAccount("创世地址");
+=======
+      // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
+      this.newAccount("创世地址")
+>>>>>>> 0fa94defa68b2ed54fe03f94a593b80ee61b987b
       return walletObj;
     },
     toggleChart(item) {
