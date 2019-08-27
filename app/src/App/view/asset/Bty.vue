@@ -313,7 +313,7 @@ export default {
     align-items: center;
     margin-top: -5px;
     p {
-      height: 38px;
+      height: 47px;
       text-align: center;
       background-size: 100% 100%;
       font-size: 16px;
@@ -341,7 +341,7 @@ export default {
       margin: 0 46px;
       p {
         width: 102px;
-        background-image: url("../../../assets/images/btyBtn.png");
+        background-image: url("../../../assets/images/gameBtn.png");
       }
     }
   }
@@ -350,7 +350,7 @@ export default {
     // overflow-x: hidden;
     background-color: #fff;
     height: 276px;
-    margin-top: 30px;
+    margin-top: 21px;
     border-top-left-radius: 50px;
     border-top-right-radius: 50px;
     position: relative;

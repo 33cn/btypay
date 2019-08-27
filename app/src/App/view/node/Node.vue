@@ -4,7 +4,7 @@
         <section class="header">
             <router-link :to="{ name: 'WalletIndex'}"><img src="../../../assets/images/close.png" alt=""></router-link>
             <p>节点设置</p>
-            <p>保存</p>
+            <p></p>
         </section>
         <ul>
             <li>
@@ -112,6 +112,12 @@ export default {
     },
     methods:{
         paraSubmit(formName){
+            for(let i = 0; i < this.paraNodeList.length; i++){
+                if(this.paraNodeList[i].url == this.form.url){
+                    this.$message.error('该节点地址已存在')
+                    return
+                }
+            }
             this.$refs[formName].validate(valid => {
                 if (valid) {
                   console.log("submit!");
@@ -139,8 +145,16 @@ export default {
                 this.mainIsInput = true;
                 return
             }
+            for(let i = 0; i < this.mainNodeList.length; i++){
+                if(this.mainNodeList[i].url == this.mainData){
+                    this.$message.error('该节点地址已存在')
+                    return
+                }
+            }
             this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData});
             // let arr = this.mainNodeList.concat([{'addr':this.mainData}])
+            console.log('this.mainData')
+            console.log(this.mainData)
             setChromeStorage('mainNodeList',this.mainNode).then(res=>{
               if(res=='success'){
                 // this.mainNodeList = this.mainNode;
@@ -194,7 +208,7 @@ export default {
         },
         getParaNode(){
             getChromeStorage('parallelNodeList').then(res=>{
-                console.log(res)
+                // console.log(res)
                 if(res.parallelNodeList){
                     this.paraNodeList = res.parallelNodeList;
                 }

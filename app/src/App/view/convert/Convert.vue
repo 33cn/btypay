@@ -5,28 +5,28 @@
             <div class="left">
                 <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt="">
                 <img v-else src="../../../assets/images/gameLogo.png" alt="">
-                <p class="coin">{{convert=='B2G'?'BTY':'GAME'}}</p>
+                <p class="coin">{{convert=='B2G'?'BTY':parallelAsset.name}}</p>
                 <input :class="isInput?'error':''" v-model="exportVal" @input.prevent="inputHandle($event,'from')" type="number" placeholder="转出数量">
-                <p class="balance">余额{{asset.amt| numFilter}}{{convert=='B2G'?'BTY':'GAME'}}</p>
+                <p class="balance">余额{{asset.amt| numFilter}}{{convert=='B2G'?'BTY':parallelAsset.name}}</p>
             </div>
             <img @click="exchangeHandle" src="../../../assets/images/exchange.png" alt="">
             <div class="right">
                 <img v-if="convert=='B2G'" src="../../../assets/images/gameLogo.png" alt="">
                 <img v-else src="../../../assets/images/btyLogo.png" alt="">
-                <p class="coin">{{convert=='G2B'?'BTY':'GAME'}}</p>
+                <p class="coin">{{convert=='G2B'?'BTY':parallelAsset.name}}</p>
                 <input :class="isInput?'error':''" v-model="receiptVal" @input.prevent="inputHandle($event,'to')" type="number" placeholder="收到数量">
             </div>
         </section>
         <section class="desc">
             <div>
                 <p>汇率</p>
-                <p>1{{convert=='B2G'?'BTY':'GAME'}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':'GAME'}}</p>
+                <p>1{{convert=='B2G'?'BTY':parallelAsset.name}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':parallelAsset.name}}</p>
             </div>
             <div>
                 <p>手续费</p>
                 <p>0%</p>
             </div>
-            <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
+            <p>温馨提示：跨链兑换支持使用BTY兑换{{parallelAsset.name}}，也可将{{parallelAsset.name}}兑换成BTY。</p>
         </section>
         <p @click="convertHandle">跨链兑换{{isOperatoring?'...':''}}</p>
     </div>
@@ -128,7 +128,7 @@ export default {
                         this.transferBTY2GameCoin(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal*1e8)).then(res=>{
                             console.log(res)
                             this.isOperatoring = false;
-                            this.exportVal = 0;
+                            this.exportVal = null;
                             this.$alert('请关注收款地址的资金变动。', '兑换成功', {
                                 confirmButtonText: '确认',
                                 closeOnClickModal:true,
@@ -138,7 +138,6 @@ export default {
                         }).catch(err=>{
                             this.isOperatoring = false;
                             console.log(err)
-                            // console.log(err.id)
                             // console.log(typeof err)
                             this.$message.error('发生错误')
                         })
@@ -146,7 +145,7 @@ export default {
                         this.transferGameCoin2BTY1(this.currentAccount.hexPrivateKey,parseFloat(this.exportVal*1e8)).then(res=>{
                             console.log(res)
                             this.isOperatoring = false;
-                            this.exportVal = 0;
+                            this.exportVal = null;
                             this.$alert('请关注收款地址的资金变动。', '兑换成功', {
                                 confirmButtonText: '确认',
                                 closeOnClickModal:true,

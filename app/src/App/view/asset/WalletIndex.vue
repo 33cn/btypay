@@ -42,6 +42,7 @@ import { createNamespacedHelpers } from "vuex";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
 import {eventBus} from '@/libs/eventBus'
+import {setChromeStorage} from '@/libs/chromeUtil.js'
 
 const { mapState } = createNamespacedHelpers("Account");
 
@@ -88,12 +89,27 @@ export default {
       this.menuIsShow = false
     },
     init() {
+      this.getWallet().then(wallet => {
+        if (wallet) {
+          this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+        }
+      })
+      this.getCurrentAccount()
+      // if (this.currentAccount) {
+      //   this.getBalance(this.currentAccount.address)
+      // }
     },
   },
   mounted() {
+    this.init()
+    // this.recoverAccount();
     this.refreshMainAsset();
     this.refreshParallelAsset();
     this.$store.commit("Records/LOADING_RECORDS", []);//清空记录
+    // // 保存登录时间
+    // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+    //   console.log(res)
+    // })
   }
 };
 </script>

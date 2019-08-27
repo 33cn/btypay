@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item label="地址" prop="address">
         <el-input v-model="ruleForm.address" placeholder="请输入地址" autocomplete="off"></el-input>
-        <img src="../../../assets/images/scan.png" alt />
+        <!-- <img src="../../../assets/images/scan.png" alt /> -->
       </el-form-item>
     </el-form>
     <p @click="submitForm('ruleForm')">添加</p>
@@ -109,7 +109,7 @@ export default {
           border-radius: 0px;
           height: 30px;
           line-height: 1;
-          padding: 0px;
+          padding: 0px 10px;
           ::-webkit-input-placeholder {
             /* Chrome/Opera/Safari */
             opacity: 0.5;
@@ -125,7 +125,7 @@ export default {
       }
       &:nth-of-type(2){
           input{
-              padding-right: 40px;
+              // padding-right: 40px;
           }
       }
     }
