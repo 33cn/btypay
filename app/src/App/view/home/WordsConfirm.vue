@@ -69,7 +69,7 @@ export default {
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
       // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
-      this.newAccount("创世地址");
+      this.newAccount("创世地址")
       return walletObj;
     },
     toggleChart(item) {

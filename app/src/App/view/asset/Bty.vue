@@ -174,15 +174,15 @@ export default {
 
     getNTxFirstTime(typeTy, n) {
       let txList = [];
+      this.$store.commit("Records/UPDATE_RECORDS", []);
       this.recordLength = 0;
-      this.refreshTxList(this.coin, typeTy, cursor => {
+      this.refreshTxList(this.coin, typeTy, 0, cursor => {
         if (cursor && n !== 0) {
           txList.push(cursor.value);
           n--;
           this.recordLength++;
           cursor.continue();
         } else if (!cursor || n === 0) {
-          console.log(txList)
           this.$store.commit("Records/UPDATE_RECORDS", txList);
         }
       });
@@ -190,19 +190,14 @@ export default {
     getNtxAfterLast(typeTy, n) {
       let txList = [];
       let advancing = true;
-      this.refreshTxList(this.coin, typeTy, cursor => {
-        if (advancing) {
-          cursor.advance(this.recordLength);
-          advancing = false;
-        } else {
-          if (cursor && n !== 0) {
-            txList.push(cursor.value);
-            n--;
-            this.recordLength++;
-            cursor.continue();
-          } else if (!cursor || n === 0) {
-            this.$store.commit("Records/LOADING_RECORDS", txList);
-          }
+      this.refreshTxList(this.coin, typeTy, this.recordLength, cursor => {
+        if (cursor && n !== 0) {
+          txList.push(cursor.value);
+          n--;
+          this.recordLength++;
+          cursor.continue();
+        } else if (!cursor || n === 0) {
+          this.$store.commit("Records/LOADING_RECORDS", txList);
         }
       });
     }
@@ -210,8 +205,10 @@ export default {
   mounted() {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
-    let url = this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
-    this.$chain33Sdk.httpProvider.setUrl(url);
+    let url =
+      this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
+    this.$chain33Sdk.httpProvider.setUrl(this.currentMain.url);
+
 
     this.getNTxFirstTime(this.currentTypeTy, 5);
   },

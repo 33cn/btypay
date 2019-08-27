@@ -194,7 +194,41 @@ export default {
       // dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
     },
 
-    refreshTxList(coin, typeTy, callback) {
+    initTxList(coin) {
+      let cNode = coin === "bty" ? this.currentMain : this.currentParallel
+      let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
+      let symbol = cNode.coin
+      let count = 100
+
+      // 拉取数据
+      this.getAddrTx(
+        this.currentAccount.address,
+        this.TX_FLAG.ALL.val,
+        count,
+        this.TX_DIRECTION.ASC,
+        cNode.txHeight,
+        cNode.txIndex
+      ).then(res => {
+        if (res.txs) {
+          for (let tx of res.txs) {
+            // 过滤 存储
+            if (!this.filterAndSaveTx(symbol, updateMethod, tx)) {
+              continue
+            }
+          }
+
+          // 重复调用拉取数据
+          if(res.txs.length === count){
+            this.initTxList(coin)
+          }
+        } else {
+          this.getLastHeader(cNode.url).then(res => {
+            this.$store.commit(updateMethod, { txHeight: res.height, txIndex: res.txCount })
+          })
+        }
+      })
+    },
+    refreshTxList(coin, typeTy, advanceNum, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
       let symbol = cNode.coin
@@ -204,80 +238,86 @@ export default {
         this.currentAccount.address,
         this.TX_FLAG.ALL.val,
         0,
-        this.TX_DIRECTION.REAR,
+        this.TX_DIRECTION.ASC,
         cNode.txHeight,
         cNode.txIndex
       ).then(res => {
+        console.log(res)
         if (res.txs) {
-          let lastTx = null
           for (let tx of res.txs) {
-            // 过滤
-            if (tx.tx.execer == "coins") {
-              let blockHeight = tx.height;
-              let txIndex = tx.index;
-              let amount = tx.amount;
-              let strToAddr = tx.tx.to;
-              let strFromAddr = tx.fromAddr;
-              let strTxHash = tx.txHash;
-              let nTime = tx.blockTime;
-              let nFee = tx.tx.fee;
-              let strExecer = tx.tx.execer;
-              let strActionname = tx.actionName;
-              let nTy = tx.receipt.ty;
-
-              let strNote = "";
-              if (tx.tx && tx.tx.payload && tx.tx.Value && tx.tx.Value.Transfer) {
-                strNote = tx.tx.payload.Value.Transfer.note;
-              }
-
-              let strError = "unKnow";
-              if (nTy === 1) {
-                let errors = tx.receipt.logs;
-                if (errors) {
-                  for (let err of errors) {
-                    if (err.ty === 1) {
-                      strError = err.log;
-                      break;
-                    }
-                  }
-                }
-              }
-
-              lastTx = new TransactionsListEntry(
-                symbol,
-                this.currentAccount.address,
-                blockHeight,
-                txIndex,
-                nTime,
-                strToAddr,
-                strFromAddr,
-                strTxHash,
-                amount,
-                nFee,
-                strExecer,
-                strActionname,
-                nTy,
-                strNote,
-                strError
-              )
-
-              // 存储
-              dbHelper.insert(TABLE_NAME, lastTx)
-            } else {
+            // 过滤 存储
+            if (!this.filterAndSaveTx(symbol, updateMethod, tx)) {
               continue
             }
           }
-
-          this.$store.commit(updateMethod, { txHeight: lastTx.height, txIndex: lastTx.index })
         }
         let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
         let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
-        dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, callback)
+        dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, advanceNum, callback)
       })
 
-
-
     },
+
+    filterAndSaveTx(symbol, updateMethod, tx) {
+      let lastTx = null
+      let blockHeight = tx.height;
+      let txIndex = tx.index;
+      if (tx.tx.execer == "coins") {
+        let amount = tx.amount;
+        let strToAddr = tx.tx.to;
+        let strFromAddr = tx.fromAddr;
+        let strTxHash = tx.txHash;
+        let nTime = tx.blockTime;
+        let nFee = tx.tx.fee;
+        let strExecer = tx.tx.execer;
+        let strActionname = tx.actionName;
+        let nTy = tx.receipt.ty;
+
+        let strNote = "";
+        if (tx.tx && tx.tx.payload && tx.tx.Value && tx.tx.Value.Transfer) {
+          strNote = tx.tx.payload.Value.Transfer.note;
+        }
+
+        let strError = "unKnow";
+        if (nTy === 1) {
+          let errors = tx.receipt.logs;
+          if (errors) {
+            for (let err of errors) {
+              if (err.ty === 1) {
+                strError = err.log;
+                break;
+              }
+            }
+          }
+        }
+
+        lastTx = new TransactionsListEntry(
+          symbol,
+          this.currentAccount.address,
+          blockHeight,
+          txIndex,
+          nTime,
+          strToAddr,
+          strFromAddr,
+          strTxHash,
+          amount,
+          nFee,
+          strExecer,
+          strActionname,
+          nTy,
+          strNote,
+          strError
+        )
+
+        // 存储
+        dbHelper.insert(TABLE_NAME, lastTx)
+      } else if (tx.tx.execer == "user.p.gbttest.trade") {
+        console.log(tx)
+      }
+      this.$store.commit(updateMethod, { txHeight: blockHeight, txIndex: txIndex })
+      return lastTx
+
+    }
     /* 交易记录相关 --end */
 
   },
