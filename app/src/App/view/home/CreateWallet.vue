@@ -26,7 +26,7 @@ import AssetBack from "@/components/AssetBack.vue";
 export default {
   components: { AssetBack },
   data() {
-    var confirmPwdValidate = (rule, value, callback) => {
+    let confirmPwdValidate = (rule, value, callback) => {
       if (value !== this.createForm.pwd) {
         callback(new Error("两次输入密码不一致"));
       } else {
@@ -52,12 +52,12 @@ export default {
   },
   methods: {
     handleCreate() {
-      // this.$refs.createForm.validate(valid => {
-      //   if (valid) {
+      this.$refs.createForm.validate(valid => {
+        if (valid) {
           this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
           this.$router.push({ name: "WordsShow" });
-      //   }
-      // });
+        }
+      });
     }
   }
 };

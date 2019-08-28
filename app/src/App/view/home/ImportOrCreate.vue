@@ -25,8 +25,11 @@
 </template>
 
 <script>
+// import {getChromeStorage} from '@/libs/chromeUtil.js'
 export default {
-
+    mounted(){
+        
+    }
 }
 </script>
 
@@ -53,9 +56,11 @@ export default {
             }
             >div{
                 width: 100%;
-                height: 156px;
-                background-image: url('../../../assets/images/importBg.png');
-                background-size: 100% 100%;
+                height: 146px;
+                // background-image: url('../../../assets/images/importBg.png');
+                // background-size: 100% 100%;
+                background-color: #fff;
+                border-radius: 10px;
                 padding: 20px 0 0 0;
                 display: flex;
                 flex-direction: column;
@@ -63,7 +68,7 @@ export default {
                 align-items: center;
                 p{
                     width: 178px;
-                    height: 34px;
+                    height: 50px;
                     background-image: url('../../../assets/images/importBtnBg.png');
                     background-size: 100% 100%;
                     text-align: center;
@@ -73,7 +78,8 @@ export default {
                     // padding-bottom: 8px;
                     a{
                         width: 100%;
-                        height: 100%;
+                        // height: 100%;
+                        height: 34px;
                         display: inline-block;
                         color:rgba(255,255,255,1)!important;
                         margin-top: 8px;

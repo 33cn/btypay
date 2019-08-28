@@ -1,6 +1,7 @@
 <template>
   <div class="dragable-btn-group">
-    <draggable v-model="valTemp" :options="{animation: 150}" @end="dragEnd">
+    <draggable v-model="valTemp" :animation:=150 @end="dragEnd">
+    <!-- <draggable v-model="valTemp" :options="{animation: 150}" @end="dragEnd"> -->
       <transition-group name="list-complete">
         <el-button
           class="word-btn draggable-btn"
@@ -59,7 +60,7 @@ export default {
   color: black;
   font-size: 14px;
   border: none;
-  box-shadow: $--box-shadow-item-base;
+  // box-shadow: $--box-shadow-item-base;
   margin-left: 10px;
   cursor: -webkit-grab;
 }

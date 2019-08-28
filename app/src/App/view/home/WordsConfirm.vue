@@ -17,7 +17,7 @@
       </div>
 
       <div class="btn">
-        <div @click="createWallet">确认</div>
+        <div @click="createWallet">确认{{isConfirming?'...':''}}</div>
       </div>
     </section>
   </div>
@@ -28,10 +28,14 @@ import DargableBtnGroup from "@/components/DragableBtnGroup.vue";
 import AssetBack from "@/components/AssetBack.vue";
 import { randomSort, addPropToArrElem } from "@/libs/common.js";
 import { encrypt } from "@/libs/crypto.js";
+import {setChromeStorage} from '@/libs/chromeUtil.js'
+import walletAPI from "@/mixins/walletAPI.js";
 export default {
   components: { AssetBack, DargableBtnGroup },
+  mixins:[walletAPI],
   data() {
     return {
+      isConfirming:false,
       seedCharts: [],
       seedChartsRandom: [],
       isCreating:false,
@@ -53,14 +57,23 @@ export default {
   methods: {
     //创建钱包
     createWallet() {
+      // this.isConfirming = true;
       // 省略各种判断
-      // if (this.seedStringSelected === this.seedString) {
-        this.saveSeed(this.seedString, "password");
-        this.$router.push({ name: "WalletIndex" });
+      if (this.seedStringSelected === this.seedString) {
+        this.saveSeed(this.seedString, this.$store.state.Account.password);
+        // 保存登录时间
+        setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+          console.log(res)
+        })
+        // this.isConfirming = false
         this.$message.success("钱包创建成功！");
-      // } else {
-      //   this.$message.error("助记词错误！");
-      // }
+        setTimeout(() => {
+          this.$router.push({ name: "WalletIndex" });
+        }, 500);
+      } else {
+        // this.isConfirming = false;
+        this.$message.error("助记词错误！");
+      }
     },
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
@@ -68,8 +81,15 @@ export default {
       console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
+<<<<<<< HEAD
+      window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
+        console.log('ciphertext is set to ' + ciphertext);
+      })
+      this.newAccount("创世地址");
+=======
       // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
       this.newAccount("创世地址")
+>>>>>>> 0fa94defa68b2ed54fe03f94a593b80ee61b987b
       return walletObj;
     },
     toggleChart(item) {
@@ -83,6 +103,7 @@ export default {
     }
   },
   mounted() {
+    // console.log(this.$store.state.Account.password)
     this.seedCharts = this.seedString.split(" ");
     this.seedChartsRandom = addPropToArrElem(
       randomSort(this.seedCharts),
@@ -192,6 +213,9 @@ export default {
     &:nth-child(4n + 1){
       margin-left: 0;
     }
+  }
+  .el-button--primary{
+    box-shadow: none;
   }
 }
 </style>

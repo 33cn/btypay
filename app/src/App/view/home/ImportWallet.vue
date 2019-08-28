@@ -35,10 +35,20 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import OneBoxOneWord from "@/components/OneBoxOneWord.vue";
+import {setChromeStorage} from '@/libs/chromeUtil.js'
 import { encrypt } from "@/libs/crypto.js";
+import walletAPI from "@/mixins/walletAPI.js";
 export default {
   components: { AssetBack, OneBoxOneWord },
+  mixins:[walletAPI],
   data() {
+    let confirmPwdValidate = (rule, value, callback) => {
+      if (value !== this.createForm.pwd) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       seedStringInput: "",
       createForm: {
@@ -51,25 +61,39 @@ export default {
           { min: 8, max: 16, message: "8 到 16位字符", trigger: "blur" }
         ],
         confirmPwd: [
-          { required: true, message: "请输入您的确认密码", trigger: "blur" }
+          { required: true, message: "请输入您的确认密码", trigger: "blur" },
+          { validator: confirmPwdValidate, trigger: "blur" }
         ]
       }
     };
   },
   methods: {
     importWallet(){
-      this.saveSeed(this.seedStringInput, this.createForm.pwd)
-      setTimeout(() => {
-        this.$router.push({ name: 'WalletIndex' })
-      }, 500)
+      if(!this.seedStringInput){
+        this.$message.error('请输入助记词')
+        return
+      }
+      this.$refs['createForm'].validate(valid=>{
+        if(valid){
+          this.saveSeed(this.seedStringInput, this.createForm.pwd)
+          // 保存登录时间
+          setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+            console.log(res)
+          })
+          setTimeout(() => {
+            this.$router.push({ name: 'WalletIndex' })
+          }, 500)
+
+        }
+      })
     },
     saveSeed (seedString, password) {
       const walletObj = this.createHDWallet(seedString)
       // 加密助记词 
       let ciphertext = encrypt(seedString, password)
-      // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
-        // console.log('ciphertext is set to ' + ciphertext);
-      // })
+      window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
+        console.log('ciphertext is set to ' + ciphertext);
+      })
       this.newAccount('创世地址')
       return walletObj
     },

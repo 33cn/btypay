@@ -29,6 +29,7 @@ function getBackgroundPage() {
       resolve(window)
     } else {
       window.chrome.runtime.getBackgroundPage(win => {
+        console.log(win)
         resolve(win)
       })
     }
@@ -68,7 +69,9 @@ export default {
       }
     },
     createHDWallet(mnemonic) {
+      console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
+      console.log(wallet)
       if (isDev) {
         window.myChain33WalletInstance = wallet
       } else {
@@ -91,6 +94,8 @@ export default {
     },
     newAccount(name) {
       return this.getWallet().then(wallet => {
+        console.log('newAccount')
+        console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
@@ -103,9 +108,11 @@ export default {
       this.getWallet().then(wallet => {
         //  获取索引恢复账户
         window.chrome.storage.local.get(['accountIndexList'], (result) => {
-          // console.log(result)
+          console.log(result)
           if (result.accountIndexList) {
             wallet.recoverAccount(result.accountIndexList)
+            console.log('wallet.accountMap')
+            console.log(wallet.accountMap)
             this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
             getChromeStorage(['currentAccountIndex']).then(result => {
               let currentAccount = wallet.accountMap[result['currentAccountIndex']]
@@ -291,6 +298,11 @@ export default {
               }
             }
           }
+<<<<<<< HEAD
+          
+          this.$store.commit(updateMethod, {txHeight: lastTx.height, txIndex: lastTx.index})
+=======
+>>>>>>> 0fa94defa68b2ed54fe03f94a593b80ee61b987b
         }
 
         lastTx = new TransactionsListEntry(

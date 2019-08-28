@@ -13,6 +13,11 @@ export default new Router({
       children:[
         {
           path:'',
+          name:'login',
+          component:() => import('./App/view/home/Login')
+        },
+        {
+          path:'importOrCreate',
           name:'ImportOrCreate',
           component:() => import('./App/view/home/ImportOrCreate')
         },
@@ -78,6 +83,12 @@ export default new Router({
       name:'convertDetail',
       component:() => import('./App/view/asset/record/ConvertDetail')
     },
+    // {
+    //   path:'/login',
+    //   name:'login',
+    //   component:() => import('./App/view/home/Login')
+    // },
+
     {
       path: '*',
       redirect: 'ImportOrCreate'

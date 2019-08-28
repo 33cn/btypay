@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       addresses: [
-          { label: "hhhh", address: "qsdfsdfsdfdsfsdfsdfsdfdsf" }
+          // { label: "hhhh", address: "qsdfsdfsdfdsfsdfsdfsdfdsf" }
         ],
       delMenu: {
         left: 0,
