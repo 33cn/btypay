@@ -298,11 +298,8 @@ export default {
               }
             }
           }
-<<<<<<< HEAD
           
           this.$store.commit(updateMethod, {txHeight: lastTx.height, txIndex: lastTx.index})
-=======
->>>>>>> 0fa94defa68b2ed54fe03f94a593b80ee61b987b
         }
 
         lastTx = new TransactionsListEntry(
