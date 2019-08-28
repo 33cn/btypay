@@ -5,13 +5,9 @@ const state = {
   seed: 'film finger voyage during alter chat sentence hundred connect riot doctor cash sing nut chat',//助记词
   accountMap: {},
   currentAccount: {
-<<<<<<< HEAD
-    address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb", //15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J  // 1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT //1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb
-=======
     // address: "15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J",
     address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",
     // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",
->>>>>>> 0fa94defa68b2ed54fe03f94a593b80ee61b987b
     base58PrivateKey: "xprvA3b4zNsRHPgvzSydbftV9acbtKhNui8P69E7B7UNmJCKfWJZ5biLtcnHC9gYWRdGufyhehMcFcaPYpCgNRYznSCBv1gxxGd3xUYAABibgxQ",
     // hexPrivateKey: "910010376d40528ef943df150f419f28d311e5d90751031f9951f1b6cfb5f8d3",
     hexPrivateKey: '0x76b33cfa093226848e1e979c649778b4a24e040a97bb099007f73afb54b4c2fb',
