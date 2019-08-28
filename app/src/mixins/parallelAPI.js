@@ -2,6 +2,8 @@ import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
 import { createNamespacedHelpers } from 'vuex'
 
+import { signGroupTransaction } from '@/libs/sign.js'
+
 const { mapState } = createNamespacedHelpers('Account')
 // let isDev = process.env.NODE_ENV === 'development'
 
@@ -24,14 +26,16 @@ export default {
                 execName: "paracross",
                 amount: amount
             }
-            return this.createRawTransaction(params, url).then(tx => {
-                return sign.signRawTransaction(tx, privateKey)
-            }).then(signedTx => {
-                return this.sendTransation(signedTx, url)
-            })
+            return this.createRawTransaction(params, url)
+                .then(tx => {
+                    return sign.signRawTransaction(tx, privateKey)
+                })
+                .then(signedTx => {
+                    return this.sendTransation(signedTx, url)
+                })
         },
         // 资产从主链转移到平行链（默认位于平行链的paracross执行器下）
-        main2Parallel(to, amount, url) {
+        main2Parallel(privateKey, to, amount, url) {
             let params = {
                 execer: "user.p.gbttest.paracross",
                 actionName: "ParacrossAssetTransfer",
@@ -41,7 +45,11 @@ export default {
                     amount: amount
                 }
             }
-            return this.createTransaction(params, url)
+            return this.createTransaction(params, url).then(tx => {
+                return sign.signRawTransaction(tx, privateKey)
+            }).then(signedTx => {
+                return this.sendTransation(signedTx, url)
+            })
         },
         // 平行链资产从paracross执行器转移到trade执行器
         parallelParacross2Trade(amount, url) {
@@ -85,37 +93,82 @@ export default {
         },
 
         transferBTY2GameCoin(privateKey, amount) {
-            const fee = 0;
             const to = this.currentAccount.address
-            // let arr = [];
-            // return this.mainCoins2Paracross(privateKey, amount, fee).then(() => {
-            //     return this.main2Parallel(privateKey, to, amount)
-            // }).then((res) => {
-            //     arr.push(res)
-            //     console.log(res)
-            //     return this.parallelParacross2Trade(privateKey, to, amount)
-            // }).then((res) => {
-            //     arr.push(res)
-            //     console.log(res)
-            //     return this.parallelMarketSell(amount, fee)
-            // }).then((res) => {
-            //     arr.push(res)
-            //     console.log(res)
-            //     return this.parallelTrade2Coins(privateKey, to, amount, fee)
-            // }).then((res)=>{
-            //     console.log(res)
-            //     arr.push(res)
-            //     console.log(arr)
-            //     return this.CreateRawTxGroup(arr)
-            //     // return this.parallelTrade2Coins(privateKey, to, amount, fee)
-            // }).then(tx=>{
-            //     return sign.signRawTransaction(tx, privateKey)
-            // }).then(signedTx => {
-            //     return this.sendTransation(signedTx)
-            // })
-
             let mainUrl = this.currentMain.url
             let paraUrl = this.currentParallel.url
+
+            let txs = []
+
+            // return this.mainCoins2Paracross(privateKey, amount, mainUrl).then(res => {
+            //     return this.main2Parallel(to, amount, paraUrl)
+            // })
+            // .then(tx => {
+            //     txs.push(tx)
+            //     return this.parallelParacross2Trade(amount, paraUrl)
+            // })
+            // .then(tx => {
+            //     txs.push(tx)
+            //     return this.parallelMarketSell(amount, paraUrl)
+            // })
+            // .then(tx => {
+            //     txs.push(tx)
+            //     return this.parallelTrade2Coins(amount, paraUrl)
+            // })
+            // .then(tx => {
+            //     txs.push(tx)
+            //     return this.createRawTxGroup(txs)
+            // })
+            // .then(tx => {
+            //     return sign.signRawTransaction(tx, privateKey)
+            // })
+            // .then(signedTx => {
+            //     console.log(signedTx)
+            //     setTimeout(() => {
+            //         this.sendTransation(signedTx, paraUrl).then(hash => {
+            //             console.log(hash)
+            //         })
+            //     }, 5000);
+            // })
+
+            // this.mainCoins2Paracross(privateKey, amount, mainUrl).then(res => {
+            //     setTimeout(() => {
+            //         this.main2Parallel(privateKey, to, amount, paraUrl).then(res => {
+            //             let txs = []
+            //             this.parallelParacross2Trade(amount, paraUrl)
+            //                 .then(tx => {
+            //                     txs.push(tx)
+            //                     return this.parallelMarketSell(amount, paraUrl)
+            //                 })
+            //                 .then(tx => {
+            //                     txs.push(tx)
+            //                     return this.parallelTrade2Coins(amount, paraUrl)
+            //                 })
+            //                 .then(tx => {
+            //                     txs.push(tx)
+            //                     return this.createRawTxGroup(txs)
+            //                 })
+            //                 .then(tx => {
+            //                     console.log(tx)
+            //                     return signGroupTransaction(tx, privateKey)
+            //                 })
+            //                 .then(signedTx => {
+            //                     console.log(signedTx)
+            //                     setTimeout(() => {
+            //                         this.sendTransation(signedTx, paraUrl).then(hash => {
+            //                             console.log(hash)
+            //                         })
+            //                     }, 5000);
+            //                 })
+            //         })
+            //     }, 5000);
+            // })
+
+            let tx = "0a18757365722e702e676274746573742e7061726163726f7373124e1004424a0a09636f696e732e62747910c096b1022214757365722e702e676274746573742e74726164652a22313534536a476152757975574b61417370724c6b786d78363972316f75624168447820e0a71230e4bfdcbdb8e2a69b233a2131787a56624c4e796e77444e4c6a504e46387a765866627967517646635a47346140034aee040ae1010a18757365722e702e676274746573742e7061726163726f7373124e1004424a0a09636f696e732e62747910c096b1022214757365722e702e676274746573742e74726164652a22313534536a476152757975574b61417370724c6b786d78363972316f75624168447820e0a71230e4bfdcbdb8e2a69b233a2131787a56624c4e796e77444e4c6a504e46387a765866627967517646635a47346140034a20a67e6db679833899271c42717e43b059418617cf13c79f38bca8f527ed656a4d5220e323b650ee0348ff49da9418fd08ac42e6791fe416b026da00cc3514db5488c10ad7010a14757365722e702e676274746573742e7472616465124b200332470a403566376132383836353166656133393063316364306166366332363035623965353664313239376564653538336434333762393565363931636437353864343210c096b10230fb9083cedfbe8dd16b3a22313534536a476152757975574b61417370724c6b786d78363972316f75624168447840034a20a67e6db679833899271c42717e43b059418617cf13c79f38bca8f527ed656a4d522050a646281100951ede6955b8e2fa1347407e18d7391fe181123cd410bd58f6db0aad010a14757365722e702e676274746573742e636f696e7312431803223f10c096b1022214757365722e702e676274746573742e74726164652a22313534536a476152757975574b61417370724c6b786d78363972316f75624168447830c2f4b4fafbd7f3aa363a2231336f477554316357484b51596e4475454e617435506672787467576f774e5a6d6140034a20a67e6db679833899271c42717e43b059418617cf13c79f38bca8f527ed656a4d5220e323b650ee0348ff49da9418fd08ac42e6791fe416b026da00cc3514db5488c1"
+            let signedTx = signGroupTransaction(tx, privateKey)
+            this.sendTransation(signedTx, paraUrl).then(hash => {
+                console.log(hash)
+            })
+
 
             // return this.mainCoins2Paracross(privateKey, amount, mainUrl).then(res => {
             //     console.log(res)
@@ -145,13 +198,13 @@ export default {
             //     console.log(res)
             // })
 
-            return this.parallelTrade2Coins(amount, paraUrl).then(tx => {
-                return sign.signRawTransaction(tx, privateKey)
-            }).then(signedTx => {
-                return this.sendTransation(signedTx, paraUrl)
-            }).then(res => {
-                console.log(res)
-            })
+            // return this.parallelTrade2Coins(amount, paraUrl).then(tx => {
+            //     return sign.signRawTransaction(tx, privateKey)
+            // }).then(signedTx => {
+            //     return this.sendTransation(signedTx, paraUrl)
+            // }).then(res => {
+            //     console.log(res)
+            // })
 
             // -----
             // return this.parallelCoins2Trade(amount, paraUrl).then(tx => {

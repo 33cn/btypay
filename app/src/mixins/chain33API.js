@@ -78,7 +78,7 @@ export default {
       }, url)
     },
     // 构造交易组
-    CreateRawTxGroup(txs){
+    createRawTxGroup(txs){
       return this.$chain33Sdk.createRawTxGroup(txs)
     },
     // 获取最新的区块头
