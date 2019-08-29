@@ -76,10 +76,10 @@ export default {
       this.$refs['createForm'].validate(valid=>{
         if(valid){
           this.saveSeed(this.seedStringInput, this.createForm.pwd)
-          // 保存登录时间
-          setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
-            console.log(res)
-          })
+          // // 保存登录时间
+          // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+          //   console.log(res)
+          // })
           setTimeout(() => {
             this.$router.push({ name: 'WalletIndex' })
           }, 500)

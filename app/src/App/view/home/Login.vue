@@ -70,7 +70,7 @@ export default {
     }
   },
   mounted() {
-    // this.$refs["pwdInput"] && this.$refs["pwdInput"].focus();
+    this.$refs["pwdInput"] && this.$refs["pwdInput"].focus();
     this.getWallet().then(wallet => {
       if (wallet) {
         // 已创建/导入钱包
@@ -90,18 +90,6 @@ export default {
           console.log("result");
           console.log(result);
           if (result.ciphertext) {
-            // getChromeStorage("loginTime").then(res => {
-            //   //   console.log(res);
-            //   if (res.loginTime) {
-            //     let time = 1 * 24 * 60 * 60 * 1000;
-            //     if (new Date().valueOf() - parseInt(res.loginTime) >= time) {
-            //       console.log("大于24小时");
-            //       //   this.$router.push({ name: "login" });
-            //     } else {
-            //       this.$router.push("/WalletIndex");
-            //     }
-            //   }
-            // });
             this.cipherMnemonic = result.ciphertext;
           } else {
             this.$router.push("/ImportOrCreate");
@@ -109,10 +97,6 @@ export default {
         });
       }
       this.recoverAccount();
-      //   let arrs = [];
-      //   for(let i = 0; i < arr.length; i++){
-      //       arrs.push(JSON.stringify(arr[i]))
-      //   }
     });
   }
 };

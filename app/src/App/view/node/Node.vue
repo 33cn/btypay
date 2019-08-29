@@ -44,7 +44,7 @@
         </ul>
         <el-dialog title="主链节点设置" :visible.sync="mainDialog" width='324px' :show-close=false class="mainNode">
             <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
-            <input type="text" class="mainAddress" v-model="mainData">
+            <input type="text" class="mainAddress" ref="mainName" v-model="mainData">
             <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="mainDialog = false">取消</el-button>
@@ -54,7 +54,7 @@
         <el-dialog title="平行链节点设置" :visible.sync="paraDialog" width='324px' :show-close=false class="paraNode">
             <el-form :model="form" :rules="rules" ref="ruleForm">
                 <el-form-item label="平行链名称" prop="name">
-                    <el-input v-model="form.name" autocomplete="off"></el-input>
+                    <el-input v-model="form.name" ref="paraName" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="代币名称" prop="coin">
                     <el-input v-model="form.coin" autocomplete="off"></el-input>
@@ -182,7 +182,7 @@ export default {
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getMainNode();//更新视图
-                    this.refreshMainAsset();
+                    this.refreshMainAsset().then(res=>{});
                   }
                 }).catch(err=>{
                     console.log(err)
@@ -193,7 +193,7 @@ export default {
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getParaNode();//更新视图
-                    this.refreshParallelAsset();
+                    this.refreshParallelAsset().then(res=>{});
                   }
                 }).catch(err=>{
                     console.log(err)
@@ -243,13 +243,19 @@ export default {
         paraDialog(val){
             if(!val){
                 this.$refs['ruleForm'].resetFields();
+            }else{
+                setTimeout(() => {
+                    this.$refs["paraName"] && this.$refs["paraName"].focus();
+                }, 50);
             }
         },
-        // mainDialog(val){
-        //     if(!val){
-        //         this.mainIsInput = false;
-        //     }
-        // }
+        mainDialog(val){
+            if(val){
+                setTimeout(() => {
+                    this.$refs["mainName"] && this.$refs["mainName"].focus();
+                }, 50);
+            }
+        }
     }
 }
 </script>
@@ -302,6 +308,7 @@ export default {
                 section.up{
                     div{
                         position: relative;
+                        cursor: pointer;
                         p.address{
                             width: 195px;
                             font-size:14px;

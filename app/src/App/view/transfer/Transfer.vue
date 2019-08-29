@@ -112,6 +112,9 @@ export default {
               center:true,
               showClose:false,
             });
+            this.form.num = null;
+            this.form.address = '';
+            this.form.comment = '';
             this.replyBackground(res)
           }).catch(err=>{
             this.isCreating = false;

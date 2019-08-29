@@ -15,7 +15,7 @@
         <p>≈￥{{mainAsset.amt * mainAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
-        <p>{{currentAccount.address}}</p>
+        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
         <img
           @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
@@ -31,7 +31,7 @@
         <p>≈￥{{parallelAsset.amt * parallelAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
-        <p>{{currentAccount.address}}</p>
+        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
         <img
           @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
@@ -94,6 +94,8 @@ export default {
       view: "All",
       preIndex: 0,
       pervScrollTop: 0,
+      perAddrScrollTop:0,
+      addrIsShowAll:false,
       nextIsLoading: false,
       loadingData: [],
       coin: "",
@@ -196,14 +198,23 @@ export default {
           this.$store.commit("Records/LOADING_RECORDS", txList);
         }
       });
+    },
+    addressScroll(e){
+      // console.log(this.$refs["address"].scrollLeft )
+      if(this.$refs["address"].scrollLeft - this.perAddrScrollTop >= 0){
+        this.addrIsShowAll = true;
+      }else if(this.$refs["address"].scrollLeft < 10){
+        this.addrIsShowAll = false;
+      }
+      this.perAddrScrollTop = this.$refs["address"].scrollLeft;
     }
   },
   mounted() {
-    // this.$nextTick(()=>{
-    //   setTimeout(() => {
-    //     console.log(this.$refs["txListWrap"])
-    //   }, 1000);
-    // })
+    this.$nextTick(()=>{
+      setTimeout(() => {
+        this.$refs["address"].addEventListener("scroll", this.addressScroll,false);
+      }, 0);
+    })
     console.log(this.currentAccount)
     // console.log(this.$store.state.Account.currentAccount)
     this.refreshMainAsset();
@@ -301,8 +312,8 @@ export default {
           font-family: MicrosoftYaHei;
           font-weight: 400;
           color: rgba(22, 42, 84, 1);
-          overflow: hidden;
-          text-overflow: ellipsis;
+          overflow: auto;
+          // text-overflow: ellipsis;
           /* 设置滚动条的样式 */
           &::-webkit-scrollbar {
             width: 0px;
@@ -369,7 +380,7 @@ export default {
     // overflow-x: hidden;
     background-color: #fff;
     height: 276px;
-    margin-top: 21px;
+    margin-top: 21.5px;
     border-top-left-radius: 50px;
     border-top-right-radius: 50px;
     position: relative;

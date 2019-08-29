@@ -1,6 +1,7 @@
 chrome.runtime.onInstalled.addListener(()=>{
   // // alert('BTY钱包插件安装好啦！')
   // console.log('hello')
+  // window.aaaa = 'fanrui'
   chrome.notifications.create(null, {
     type: 'basic',
     iconUrl: 'icons/logo.png',

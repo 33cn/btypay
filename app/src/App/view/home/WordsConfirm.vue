@@ -61,10 +61,10 @@ export default {
       // 省略各种判断
       if (this.seedStringSelected === this.seedString) {
         this.saveSeed(this.seedString, this.$store.state.Account.password);
-        // 保存登录时间
-        setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
-          console.log(res)
-        })
+        // // 保存登录时间
+        // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+        //   console.log(res)
+        // })
         // this.isConfirming = false
         this.$message.success("钱包创建成功！");
         setTimeout(() => {

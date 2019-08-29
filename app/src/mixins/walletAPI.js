@@ -45,20 +45,6 @@ export default {
     ])
   },
   methods: {
-    // getChromeStorage(keys) {
-    //   return new Promise(resolve => {
-    //     window.chrome.storage.local.get(keys, (result) => {
-    //       resolve(result)
-    //     })
-    //   })
-    // },
-    // setChromeStorage(key, value) {
-    //   return new Promise(resolve => {
-    //     window.chrome.storage.local.set({ [key]: value }, () => {
-    //       resolve('success')
-    //     })
-    //   })
-    // },
     /* 账户相关 -- start */
     newMnemonic(lang) {
       if (lang === 1) {
@@ -68,15 +54,20 @@ export default {
       }
     },
     createHDWallet(mnemonic) {
-      console.log('createHDWallet')
       console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
       console.log(wallet)
+      // 保存登录时间
+      setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+        console.log(res)
+      })
       if (isDev) {
         window.myChain33WalletInstance = wallet
       } else {
         getBackgroundPage().then(win => {
           win.myChain33WalletInstance = wallet
+          console.log('createHDWallet')
+          console.log(win)
         })
       }
       return wallet
@@ -102,7 +93,7 @@ export default {
         console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
-        this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
+        // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
         setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
@@ -187,28 +178,44 @@ export default {
       console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.currentMain.url
-      this.getAddrBalance(addr, 'coins', url).then(res => {
-        let payload = { amt: res[0].balance / 1e8 }
-        // console.log(payload)
-        this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
-        this.$store.commit('Account/UPDATE_MAIN_CONNECT', 2)
-      }).catch(err=>{
-        this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
-        console.log(err)
+      return new Promise((resolve,reject)=>{
+        this.getAddrBalance(addr, 'coins', url).then(res => {
+          let payload = { amt: res[0].balance / 1e8 }
+          this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
+          this.$store.commit('Account/UPDATE_MAIN_CONNECT', 2)
+          resolve('success')
+        }).catch(err=>{
+          this.$store.commit('Account/UPDATE_MAIN_ASSET', {
+    amt: 0.0000,
+    price: 10
+  })
+          this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
+          reject(err)
+          console.log(err)
+        })
       })
     },
 
     refreshParallelAsset() {
       let addr = this.currentAccount.address
       let url = this.currentParallel.url
-      this.getAddrBalance(addr, 'coins', url).then(res => {
-        let payload = { amt: res[0].balance / 1e8 }
-        // console.log(payload)
-        this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
-        this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
-      }).catch(err=>{
-        this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
-        console.log(err)
+      return new Promise((resolve,reject)=>{
+        this.getAddrBalance(addr, 'coins', url).then(res => {
+          let payload = { amt: res[0].balance / 1e8 }
+          // console.log(payload)
+          this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
+          this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
+          resolve('success')
+        }).catch(err=>{
+          this.$store.commit('Account/UPDATE_PARALLEL_ASSET', {
+            name: "GBT",
+            amt: 0.0000,
+            price: 10
+          })
+          this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
+          reject(err)
+          console.log(err)
+        })
       })
     },
     /* 资产相关 -- end */
@@ -355,8 +362,14 @@ export default {
   filters: {
     numFilter(val,num) {
       if (val || val == 0) {
-        let f = parseFloat(val)
-        let result = Math.floor(f * 100) / 100;
+        let f = parseFloat(val),
+          result = null;
+        if(num == 4){
+          result = Math.floor(f * 10000) / 10000;
+        }else{
+          result = Math.floor(f * 100) / 100;
+        }
+        
         return parseFloat(result).toFixed(num)
       }
     }

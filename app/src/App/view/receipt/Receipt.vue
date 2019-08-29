@@ -93,6 +93,7 @@ export default {
                     color: #217BF4;
                     font-size: 12px;
                     line-height: 22px;
+                    cursor: pointer;
                 }
                 // overflow: hidden;
                 // text-overflow: ellipsis;
