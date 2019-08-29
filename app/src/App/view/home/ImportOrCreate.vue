@@ -68,8 +68,8 @@ export default {
                 align-items: center;
                 p{
                     width: 178px;
-                    height: 50px;
-                    background-image: url('../../../assets/images/importBtnBg.png');
+                    height: 66px;
+                    background-image: url('../../../assets/images/loginBtn.png');
                     background-size: 100% 100%;
                     text-align: center;
                     font-size:14px;

@@ -16,8 +16,11 @@ export default {
       // eventBus.$emit('provider-changed')
     })
     getChromeStorage('mainNodeList').then(res=>{
-      if(res.mainNodeList && res.mainNodeList.length > 0){}else{
+      if(res.mainNodeList && res.mainNodeList.length > 0){
+        // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
+      }else{
         chrome.storage.local.set({ 'mainNodeList': [{url:'http://172.16.103.18:8801'}] }, () => {})
+        // console.log(this.$store.state.Account.mainNode)
       }
     })
     getChromeStorage('parallelNodeList').then(res=>{
@@ -26,12 +29,16 @@ export default {
       }
     })
     getChromeStorage('mainNode').then(res=>{
-      if(res.mainNode){}else{
+      if(res.mainNode){
+        this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
+      }else{
         chrome.storage.local.set({ 'mainNode': {url: 'http://172.16.103.18:8801'} }, () => {})
       }
     })
     getChromeStorage('paraNode').then(res=>{
-      if(res.paraNode){}else{
+      if(res.paraNode){
+        this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
+      }else{
         chrome.storage.local.set({ 'paraNode': {url: 'http://172.16.103.24:8801'} }, () => {})
       }
     })

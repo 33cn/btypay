@@ -61,10 +61,10 @@ export default {
       // 省略各种判断
       if (this.seedStringSelected === this.seedString) {
         this.saveSeed(this.seedString, this.$store.state.Account.password);
-        // 保存登录时间
-        setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
-          console.log(res)
-        })
+        // // 保存登录时间
+        // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+        //   console.log(res)
+        // })
         // this.isConfirming = false
         this.$message.success("钱包创建成功！");
         setTimeout(() => {
@@ -81,8 +81,10 @@ export default {
       console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
-      // window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
-      this.newAccount("创世地址")
+      window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
+        console.log('ciphertext is set to ' + ciphertext);
+      })
+      this.newAccount("创世地址");
       return walletObj;
     },
     toggleChart(item) {
@@ -117,13 +119,14 @@ export default {
     .desc {
       font-size: 16px;
       color: #ffffff;
+      font-family: MicrosoftYaHei;
     }
     .btn {
       margin: 0 auto;
       margin-top: 20px;
       width: 344px;
-      height: 47px;
-      background-image: url("../../../assets/images/longBtnBg.png");
+      height: 66px;
+      background-image: url("../../../assets/images/loginBtn.png");
       background-size: 100% 100%;
       text-align: center;
       font-size: 16px;
@@ -151,6 +154,7 @@ export default {
     display: flex;
     align-content: center;
     align-items: center;
+    font-family: MicrosoftYaHei;
     .word-btn_combine {
       flex: 0;
       width: auto;
@@ -174,6 +178,7 @@ export default {
   .mnemonic-select {
     margin-top: 15px;
     padding: 0 25px;
+    font-family: MicrosoftYaHei;
     .word-btn.el-button--primary {
       background: #FF6A8B;
       &:hover,

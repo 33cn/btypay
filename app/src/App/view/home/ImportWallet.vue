@@ -76,10 +76,10 @@ export default {
       this.$refs['createForm'].validate(valid=>{
         if(valid){
           this.saveSeed(this.seedStringInput, this.createForm.pwd)
-          // 保存登录时间
-          setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
-            console.log(res)
-          })
+          // // 保存登录时间
+          // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+          //   console.log(res)
+          // })
           setTimeout(() => {
             this.$router.push({ name: 'WalletIndex' })
           }, 500)
@@ -169,8 +169,8 @@ export default {
       margin: 0 auto;
       margin-top: 36px;
       width: 344px;
-      height: 47px;
-      background-image: url("../../../assets/images/longBtnBg.png");
+      height: 66px;
+      background-image: url("../../../assets/images/loginBtn.png");
       background-size: 100% 100%;
       text-align: center;
       font-size: 16px;

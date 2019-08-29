@@ -1,4 +1,4 @@
-import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
+// import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 
 const state = {
   password: '11111111',
@@ -14,15 +14,17 @@ const state = {
     index: 0,
     name: "创世地址"
   },
+  mainIsConnected:1,//1:连接中；2:连接成功；3:连接失败
+  parallelIsConnected:1,//1:连接中；2:连接成功；3:连接失败
 
 
   mainAsset: {
-    amt: 0.00,
+    amt: 0.0000,
     price: 10
   },
   parallelAsset: {
     name: "GBT",
-    amt: 0.00,
+    amt: 0.0000,
     price: 10
   },
 
@@ -36,6 +38,12 @@ const state = {
 }
 
 const mutations = {
+  UPDATE_MAIN_CONNECT(state, payload){
+    state.mainIsConnected = payload;
+  },
+  UPDATE_PARALLEL_CONNECT(state, payload){
+    state.parallelIsConnected = payload;
+  },
   UPDATE_PASSWORD(state, payload) {
     state.password = payload;
   },
@@ -61,7 +69,7 @@ const mutations = {
     // })
   },
   UPDATE_CURRENT_MAIN(state, { index, url, txHeight, txIndex, coin }) {
-    let backup = JSON.parse(JSON.stringify(state.mainNode))
+    // let backup = JSON.parse(JSON.stringify(state.mainNode))
     let i = state.currentMain.index
     // if (i !== -1) {
     //   index && (state.mainNode[i].index = index)

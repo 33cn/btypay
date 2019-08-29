@@ -11,11 +11,11 @@
     <section class="balance" v-if="coin=='bty'">
       <img src="../../../assets/images/btyLogo.png" alt />
       <div class="balance">
-        <p>{{mainAsset.amt| numFilter}}</p>
-        <p>≈￥{{mainAsset.amt * mainAsset.price| numFilter}}</p>
+        <p>{{mainAsset.amt| numFilter(4)}}</p>
+        <p>≈￥{{mainAsset.amt * mainAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
-        <p>{{currentAccount.address}}</p>
+        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
         <img
           @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
@@ -27,11 +27,11 @@
     <section class="balance" v-else>
       <img src="../../../assets/images/gameLogo.png" alt />
       <div class="balance">
-        <p>{{parallelAsset.amt| numFilter}}</p>
-        <p>≈￥{{parallelAsset.amt * parallelAsset.price| numFilter}}</p>
+        <p>{{parallelAsset.amt| numFilter(4)}}</p>
+        <p>≈￥{{parallelAsset.amt * parallelAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
-        <p>{{currentAccount.address}}</p>
+        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
         <img
           @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
@@ -52,11 +52,7 @@
       </p>
     </section>
     <section class="records">
-      <!-- <div class="bg"></div> -->
       <ul>
-        <!-- <li v-for="(item,i) in tab" :key="item.name" @click="tabChange(item,i)">{{item.name}}</li>
-        <li v-if="coin=='game'" @click="tabChange({name:'兑换',com:'Convert'},3)">兑换</li>-->
-
         <template v-for="(item, key, i) in TX_FLAG">
           <li
             :key="key"
@@ -65,7 +61,7 @@
           >{{item.label}}</li>
         </template>
       </ul>
-      <div class="line" ref="line" :style="{left:toLeft}"></div>
+      <div class="line" id="line" ref="line" :style="{left:toLeft}"></div>
       <div ref="txListWrap" class="history">
         <transition name="ani" mode="out-in">
           <component :is="view"></component>
@@ -98,6 +94,8 @@ export default {
       view: "All",
       preIndex: 0,
       pervScrollTop: 0,
+      perAddrScrollTop:0,
+      addrIsShowAll:false,
       nextIsLoading: false,
       loadingData: [],
       coin: "",
@@ -200,10 +198,29 @@ export default {
           this.$store.commit("Records/LOADING_RECORDS", txList);
         }
       });
+    },
+    addressScroll(e){
+      // console.log(this.$refs["address"].scrollLeft )
+      if(this.$refs["address"].scrollLeft - this.perAddrScrollTop >= 0){
+        this.addrIsShowAll = true;
+      }else if(this.$refs["address"].scrollLeft < 10){
+        this.addrIsShowAll = false;
+      }
+      this.perAddrScrollTop = this.$refs["address"].scrollLeft;
     }
   },
   mounted() {
+    this.$nextTick(()=>{
+      setTimeout(() => {
+        this.$refs["address"].addEventListener("scroll", this.addressScroll,false);
+      }, 0);
+    })
+    console.log(this.currentAccount)
+    // console.log(this.$store.state.Account.currentAccount)
+    this.refreshMainAsset();
+    this.refreshParallelAsset();
     this.coin = this.$route.query.coin;
+    console.log(document.querySelector('#line'))
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url =
       this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
@@ -226,7 +243,7 @@ export default {
   // background-size: 100% 100%;
   position: relative;
   > section.header {
-    margin: 5px 29px 0 46px;
+    padding: 5px 29px 0 46px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -295,8 +312,20 @@ export default {
           font-family: MicrosoftYaHei;
           font-weight: 400;
           color: rgba(22, 42, 84, 1);
-          overflow: hidden;
-          text-overflow: ellipsis;
+          overflow: auto;
+          // text-overflow: ellipsis;
+          /* 设置滚动条的样式 */
+          &::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+          }
+          /* 滚动条滑块 */
+          &::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 2px;
+            opacity: 0.2;
+          }
         }
         img {
           width: 22px;
@@ -351,7 +380,7 @@ export default {
     // overflow-x: hidden;
     background-color: #fff;
     height: 276px;
-    margin-top: 21px;
+    margin-top: 21.5px;
     border-top-left-radius: 50px;
     border-top-right-radius: 50px;
     position: relative;

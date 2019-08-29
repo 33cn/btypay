@@ -133,7 +133,8 @@ export default {
   > p {
     margin: 160px 26px 0 29px;
     padding: 12px 0 18px;
-    background-image: url("../../../assets/images/longBtnBg.png");
+    height: 66px;
+    background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;
     text-align: center;
     font-size: 16px;

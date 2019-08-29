@@ -213,27 +213,6 @@ export default {
       this.seedCharts = this.seedString.split(" ");
       this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
-    // //创建钱包
-    // createWallet(){
-    //     // 省略各种判断
-    //     this.saveSeed(seedString, 'password');
-
-    // },
-    // //保存加密助记词并创建钱包
-    // saveSeed(seedString,password){
-    //     const walletObj = this.createHDWallet(seedString);
-    //     // 加密助记词
-    //     let ciphertext = encrypt(seedString, password);
-    //     window.chrome.storage.local.set({ciphertext: ciphertext}, () => {})
-    //     // this.newAccount('创世地址');
-    //     return walletObj;
-    // }
-  },
-  computed: {},
-  watch: {
-    // seedString(val){
-    // this.seedCharts = val.split(' ');
-    // },
   },
   mounted() {
     this.generateSeed();
@@ -252,6 +231,7 @@ export default {
       color: #ffffff;
       margin-bottom: 11px;
       line-height: 20px;
+      font-family: MicrosoftYaHei;
     }
     .mnemonic-con {
       height: 190px;
@@ -274,6 +254,7 @@ export default {
           margin-top: 16px;
           // background: #334654;
           border-radius: 4px;
+          font-family: MicrosoftYaHei;
 
           &:nth-child(-n + 4) {
             margin-top: 0;
@@ -286,8 +267,8 @@ export default {
     }
     .btn {
       margin-top: 48px;
-      height: 43.5px;
-      background-image: url("../../../assets/images/longBtnBg.png");
+      height: 66px;
+      background-image: url("../../../assets/images/loginBtn.png");
       background-size: 100% 100%;
       text-align: center;
       font-size: 16.8px;
