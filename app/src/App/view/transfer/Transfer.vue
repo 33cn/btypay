@@ -9,8 +9,10 @@
     >
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
-        <p class="balance">余额{{mainAsset.amt| numFilter}}{{coin=='bty'?'BTY':parallelAsset.name}}</p>
-        <p class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
+        <p v-if="coin=='bty'" class="balance">余额{{mainAsset.amt| numFilter(2)}}BTY</p>
+        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{parallelAsset.name}}</p>
+        <p v-if="coin=='bty'" class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
+        <p v-if="coin=='game'" class="mentionAll" @click="form.num=parallelAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
         <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+parallelAsset.name+"地址"' auto-complete="off"></el-input>
@@ -19,10 +21,10 @@
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
       </el-form-item>
       <el-form-item label="备注" prop="comment">
-        <el-input v-model.number="form.comment" placeholder='选填'></el-input>
+        <el-input v-model.number="form.comment" type="text" placeholder='选填'></el-input>
         <div class="fee">
             <p>矿工费</p>
-            <p>0.001{{coin=='bty'?'BTY':parallelAsset.name}}</p>
+            <p>0.001BTY</p>
         </div>
       </el-form-item>
     </el-form>
@@ -87,26 +89,21 @@ export default {
   },
   methods: {
     submitForm(formName) {
-      // this.$alert('请关注您的资金变动。', '转账成功', {
-      //   confirmButtonText: '知道了',
-      //   closeOnClickModal:true,
-      //   center:true,
-      //   showClose:false,
-      // });
       if(this.isCreating){
         return
       }
       this.isCreating = true;
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log("submit!");
+          let url = this.coin=='bty'?this.currentMain.url:this.coin=='game'?this.currentParallel.url:'';
+          console.log("submit!!"+url);
           this.sendToAddr({
             privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
-            amount: this.form.num * 1e8,
-            fee: dMinFee * 1e8,
-            note: this.form.comment,
-          }).then(res => {
+            amount: parseInt(this.form.num * 1e8),
+            fee: parseInt(dMinFee * 1e8),
+            note: this.form.comment+'',
+          },url).then(res => {
             console.log(res)
             this.isCreating = false;
             this.$alert('请关注您的资金变动。', '转账成功', {
@@ -140,15 +137,17 @@ export default {
     // }
   }, 
   computed:{
-    ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset"]),
+    ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset",'currentMain','currentParallel']),
   },
   mounted(){
     if(this.$route.query.coin){
       this.coin = this.$route.query.coin;
+      console.log(this.coin)
     }
     this.coin = this.$store.state.Records.assetType;
     this.form.address = this.$route.query.address || '';
     this.refreshMainAsset();
+    this.refreshParallelAsset();
     // if (this.currentAccount) {
     //   this.getBalance(this.currentAccount.address)
     // }
@@ -289,7 +288,8 @@ export default {
   > p {
     margin: 0px 26px 0 29px;
     padding: 11px 0 19px;
-    background-image: url("../../../assets/images/longBtnBg.png");
+    height: 66px;
+    background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;
     text-align: center;
       font-size: 16px;

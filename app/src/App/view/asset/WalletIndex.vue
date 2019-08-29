@@ -13,8 +13,8 @@
             <p>BTY</p>
           </div>
           <div class="right">
-            <p>{{ mainAsset.amt | numFilter}}</p>
-            <p>≈￥{{ mainAsset.amt * mainAsset.price | numFilter}}</p>
+            <p>{{ mainAsset.amt | numFilter(4)}}</p>
+            <p>≈￥{{ mainAsset.amt * mainAsset.price | numFilter(4)}}</p>
           </div>
         </li>
         <li @click="toGame">
@@ -23,8 +23,8 @@
             <p>{{ parallelAsset.name }}</p>
           </div>
           <div class="right">
-            <p>{{ parallelAsset.amt | numFilter}}</p>
-            <p>≈￥{{ parallelAsset.amt * parallelAsset.price | numFilter}}</p>
+            <p>{{ parallelAsset.amt | numFilter(4)}}</p>
+            <p>≈￥{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}</p>
           </div>
         </li>
       </ul>
@@ -91,10 +91,13 @@ export default {
     init() {
       this.getWallet().then(wallet => {
         if (wallet) {
+          console.log('walletIndex-wallet')
+          console.log(wallet)
           this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         }
       })
       this.getCurrentAccount()
+      
       // if (this.currentAccount) {
       //   this.getBalance(this.currentAccount.address)
       // }
@@ -102,9 +105,11 @@ export default {
   },
   mounted() {
     this.init()
-    // this.recoverAccount();
-    this.refreshMainAsset();
-    this.refreshParallelAsset();
+    this.recoverAccount();
+    setTimeout(() => {
+      this.refreshMainAsset();
+      this.refreshParallelAsset();
+    }, 10);
     this.$store.commit("Records/LOADING_RECORDS", []);//清空记录
     // // 保存登录时间
     // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{

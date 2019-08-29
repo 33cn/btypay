@@ -5,7 +5,8 @@
             <canvas id="qrcode"></canvas>
             <div>
                 <p class="copy" >{{currentAccount.address}}</p>
-                <img @click="copyHandle($event, currentAccount.address)" src="../../../assets/images/copy.png" alt="">
+                <p @click="copyHandle($event, currentAccount.address)">复制</p>
+                <!-- <img @click="copyHandle($event, currentAccount.address)" src="../../../assets/images/copy.png" alt=""> -->
             </div>
             <p>注意：该地址仅支持{{coin=='bty'?'BTY':parallelAsset.name}}收款，请勿向该地址充值其他币种。</p>
         </section>
@@ -70,27 +71,42 @@ export default {
         flex-direction: column;
         align-items: center;
         >div{
-            margin: 20px 0 22px;
+            margin: 20px 0 17px;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             p{
-                width: 160px;
-                font-size:14px;
-                font-family:ArialMT;
+                // width: 160px;
+                font-family:MicrosoftYaHei;
                 font-weight:400;
-                color:rgba(22,42,84,1);
-                overflow: hidden;
-                text-overflow: ellipsis;
+                &:nth-of-type(1){
+                    color:rgba(22,42,84,1);
+                    font-size:14px;
+                    margin-bottom: 18px;
+                }
+                &:nth-of-type(2){
+                    width: 56px;
+                    text-align: center;
+                    border:1px solid rgba(33,123,244,1);
+                    border-radius:10px;
+                    color: #217BF4;
+                    font-size: 12px;
+                    line-height: 22px;
+                }
+                // overflow: hidden;
+                // text-overflow: ellipsis;
             }
             img{
                 width: 22px;
-                position: absolute;
-                right: -30px;
-                bottom: 0px;
+                // position: absolute;
+                // right: -30px;
+                // bottom: 0px;
             }
         }
         >p{
             font-size:16px;
-            font-family:Adobe Heiti Std R;
+            font-family:MicrosoftYaHei;
             font-weight:normal;
             color:rgba(22,42,84,1);
             line-height:22px;

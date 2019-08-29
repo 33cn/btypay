@@ -3,7 +3,6 @@
     <!-- <home-header></home-header> -->
     <div class="desc">
       <img src="../../../assets/images/loginLogo.png" alt />
-      <p>比特元钱包</p>
       <p>欢迎回来</p>
     </div>
     <el-form label-position="top" :rules="rules" :model="form" ref="loginForm" class="password">
@@ -53,8 +52,8 @@ export default {
         if(valid){
           this.isLogining = true;
           const mnemonic = decrypt(this.cipherMnemonic, this.form.pwd);
-          console.log(mnemonic);
-          console.log(mnemonic.split(" "));
+          // console.log(mnemonic);
+          // console.log(mnemonic.split(" "));
           if (mnemonic.split(" ").length !== 15) {
             this.$message.error("密码错误");
             this.isLogining = false;
@@ -73,8 +72,6 @@ export default {
   mounted() {
     // this.$refs["pwdInput"] && this.$refs["pwdInput"].focus();
     this.getWallet().then(wallet => {
-      console.log("wallet");
-      console.log(wallet);
       if (wallet) {
         // 已创建/导入钱包
         getChromeStorage("loginTime").then(res => {
@@ -127,22 +124,24 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 116px 0 80px;
+    padding: 107px 0 71px;
     p {
       font-family: Microsoft YaHei;
       font-weight: 400;
+      font-size: 30px;
+      margin: 31px 0 0px;
       color: rgba(255, 255, 255, 1);
-      &:nth-of-type(1) {
-        font-size: 18px;
-        margin: 15px 0 33px;
-      }
-      &:nth-of-type(2) {
-        font-size: 30px;
-      }
+      // &:nth-of-type(1) {
+      //   font-size: 18px;
+      //   margin: 15px 0 33px;
+      // }
+      // &:nth-of-type(2) {
+      //   font-size: 30px;
+      // }
     }
     img {
-      width: 74px;
-      height: 74px;
+      width: 115px;
+      height: 126px;
     }
   }
   > form {
@@ -188,11 +187,14 @@ export default {
     justify-content: flex-start;
     p {
       font-size: 16px;
+      font-family: MicrosoftYaHei;
       &:nth-of-type(1) {
         margin-right: 29px;
       }
       a {
+        font-family: MicrosoftYaHei;
         color: rgba(255, 255, 255, 1);
+        cursor: pointer;
       }
     }
   }

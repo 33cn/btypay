@@ -18,6 +18,7 @@ export default {
     getChromeStorage('mainNodeList').then(res=>{
       if(res.mainNodeList && res.mainNodeList.length > 0){}else{
         chrome.storage.local.set({ 'mainNodeList': [{url:'http://172.16.103.18:8801'}] }, () => {})
+        // console.log(this.$store.state.Account.mainNode)
       }
     })
     getChromeStorage('parallelNodeList').then(res=>{

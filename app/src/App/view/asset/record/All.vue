@@ -28,7 +28,7 @@
         </div>
         <p
           :class="item.amountChangeType == 'decrease' ?'transfer':'receipt'"
-        >{{item.typeTy==TX_TYPE.SendToAddress?'-':item.typeTy==TX_TYPE.RecvWithAddress?'+':''}}{{item.strAmount | numFilter}}</p>
+        >{{item.typeTy==TX_TYPE.SendToAddress?'-':item.typeTy==TX_TYPE.RecvWithAddress?'+':''}}{{item.strAmount | numFilter(2)}}</p>
       </li>
     </ul>
   </div>

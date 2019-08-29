@@ -1,8 +1,8 @@
 const cryptoJS = require('crypto-js')
 
 export function encrypt(msg, pwd) {
-  console.log(msg)
-  console.log(pwd)
+  // console.log(msg)
+  // console.log(pwd)
   let encJson = cryptoJS.AES.encrypt(msg, pwd).toString()
   return cryptoJS.enc.Base64.stringify(cryptoJS.enc.Utf8.parse(encJson));
   // return cryptoJS.AES.encrypt(msg, pwd).toString()

@@ -14,7 +14,7 @@
                 </div>
                 <p
           :class="item.amountChangeType == 'decrease' ?'transfer':'receipt'"
-        >-{{item.strAmount | numFilter}}</p>
+        >-{{item.strAmount | numFilter(2)}}</p>
             </li>
         </ul>
     </div>

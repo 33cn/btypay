@@ -45,7 +45,7 @@ export default {
       return this.$chain33Sdk.createRawTransaction(params, url)
     },
     // 发送交易
-    sendTransation(signedTx, url) {
+    sendTransaction(signedTx, url) {
       return this.$chain33Sdk.sendTransaction(signedTx, url)
     },
 

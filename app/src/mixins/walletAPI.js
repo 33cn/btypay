@@ -29,7 +29,6 @@ function getBackgroundPage() {
       resolve(window)
     } else {
       window.chrome.runtime.getBackgroundPage(win => {
-        console.log(win)
         resolve(win)
       })
     }
@@ -69,6 +68,7 @@ export default {
       }
     },
     createHDWallet(mnemonic) {
+      console.log('createHDWallet')
       console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
       console.log(wallet)
@@ -83,10 +83,14 @@ export default {
     },
     getWallet() {
       return new Promise((resolve) => {
+        console.log('getWallet')
+        console.log(isDev)
         if (isDev) {
           resolve(window.myChain33WalletInstance)
         } else {
           getBackgroundPage().then(win => {
+            console.log(win)
+            console.log(win.myChain33WalletInstance)
             resolve(win.myChain33WalletInstance)
           })
         }
@@ -137,8 +141,13 @@ export default {
       })
     },
     getCurrentAccount() {
+      console.log('getCurrentAccount')
       return getBackgroundPage().then(win => {
+        console.log('win')
+        console.log(win)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+        // this.refreshMainAsset();
+        // this.refreshParallelAsset();
         return win.currentAccount
       })
     },
@@ -158,14 +167,15 @@ export default {
       return sign.signRawTransaction(tx, privateKey)
     },
 
-    sendToAddr({ privateKey, to, amount, fee, note }) {
+    sendToAddr({ privateKey, to, amount, fee, note },url) {
       console.log({ privateKey, to, amount, fee, note })
-      return this.createRawTransaction(to, amount, fee, note)
+      return this.createRawTransaction({to, amount, fee, note},url)
         .then(tx => {
           console.log(tx)
           return sign.signRawTransaction(tx, privateKey)
         }).then(signedTx => {
-          return this.sendTransation(signedTx)
+          console.log(signedTx)
+          return this.sendTransaction(signedTx,url)
         })
     },
 
@@ -174,12 +184,17 @@ export default {
 
     /* 资产相关 -- start */
     refreshMainAsset() {
+      console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.currentMain.url
       this.getAddrBalance(addr, 'coins', url).then(res => {
         let payload = { amt: res[0].balance / 1e8 }
         // console.log(payload)
         this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
+        this.$store.commit('Account/UPDATE_MAIN_CONNECT', 2)
+      }).catch(err=>{
+        this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
+        console.log(err)
       })
     },
 
@@ -190,6 +205,10 @@ export default {
         let payload = { amt: res[0].balance / 1e8 }
         // console.log(payload)
         this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
+        this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
+      }).catch(err=>{
+        this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
+        console.log(err)
       })
     },
     /* 资产相关 -- end */
@@ -296,11 +315,8 @@ export default {
               }
             }
           }
-<<<<<<< HEAD
           
           this.$store.commit(updateMethod, {txHeight: lastTx.height, txIndex: lastTx.index})
-=======
->>>>>>> 0fa94defa68b2ed54fe03f94a593b80ee61b987b
         }
 
         lastTx = new TransactionsListEntry(
@@ -334,11 +350,11 @@ export default {
 
   },
   filters: {
-    numFilter(val) {
+    numFilter(val,num) {
       if (val || val == 0) {
         let f = parseFloat(val)
         let result = Math.floor(f * 100) / 100;
-        return parseFloat(result).toFixed(2)
+        return parseFloat(result).toFixed(num)
       }
     }
   }

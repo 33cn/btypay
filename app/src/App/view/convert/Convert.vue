@@ -13,7 +13,7 @@
           type="number"
           placeholder="转出数量"
         />
-        <p class="balance">余额{{asset.amt| numFilter}}{{convert=='B2G'?'BTY':'GAME'}}</p>
+        <p class="balance">余额{{asset.amt| numFilter(2)}}{{convert=='B2G'?'BTY':'GAME'}}</p>
       </div>
       <img @click="exchangeHandle" src="../../../assets/images/exchange.png" alt />
       <div class="right">
@@ -41,7 +41,7 @@
       <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
     </section>
     <p @click="convertHandle">跨链兑换{{isOperatoring?'...':''}}</p>
-    <el-button size="mini" @click="showBalance">查余额</el-button>
+    <!-- <el-button size="mini" @click="showBalance">查余额</el-button> -->
   </div>
 </template>
 
@@ -341,7 +341,8 @@ export default {
   }
   > p {
     margin: 55px 26px 0 29px;
-    background-image: url("../../../assets/images/longBtnBg.png");
+    height: 66px;
+    background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;
     text-align: center;
     padding: 12px 0 18px;

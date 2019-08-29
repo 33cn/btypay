@@ -169,8 +169,8 @@ export default {
       margin: 0 auto;
       margin-top: 36px;
       width: 344px;
-      height: 47px;
-      background-image: url("../../../assets/images/longBtnBg.png");
+      height: 66px;
+      background-image: url("../../../assets/images/loginBtn.png");
       background-size: 100% 100%;
       text-align: center;
       font-size: 16px;

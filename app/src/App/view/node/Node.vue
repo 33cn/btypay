@@ -13,8 +13,11 @@
                     <section class="up">
                         <!-- <p class="name">敢么（GMT）</p> -->
                         <div v-for="(item,i) in mainNodeList" :key="i" @click="setNode(item,'main')">
-                            <p>{{item.url}}</p>
+                            <p class="address">{{item.url}}</p>
                             <img v-if="item.url==currentMainNode.url" src="../../../assets/images/selected.png" alt="">
+                            <span :style="mainIsConnected==3?'color:#EF394A':mainIsConnected==1?'color:#f4c36a':''" v-if="item.url==currentMainNode.url">
+                                {{mainIsConnected==1?'连接中':mainIsConnected==2?'连接成功':mainIsConnected==3?'连接失败':''}}
+                            </span>
                             <p class="line"></p>
                         </div>
                     </section>
@@ -27,8 +30,11 @@
                     <section class="up">
                         <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')">
                             <p class="name">{{item.name}}（{{item.coin}}）</p>
-                            <p>{{item.url}}</p>
+                            <p class="address">{{item.url}}</p>
                             <img v-if="item.url==currentParaNode.url" src="../../../assets/images/selected.png" alt="">
+                            <span :style="parallelIsConnected==3?'color:#EF394A':parallelIsConnected==1?'color:#f4c36a':''" v-if="item.url==currentParaNode.url">
+                                {{parallelIsConnected==1?'连接中':parallelIsConnected==2?'连接成功':parallelIsConnected==3?'连接失败':''}}
+                            </span>
                             <p class="line"></p>
                         </div>
                     </section>
@@ -85,7 +91,9 @@ export default {
           "mainAsset",
           "parallelAsset",
           "mainNode",
-          "parallelNode"
+          "parallelNode",
+          "mainIsConnected",
+          "parallelIsConnected"
         ])
     },
     data(){
@@ -174,6 +182,7 @@ export default {
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getMainNode();//更新视图
+                    this.refreshMainAsset();
                   }
                 }).catch(err=>{
                     console.log(err)
@@ -184,6 +193,7 @@ export default {
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getParaNode();//更新视图
+                    this.refreshParallelAsset();
                   }
                 }).catch(err=>{
                     console.log(err)
@@ -226,6 +236,8 @@ export default {
         this.paraNodeList = this.parallelNode;
         this.getMainNode();
         this.getParaNode();
+        // this.refreshMainAsset();
+        // this.refreshParallelAsset();
     },
     watch:{
         paraDialog(val){
@@ -286,34 +298,46 @@ export default {
             >div{
                 background:rgba(251,251,251,1);
                 border-radius:10px;
-                padding: 19px 51px 24px 24px;
+                padding: 19px 51px 18px 24px;
                 section.up{
                     div{
                         position: relative;
-                        p{
+                        p.address{
+                            width: 195px;
                             font-size:14px;
                             font-family:MicrosoftYaHei;
                             font-weight:400;
                             color:rgba(22,42,84,1);
+                            overflow: hidden;
+                            text-overflow: ellipsis;
                         }
                         img{
                             width: 18px;
                             position: absolute;
                             right: -37px;
-                            bottom: 5px;
+                            bottom: 10px;
                         }
-                        
+                        span{
+                            font-size:12px;
+                            font-family:MicrosoftYaHei;
+                            position: absolute;
+                            left: 204px;
+                            // right: calc(-37px - 18px - 35px);
+                            bottom: 12px;
+                            color: #1CC0DB;
+                            // color: #EF394A;
+                        }
                         p.name{
                             font-size: 12px;
                             color:rgba(22,42,84,1);
-                            margin-bottom: 9px;
+                            margin-bottom: 11px;
                         }
                     }
                 }
                 p.line{
                     height: 1px;
                     border:0.1px solid rgba(230,230,230,1);
-                    margin: 10px 0 8px;
+                    margin: 10px 0 17px;
                 }
                 p.add{
                     font-size:12px;
@@ -335,6 +359,9 @@ export default {
                     .up{
                         img{
                             bottom: 16px;
+                        }
+                        span{
+                            bottom: 18px;
                         }
                     }
                 }
