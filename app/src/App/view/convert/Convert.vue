@@ -95,8 +95,14 @@ export default {
       let mainUrl = this.currentMain.url;
       let paraUrl = this.currentParallel.url;
 
+      
+      
+      this.getAddrBalance(addr, "coins", mainUrl).then(res => {
+        console.log("0.bty", res[0].balance);
+      });
+
       this.getAddrBalance(addr, "paracross", mainUrl).then(res => {
-        console.log("main para", res[0].balance);
+        console.log("1.main para", res[0].balance);
       });
 
       this.getAddrBalance(
@@ -106,7 +112,7 @@ export default {
         "paracross",
         "coins.bty",
       ).then(res => {
-        console.log("para para", res[0].balance);
+        console.log("2.para para", res[0].balance);
       });
 
       this.getAddrBalance(
@@ -116,11 +122,15 @@ export default {
         "paracross",
         "coins.bty",
       ).then(res => {
-        console.log("trade bty", res[0].balance);
+        console.log("3.trade bty", res[0].balance);
       });
 
       this.getAddrBalance(addr, "user.p.gbttest.trade", paraUrl).then(res => {
-        console.log("trade", res[0].balance);
+        console.log("4.trade", res[0].balance);
+      });
+      
+      this.getAddrBalance(addr, "coins", paraUrl).then(res => {
+        console.log("5.gbt", res[0].balance);
       });
 
     },
@@ -176,24 +186,24 @@ export default {
               this.currentAccount.hexPrivateKey,
               parseFloat(this.exportVal * 1e8)
             )
-              .then(res => {
-                console.log(res);
-                this.isOperatoring = false;
-                this.exportVal = 0;
-                this.$alert("请关注收款地址的资金变动。", "兑换成功", {
-                  confirmButtonText: "确认",
-                  closeOnClickModal: true,
-                  center: true,
-                  showClose: false
-                });
-              })
-              .catch(err => {
-                this.isOperatoring = false;
-                console.log(err);
-                // console.log(err.id)
-                // console.log(typeof err)
-                this.$message.error("发生错误");
-              });
+              // .then(res => {
+              //   console.log(res);
+              //   this.isOperatoring = false;
+              //   this.exportVal = 0;
+              //   this.$alert("请关注收款地址的资金变动。", "兑换成功", {
+              //     confirmButtonText: "确认",
+              //     closeOnClickModal: true,
+              //     center: true,
+              //     showClose: false
+              //   });
+              // })
+              // .catch(err => {
+              //   this.isOperatoring = false;
+              //   console.log(err);
+              //   // console.log(err.id)
+              //   // console.log(typeof err)
+              //   this.$message.error("发生错误");
+              // });
           } else if (this.convert == "G2B") {
             this.transferGameCoin2BTY1(
               this.currentAccount.hexPrivateKey,

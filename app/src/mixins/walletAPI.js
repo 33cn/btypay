@@ -244,7 +244,7 @@ export default {
           }
 
           // 重复调用拉取数据
-          if(res.txs.length === count){
+          if (res.txs.length === count) {
             this.initTxList(coin)
           }
         } else {
@@ -254,34 +254,36 @@ export default {
         }
       })
     },
-    refreshTxList(coin, typeTy, advanceNum, callback) {
+    getTxList(coin, typeTy, advanceNum, refresh, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
       let symbol = cNode.coin
+      let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
+      let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
 
       // 拉取数据
-      this.getAddrTx(
-        this.currentAccount.address,
-        this.TX_FLAG.ALL.val,
-        0,
-        this.TX_DIRECTION.ASC,
-        cNode.txHeight,
-        cNode.txIndex
-      ).then(res => {
-        console.log(res)
-        if (res.txs) {
-          for (let tx of res.txs) {
-            // 过滤 存储
-            if (!this.filterAndSaveTx(symbol, updateMethod, tx)) {
-              continue
+      if (refresh) {
+        this.getAddrTx(
+          this.currentAccount.address,
+          this.TX_FLAG.ALL.val,
+          0,
+          this.TX_DIRECTION.ASC,
+          cNode.txHeight,
+          cNode.txIndex
+        ).then(res => {
+          if (res.txs) {
+            for (let tx of res.txs) {
+              // 过滤 存储
+              if (!this.filterAndSaveTx(symbol, updateMethod, tx)) {
+                continue
+              }
             }
           }
-        }
-        let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
-        let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
+          dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, advanceNum, callback)
+        })
+      } else {
         dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, advanceNum, callback)
-      })
-
+      }
     },
 
     filterAndSaveTx(symbol, updateMethod, tx) {
@@ -342,6 +344,7 @@ export default {
       } else if (tx.tx.execer == "user.p.gbttest.trade") {
         console.log(tx)
       }
+      console.log(blockHeight, txIndex)
       this.$store.commit(updateMethod, { txHeight: blockHeight, txIndex: txIndex })
       return lastTx
 

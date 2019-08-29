@@ -172,7 +172,7 @@ export default {
       let txList = [];
       this.$store.commit("Records/UPDATE_RECORDS", []);
       this.recordLength = 0;
-      this.refreshTxList(this.coin, typeTy, 0, cursor => {
+      this.getTxList(this.coin, typeTy, 0, true, cursor => {
         if (cursor && n !== 0) {
           txList.push(cursor.value);
           n--;
@@ -186,7 +186,7 @@ export default {
     getNtxAfterLast(typeTy, n) {
       let txList = [];
       let advancing = true;
-      this.refreshTxList(this.coin, typeTy, this.recordLength, cursor => {
+      this.getTxList(this.coin, typeTy, this.recordLength, false, cursor => {
         if (cursor && n !== 0) {
           txList.push(cursor.value);
           n--;
