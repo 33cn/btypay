@@ -97,6 +97,9 @@ export class TransactionsListEntry {
       this.typeTy = TransactionsType.SendToAddress
     } else if (myAddress === strToAddress) {
       this.typeTy = TransactionsType.RecvWithAddress
+    } else if (strActionname = "withdraw") {
+      console.log("xxx")
+      this.typeTy = TransactionsType.Exchange
     } else {
       this.typeTy = TransactionsType.Other
     }

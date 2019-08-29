@@ -14,7 +14,7 @@
             alt
           />
           <img
-            v-if="item.typeTy==TX_TYPE.SendToSelf"
+            v-if="item.typeTy==TX_TYPE.Exchange"
             style="width:27px;height:28px"
             src="../../../../assets/images/convertLogo.png"
             alt
@@ -23,7 +23,7 @@
           <div>
             <p>{{item.hashShort}}</p>
             <!-- <p>{{item.time}} &nbsp; {{item.type==1?'转账':item.type==2?'收款':item.type==3?'兑换':''}}</p> -->
-            <p>{{item.strTimeData}} &nbsp; {{item.typeTy==TX_TYPE.SendToAddress?'转账':item.typeTy==TX_TYPE.RecvWithAddress?'收款':item.typeTy==TX_TYPE.convertLogo?'兑换':''}}</p>
+            <p>{{item.strTimeData}} &nbsp; {{item.typeTy==TX_TYPE.SendToAddress?'转账':item.typeTy==TX_TYPE.RecvWithAddress?'收款':item.typeTy==TX_TYPE.Exchange?'兑换':''}}</p>
           </div>
         </div>
         <p

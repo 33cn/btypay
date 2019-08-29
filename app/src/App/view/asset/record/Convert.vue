@@ -9,7 +9,7 @@
           <!-- <img :src="item.type==1?'../../../../assets/images/receiptLogo.png':'../../../../assets/images/transferLogo.png'" alt=""> -->
           <div>
             <p>{{item.hashShort}}</p>
-            <p>{{item.strTimeData}} &nbsp; {{item.typeTy==TX_TYPE.SendToAddress?'转账':item.typeTy==TX_TYPE.RecvWithAddress?'收款':item.typeTy==TX_TYPE.convertLogo?'兑换':''}}</p>
+            <p>{{item.strTimeData}} &nbsp; {{item.typeTy==TX_TYPE.SendToAddress?'转账':item.typeTy==TX_TYPE.RecvWithAddress?'收款':item.typeTy==TX_TYPE.Exchange?'兑换':''}}</p>
           </div>
         </div>
         <p

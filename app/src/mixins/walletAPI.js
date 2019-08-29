@@ -250,7 +250,8 @@ export default {
           0,
           this.TX_DIRECTION.ASC,
           cNode.txHeight,
-          cNode.txIndex
+          cNode.txIndex,
+          cNode.url
         ).then(res => {
           if (res.txs) {
             for (let tx of res.txs) {
@@ -271,7 +272,8 @@ export default {
       let lastTx = null
       let blockHeight = tx.height;
       let txIndex = tx.index;
-      if (tx.tx.execer == "coins") {
+      if (tx.tx.execer == "coins" && tx.actionName == "transfer" || tx.actionName == "withdraw") {
+        console.log(tx)
         let amount = tx.amount;
         let strToAddr = tx.tx.to;
         let strFromAddr = tx.fromAddr;
@@ -298,8 +300,6 @@ export default {
               }
             }
           }
-          
-          this.$store.commit(updateMethod, {txHeight: lastTx.height, txIndex: lastTx.index})
         }
 
         lastTx = new TransactionsListEntry(
@@ -325,7 +325,6 @@ export default {
       } else if (tx.tx.execer == "user.p.gbttest.trade") {
         console.log(tx)
       }
-      console.log(blockHeight, txIndex)
       this.$store.commit(updateMethod, { txHeight: blockHeight, txIndex: txIndex })
       return lastTx
 
