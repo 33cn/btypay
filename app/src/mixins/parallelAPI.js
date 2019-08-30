@@ -2,11 +2,11 @@ import chain33API from '@/mixins/chain33API'
 import { seed, sign } from '@33cn/wallet-base'
 import { createNamespacedHelpers } from 'vuex'
 
-var protobufjs = require('protobufjs');
-var transaction_json_1 = require("./transaction.json")
+// var protobufjs = require('protobufjs');
+// var transaction_json_1 = require("./transaction.json")
 
-// import { signGroupTransaction, signRawTx } from '@/libs/sign.js'
-import { signRawTx } from '@/libs/signgg.js'
+import { signGroupTransaction, signRawTx } from '@/libs/sign.js'
+// import { signRawTx } from '@/libs/signgg.js'
 
 const { mapState } = createNamespacedHelpers('Account')
 // let isDev = process.env.NODE_ENV === 'development'
@@ -181,18 +181,11 @@ export default {
             //     console.log(res)
             // })
 
-            // let xxx = signRawTx("0a05636f696e731238180a2a3410c096b10222097061726163726f73732a223148506b506f7056653345526676614167656444744a5137393274615a464548436520a08d0630c692bcdbfca8ec90613a223148506b506f7056653345526676614167656444744a5137393274615a4645484365", privateKey)
-            // console.log(xxx)
+            let xxx = signRawTx("0a05636f696e731238180a2a3410c096b10222097061726163726f73732a223148506b506f7056653345526676614167656444744a5137393274615a464548436520a08d0630c692bcdbfca8ec90613a223148506b506f7056653345526676614167656444744a5137393274615a4645484365", privateKey)
+            console.log(xxx)
 
-            let rawTx = "0a05636f696e731238180a2a3410c096b10222097061726163726f73732a223148506b506f7056653345526676614167656444744a5137393274615a464548436520a08d0630c692bcdbfca8ec90613a223148506b506f7056653345526676614167656444744a5137393274615a4645484365"
 
-            var root = protobufjs.Root.fromJSON(transaction_json_1);
-            var Transaction = root.lookupType('Transaction');
-            // decode transaction string
-            var buffer = this.fromHexString(rawTx);
-            console.log("buffer", buffer)
-            var message = Transaction.decode(buffer);
-            console.log("message", message.nonce + "")
+            console.log("quire".replace(/^/,"re"))
 
             // return this.main2Parallel(to, amount, mainUrl).then(tx => {
             //     return sign.signRawTransaction(tx, privateKey)
