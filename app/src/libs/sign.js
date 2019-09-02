@@ -5,12 +5,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 // Object.defineProperty(exports, "__esModule", { value: true });
 // var protobufjs = __importDefault(require("protobufjs"));
 var protobufjs = require('protobufjs');
+var Long = require("long")
+protobufjs.util.isNode = true
+protobufjs.util.Long = Long
+protobufjs.util.global.Long = Long
+protobufjs.util.global.dcodeIO = {Long: Long}
+
 var sha256js = require("js-sha256");
-// var bitcoinjs = __importDefault(require("bitcoinjs-lib"));
+var bitcoinjs = require("bitcoinjs-lib");
 var transaction_json_1 = require("./transaction.json")
 var crypto = require("crypto")
-// var bip66 = require('bip66');
+var bip66 = require('bip66');
 // import { sign } from '@33cn/wallet-base'
+var googleProtobuf = require("google-protobuf")
 
 // var root = protobufjs.default.Root.fromJSON(transaction_json_1);
 // var Transaction = root.lookupType('Transaction');
@@ -111,47 +118,48 @@ var getTxHash = function (tx) {
 
 
 export function signRawTx(rawTx, priKeyStr) {
+    console.log(googleProtobuf)
     // protobufjs.default.Root.fromJSON(transaction_json_1);
+    console.log(protobufjs)
     var root = protobufjs.Root.fromJSON(transaction_json_1);
     var Transaction = root.lookupType('Transaction');
+    console.log(Transaction)
     // decode transaction string
     var buffer = fromHexString(rawTx);
     console.log("buffer", buffer)
     var message = Transaction.decode(buffer);
-    console.log("message", message.nonce + "")
+    console.log("message", message)
     var txdata = Transaction.toObject(message, {defaults: true});
-    console.log("txdata", txdata)
-    // txdata.signature = null;
-    // var data = Transaction.encode(txdata).finish();
-    // // hash transaction
-    // var hash = sha256js.sha256(data);
-    // var keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));;
+    // console.log("txdata", txdata)
+    txdata.signature = null;
+    var data = Transaction.encode(message).finish();
+    // hash transaction
+    var hash = sha256js.sha256(data);
+    var keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));;
 
-    // // sign
-    // var signature = keypair.sign(Buffer.from(fromHexString(hash)));
-    // var r = signature.slice(0, 32);
-    // var s = signature.slice(32, 64);
-    // if (r[0] & 0x80) {
-    //     r = Buffer.concat([Buffer.from([0]), r]);
-    // }
-    // if (s[0] & 0x80) {
-    //     s = Buffer.concat([Buffer.from([0]), s]);
-    // }
+    // sign
+    var signature = keypair.sign(Buffer.from(fromHexString(hash)));
+    var r = signature.slice(0, 32);
+    var s = signature.slice(32, 64);
+    if (r[0] & 0x80) {
+        r = Buffer.concat([Buffer.from([0]), r]);
+    }
+    if (s[0] & 0x80) {
+        s = Buffer.concat([Buffer.from([0]), s]);
+    }
 
-    // signature = bip66.encode(r, s);
-    // txdata.signature = {
-    //     ty: 1,
-    //     pubkey: keypair.publicKey,
-    //     signature: signature,
-    // };
+    signature = bip66.encode(r, s);
+    txdata.signature = {
+        ty: 1,
+        pubkey: keypair.publicKey,
+        signature: signature,
+    };
 
-    // message = Transaction.fromObject(txdata);
-    // var signedTxBuffer = Transaction.encode(message).finish();
-    // var signedTxHexString = Buffer.from(signedTxBuffer).toString('hex');
-    // // return encoded transaction hex string
-    // console.log(signedTxHexString);
-    // console.log(signedTxHexString.length);
-    // return signedTxHexString;
+    message = Transaction.fromObject(txdata);
+    var signedTxBuffer = Transaction.encode(message).finish();
+    var signedTxHexString = Buffer.from(signedTxBuffer).toString('hex');
+    // return encoded transaction hex string
+    return signedTxHexString;
 }
 
 
