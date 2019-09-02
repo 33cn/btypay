@@ -50,6 +50,8 @@ import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import parallelAPI from "@/mixins/parallelAPI.js";
 import { createNamespacedHelpers } from "vuex";
+// var protobufjs = require('protobufjs');
+// var transaction_json_1 = require("@/libs/transaction.json")
 
 const { mapState } = createNamespacedHelpers("Account");
 

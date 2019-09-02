@@ -100,11 +100,11 @@ export default {
         },
 
         transferBTY2GameCoin(privateKey, amount) {
-            const to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
+            // const to = this.currentAccount.address
+            // let mainUrl = this.currentMain.url
+            // let paraUrl = this.currentParallel.url
 
-            let txs = []
+            // let txs = []
 
             // return this.mainCoins2Paracross(privateKey, amount, mainUrl).then(res => {
             //     return this.main2Parallel(to, amount, paraUrl)
@@ -190,9 +190,9 @@ export default {
             var Transaction = root.lookupType('Transaction');
             // decode transaction string
             var buffer = this.fromHexString(rawTx);
-            console.log("buffer", buffer)
             var message = Transaction.decode(buffer);
-            console.log("message", message.nonce + "")
+            // console.log(Transaction.decode)
+            console.log("message", message)
 
             // return this.main2Parallel(to, amount, mainUrl).then(tx => {
             //     return sign.signRawTransaction(tx, privateKey)
