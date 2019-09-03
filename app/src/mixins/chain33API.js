@@ -24,7 +24,7 @@ export default {
         case this.TX_FLAG.RECV.val:
           return TransactionsType.RecvWithAddress
         case this.TX_FLAG.EXC.val: 
-          return TransactionsType
+          return TransactionsType.Exchange
         default: 
           return -1
       }

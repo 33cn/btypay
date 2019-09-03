@@ -41,7 +41,7 @@
       <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
     </section>
     <p @click="convertHandle">跨链兑换{{isOperatoring?'...':''}}</p>
-    <!-- <el-button size="mini" @click="showBalance">查余额</el-button> -->
+    <el-button size="mini" @click="showBalance">查余额</el-button>
   </div>
 </template>
 

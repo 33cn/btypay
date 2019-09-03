@@ -58,7 +58,7 @@ export default {
       const wallet = seed.newWalletFromMnemonic(mnemonic)
       console.log(wallet)
       // 保存登录时间
-      setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
+      setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
         console.log(res)
       })
       if (isDev) {
@@ -158,15 +158,15 @@ export default {
       return sign.signRawTransaction(tx, privateKey)
     },
 
-    sendToAddr({ privateKey, to, amount, fee, note },url) {
+    sendToAddr({ privateKey, to, amount, fee, note }, url) {
       console.log({ privateKey, to, amount, fee, note })
-      return this.createRawTransaction({to, amount, fee, note},url)
+      return this.createRawTransaction({ to, amount, fee, note }, url)
         .then(tx => {
           console.log(tx)
           return sign.signRawTransaction(tx, privateKey)
         }).then(signedTx => {
           console.log(signedTx)
-          return this.sendTransaction(signedTx,url)
+          return this.sendTransaction(signedTx, url)
         })
     },
 
@@ -178,17 +178,17 @@ export default {
       console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.currentMain.url
-      return new Promise((resolve,reject)=>{
+      return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
           let payload = { amt: res[0].balance / 1e8 }
           this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
           this.$store.commit('Account/UPDATE_MAIN_CONNECT', 2)
           resolve('success')
-        }).catch(err=>{
+        }).catch(err => {
           this.$store.commit('Account/UPDATE_MAIN_ASSET', {
-    amt: 0.0000,
-    price: 10
-  })
+            amt: 0.0000,
+            price: 10
+          })
           this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
           reject(err)
           console.log(err)
@@ -199,14 +199,14 @@ export default {
     refreshParallelAsset() {
       let addr = this.currentAccount.address
       let url = this.currentParallel.url
-      return new Promise((resolve,reject)=>{
+      return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
           let payload = { amt: res[0].balance / 1e8 }
           // console.log(payload)
           this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
           this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
           resolve('success')
-        }).catch(err=>{
+        }).catch(err => {
           this.$store.commit('Account/UPDATE_PARALLEL_ASSET', {
             name: "GBT",
             amt: 0.0000,
@@ -282,7 +282,7 @@ export default {
           if (res.txs) {
             for (let tx of res.txs) {
               // 过滤 存储
-              if (!this.filterAndSaveTx(symbol, updateMethod, tx)) {
+              if (!this.filterAndSaveTx(coin, updateMethod, tx)) {
                 continue
               }
             }
@@ -294,41 +294,59 @@ export default {
       }
     },
 
-    filterAndSaveTx(symbol, updateMethod, tx) {
+    filterAndSaveTx(coin, updateMethod, tx) {
+      let cNode = coin === "bty" ? this.currentMain : this.currentParallel
+      let symbol = cNode.coin
       let lastTx = null
+      let createNewTx = false
       let blockHeight = tx.height;
       let txIndex = tx.index;
-      if (tx.tx.execer == "coins" && tx.actionName == "transfer" || tx.actionName == "withdraw") {
-        console.log(tx)
-        let amount = tx.amount;
-        let strToAddr = tx.tx.to;
-        let strFromAddr = tx.fromAddr;
-        let strTxHash = tx.txHash;
-        let nTime = tx.blockTime;
-        let nFee = tx.tx.fee;
-        let strExecer = tx.tx.execer;
-        let strActionname = tx.actionName;
-        let nTy = tx.receipt.ty;
+      const paraName = "gbttest"
+      const execerPrefix = "user.p." + paraName + "."
 
-        let strNote = "";
-        if (tx.tx && tx.tx.payload && tx.tx.Value && tx.tx.Value.Transfer) {
-          strNote = tx.tx.payload.Value.Transfer.note;
-        }
+      let amount = tx.amount;
+      let strToAddr = tx.tx.to;
+      let strFromAddr = tx.fromAddr;
+      let strTxHash = tx.txHash;
+      let nTime = tx.blockTime;
+      let nFee = tx.tx.fee;
+      let strExecer = tx.tx.execer;
+      let strActionname = tx.actionName;
+      let nTy = tx.receipt.ty;
 
-        let strError = "unKnow";
-        if (nTy === 1) {
-          let errors = tx.receipt.logs;
-          if (errors) {
-            for (let err of errors) {
-              if (err.ty === 1) {
-                strError = err.log;
-                break;
-              }
+      let strNote = "";
+      if (tx.tx && tx.tx.payload && tx.tx.payload.Value && tx.tx.payload.Value.Transfer) {
+        strNote = tx.tx.payload.Value.Transfer.note;
+      }
+
+      let strError = "unKnow";
+      if (nTy === 1) {
+        let errors = tx.receipt.logs;
+        if (errors) {
+          for (let err of errors) {
+            if (err.ty === 1) {
+              strError = err.log;
+              break;
             }
           }
         }
+      }
 
+      if (coin === "bty") {
+        if (tx.tx.execer === "coins" && tx.actionName === "transfer" && strError === "unKnow") {
+          createNewTx = true
+        }
+      } else {
+        if (tx.tx.execer === execerPrefix + "coins" && tx.actionName === "transfer") {
+          createNewTx = true
+        } else if (tx.tx.execer === execerPrefix + "coins" && tx.actionName === "withdraw") {
+          createNewTx = true
+        }
+      }
+
+      if (createNewTx) {
         lastTx = new TransactionsListEntry(
+          paraName,
           symbol,
           this.currentAccount.address,
           blockHeight,
@@ -345,30 +363,26 @@ export default {
           strNote,
           strError
         )
-
-        // 存储
         dbHelper.insert(TABLE_NAME, lastTx)
-      } else if (tx.tx.execer == "user.p.gbttest.trade") {
-        console.log(tx)
       }
+
       this.$store.commit(updateMethod, { txHeight: blockHeight, txIndex: txIndex })
       return lastTx
-
     }
     /* 交易记录相关 --end */
 
   },
   filters: {
-    numFilter(val,num) {
+    numFilter(val, num) {
       if (val || val == 0) {
         let f = parseFloat(val),
           result = null;
-        if(num == 4){
+        if (num == 4) {
           result = Math.floor(f * 10000) / 10000;
-        }else{
+        } else {
           result = Math.floor(f * 100) / 100;
         }
-        
+
         return parseFloat(result).toFixed(num)
       }
     }

@@ -56,7 +56,7 @@ export class TransactionsListEntry {
   amountChangeType = 'decrease'
   strToAddrLabel = ''
   strFromAddrLabel = ''
-  constructor(symbol, myAddress, blockHeight, txIndex, nTimeData, strToAddress, strFromAddress, strHash, nAmount, nFee,
+  constructor(paraName, symbol, myAddress, blockHeight, txIndex, nTimeData, strToAddress, strFromAddress, strHash, nAmount, nFee,
     strExecer, strActionname, nReceiptTy, strNote, strError) {
     //
     this.symbol = symbol
@@ -97,11 +97,21 @@ export class TransactionsListEntry {
       this.typeTy = TransactionsType.SendToAddress
     } else if (myAddress === strToAddress) {
       this.typeTy = TransactionsType.RecvWithAddress
-    } else if (strActionname = "withdraw") {
-      console.log("xxx")
-      this.typeTy = TransactionsType.Exchange
     } else {
       this.typeTy = TransactionsType.Other
+    }
+
+    let execerPrefix = "user.p." + paraName + "."
+    if(strExecer === execerPrefix + "coins") {
+      if(strActionname === "transfer"){
+        if(myAddress === strFromAddress){
+          this.typeTy = TransactionsType.SendToAddress
+        } else {
+          this.typeTy = TransactionsType.RecvWithAddress
+        }
+      } else if(strActionname === "withdraw") {
+        this.typeTy = TransactionsType.Exchange
+      }
     }
 
     if (this.typeTy === TransactionsType.Generated ||
