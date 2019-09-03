@@ -185,17 +185,7 @@ export default {
             console.log(xxx)
 
 
-<<<<<<< HEAD
-            var root = protobufjs.Root.fromJSON(transaction_json_1);
-            var Transaction = root.lookupType('Transaction');
-            // decode transaction string
-            var buffer = this.fromHexString(rawTx);
-            var message = Transaction.decode(buffer);
-            // console.log(Transaction.decode)
-            console.log("message", message)
-=======
             console.log("quire".replace(/^/,"re"))
->>>>>>> e933b34f39664218647e6872bade7a5e3d337d73
 
             // return this.main2Parallel(to, amount, mainUrl).then(tx => {
             //     return sign.signRawTransaction(tx, privateKey)
