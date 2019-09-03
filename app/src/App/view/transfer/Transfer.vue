@@ -295,11 +295,12 @@ export default {
     background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;
     text-align: center;
-      font-size: 16px;
-      font-family: MicrosoftYaHei;
-      font-weight: 400;
-      color: rgba(255, 255, 255, 1);
-      line-height: 1;
+    font-size: 16px;
+    font-family: MicrosoftYaHei;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 1);
+    line-height: 1;
+    cursor: pointer;
   }
 }
 </style>

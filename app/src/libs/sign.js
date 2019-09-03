@@ -9,130 +9,132 @@ var Long = require("long")
 protobufjs.util.isNode = true
 protobufjs.util.Long = Long
 protobufjs.util.global.Long = Long
-protobufjs.util.global.dcodeIO = {Long: Long}
+protobufjs.util.global.dcodeIO = { Long: Long }
 
 var sha256js = require("js-sha256");
 var bitcoinjs = require("bitcoinjs-lib");
 var transaction_json_1 = require("./transaction.json")
 var crypto = require("crypto")
 var bip66 = require('bip66');
-// import { sign } from '@33cn/wallet-base'
-var googleProtobuf = require("google-protobuf")
+import { sign } from '@33cn/wallet-base'
 
-// var root = protobufjs.default.Root.fromJSON(transaction_json_1);
-// var Transaction = root.lookupType('Transaction');
-// var Transactions = root.lookupType('Transactions');
+var root = protobufjs.Root.fromJSON(transaction_json_1);
+var Transaction = root.lookupType('Transaction');
+var Transactions = root.lookupType('Transactions');
+// var AwesomeMessage = root.lookupType("awesomepackage.AwesomeMessage");
 
 export function signGroupTransaction(tx, account) {
-    // // decode transaction string
-    // var buffer = fromHexString(tx);
-    // var message = Transaction.decode(buffer);
-    // var txdata = Transaction.toObject(message);
-    // var data = Transactions.decode(txdata.header);
-    // var txgroup = Transactions.toObject(data);
-    // console.log(txgroup)
-    // let arr = []
-    // //先填next hash
-    // // for (let i = txgroup.length - 1; i >= 0; i--) {
-    // //     let tg = txgroup[i]
-    // //     if (i==txgroup.length - 1){
-    // //         tg.next=null;
-    // //     }else {
-    // //         tg.next=getTxHash(txgroup[i+1])
-    // //     }
-    // // }
-    // // var header = getTxHash(txgroup.txs[0])
-    // //重新刷新header
-
-    // for (let tg of txgroup.txs) {
-    //     // tg.header=header;
-    //     message = Transaction.fromObject(tg);
-    //     let signedTxBuffer = Transaction.encode(message).finish();
-    //     let rawTxHexString = Buffer.from(signedTxBuffer).toString('hex');
-    //     // let signedTx = sign.signRawTransaction(rawTxHexString, account)
-    //     let signedTx = signRawTx(rawTxHexString, account)
-    //     let buffer = fromHexString(signedTx);
-    //     let message = Transaction.decode(buffer);
-    //     let txdata = Transaction.toObject(message);
-    //     arr.push(txdata)
-    // }
-    // txgroup.txs = arr;
-    // //debug
-    // // console.log(arr)
-    // var headtx = arr[0];
-    // console.log(headtx)
-    // var copyTx = JSON.parse(JSON.stringify(headtx));
-    // message = Transactions.fromObject(txgroup)
-    // data = Transactions.encode(message).finish();
-    // // console.log(data)
-    // copyTx.header = data;
-    // console.log(arr[0])
-    // console.log(copyTx);
-    // // console.log(txgroup.txs);
-
-    // // console.log(getTxHash(copyTx))
-
-    // //debug
-
-    // message = Transaction.fromObject(copyTx);
-    // var signedTxBuffer = Transaction.encode(message).finish();
-    // var signedTxHexString = Buffer.from(signedTxBuffer).toString('hex');
-    // console.log(signedTxHexString)
-    // // return encoded transaction hex string
-    // // return signedTxHexString;
-    return ""
-}
-// var fromHexString = function (hexString) {
-//     hexString = hexString.replace(/^(0x|0X)/, '');
-//     var matchResult = hexString.match(/.{2}/g);
-//     if (!matchResult) {
-//         throw new Error('hexString format error: ' + hexString);
-//     }
-//     return Buffer.from(new Uint8Array(matchResult.map(function (byte) { return parseInt(byte, 16); })));
-// };
-//# sourceMappingURL=sign.js.map
-
-var toHexString = function (str) {
-    var val = "";
-    for (var i = 0; i < str.length; i++) {
-
-        if (val == "")
-            val = str.charCodeAt(i).toString(16);
-        else
-            val += "," + str.charCodeAt(i).toString(16);
-    }
-    return val;
-}
-
-var getTxHash = function (tx) {
-    let message = Transaction.fromObject(tx);
-    let txheader = Transaction.toObject(message);
-    txheader.signature = null;
-    txheader.header = null;
-    let data = Transaction.encode(txheader).finish();
-    // hash transaction
-    let hash = sha256js.sha256(data);
-    let header = Buffer.from(fromHexString(hash))
-    return hash
-}
-
-
-export function signRawTx(rawTx, priKeyStr) {
-    console.log(googleProtobuf)
-    // protobufjs.default.Root.fromJSON(transaction_json_1);
-    console.log(protobufjs)
-    var root = protobufjs.Root.fromJSON(transaction_json_1);
-    var Transaction = root.lookupType('Transaction');
-    console.log(Transaction)
     // decode transaction string
-    var buffer = fromHexString(rawTx);
-    console.log("buffer", buffer)
+    var buffer = fromHexString(tx);
     var message = Transaction.decode(buffer);
-    console.log("message", message)
-    var txdata = Transaction.toObject(message, {defaults: true});
-    // console.log("txdata", txdata)
+    var txdata = Transaction.toObject(message);
+    var data = Transactions.decode(txdata.header);
+    var txgroup = Transactions.toObject(data);
+    let arr = []
+    for (let tg of txgroup.txs) {
+        message = Transaction.fromObject(tg);
+        let signedTxBuffer = Transaction.encode(message).finish();
+        let rawTxHexString = Buffer.from(signedTxBuffer).toString('hex');
+        let signedTx = sign.signRawTransaction(rawTxHexString, account)
+        console.log(signedTx)
+        let buffer = fromHexString(signedTx);
+        let message = Transaction.decode(buffer);
+        let txdata = Transaction.toObject(message);
+        arr.push(txdata)
+    }
+
+    txgroup.txs = arr;
+    var headtx = arr[0];
+    var copyTx = JSON.parse(JSON.stringify(headtx));
+    message = Transactions.fromObject(txgroup)
+    data = Transactions.encode(message).finish();
+    copyTx.header = data;
+    // console.log(arr[0])
+    console.log(copyTx);
+    // console.log(byteToString(copyTx.execer))
+    // let obj = JSON.parse(copyTx)
+    message = Transaction.fromObject(copyTx);
+    // var message = AwesomeMessage.create(copyTx);
+    console.log(message)
+    var signedTxBuffer = Transaction.encode(message).finish();
+    var message1 = Transaction.decode(signedTxBuffer);
+    var tx1 = Transaction.toObject(message1);
+    console.log(byteToString(tx1.execer))
+
+    var signedTxHexString = Buffer.from(signedTxBuffer).toString('hex');
+    return signedTxHexString;
+}
+
+
+function byteToString(arr) {
+    if (typeof arr === 'string') {
+        return arr;
+    }
+    var str = '',
+        _arr = arr;
+    for (let i in _arr) {
+        var one = _arr[i].toString(2),
+            v = one.match(/^1+?(?=0)/);
+        if (v && one.length == 8) {
+            var bytesLength = v[0].length;
+            var store = _arr[i].toString(2).slice(7 - bytesLength);
+            for (var st = 1; st < bytesLength; st++) {
+                store += _arr[st + i].toString(2).slice(2);
+            }
+            str += String.fromCharCode(parseInt(store, 2));
+            i += bytesLength - 1;
+        } else {
+            str += String.fromCharCode(_arr[i]);
+        }
+    }
+    return str
+}
+
+
+function fromHexString(hexString) {
+    hexString = hexString.replace(/^(0x|0X)/, '');
+    var matchResult = hexString.match(/.{2}/g);
+    if (!matchResult) {
+        throw new Error('hexString format error: ' + hexString);
+    }
+    return Buffer.from(new Uint8Array(matchResult.map(function (byte) { return parseInt(byte, 16); })));
+}
+
+export function signGroupTx(tx, privateKey) {
+    let txBuffer = fromHexString(tx)
+    let txData = protobufDecode(Transaction, txBuffer)
+    let txsData = protobufDecode(Transactions, txData.header)
+
+    let arr = []
+    for (let txItem of txsData.txs) {
+        let signedTxData = signTxData(txItem, privateKey)
+        arr.push(signedTxData)
+    }
+
+    txsData.txs = arr
+    let copyHeadTxData = JSON.parse(JSON.stringify(arr[0]))
+    let txsBuffer = protobufEncode(Transactions, txsData)
+    copyHeadTxData.header = txsBuffer
+
+    let buffer = protobufEncode(Transaction, copyHeadTxData)
+    return Buffer.from(buffer).toString('hex')
+}
+
+
+function protobufDecode(type, buffer) {
+    let msg = type.decode(buffer)
+    return type.toObject(msg)
+}
+
+function protobufEncode(type, data) {
+    let msg = type.fromObject(data)
+    return type.encode(msg).finish()
+}
+
+
+function signTxData(txdata, priKeyStr) {
     txdata.signature = null;
-    var data = Transaction.encode(message).finish();
+    var data = Transaction.encode(txdata).finish();
     // hash transaction
     var hash = sha256js.sha256(data);
     var keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));;
@@ -154,78 +156,5 @@ export function signRawTx(rawTx, priKeyStr) {
         pubkey: keypair.publicKey,
         signature: signature,
     };
-
-    message = Transaction.fromObject(txdata);
-    var signedTxBuffer = Transaction.encode(message).finish();
-    var signedTxHexString = Buffer.from(signedTxBuffer).toString('hex');
-    // return encoded transaction hex string
-    return signedTxHexString;
+    return txdata
 }
-
-
-function fromHexString(hexString) {
-    hexString = hexString.replace(/^(0x|0X)/, '');
-    var matchResult = hexString.match(/.{2}/g);
-    if (!matchResult) {
-        throw new Error('hexString format error: ' + hexString);
-    }
-    let intArr = matchResult.map(byte => { return parseInt(byte, 16); })
-    let u8Arr = new Uint8Array(intArr)
-    let resBuffer = Buffer.from(u8Arr)
-    return resBuffer;
-}
-
-// function fromHexString(hexString) {
-//     var pos = 0;
-//     var len = hexString.length;
-//     if (len % 2 != 0) {
-//         return null;
-//     }
-//     len /= 2;
-//     var arrBytes = new Array();
-//     for (var i = 0; i < len; i++) {
-//         var s = hexString.substr(pos, 2);
-//         var v = parseInt(s, 16);
-//         arrBytes.push(v);
-//         pos += 2;
-//     }
-//     return Buffer.from(arrBytes);
-// }
-
-function sha256(data) {
-    return crypto.createHash('sha256').update(data).digest();
-}
-
-function hexStr2Bytes(str) {
-    var pos = 0;
-    var len = str.length;
-    if (len % 2 != 0) {
-        return null;
-    }
-    len /= 2;
-    var arrBytes = new Array();
-    for (var i = 0; i < len; i++) {
-        var s = str.substr(pos, 2);
-        var v = parseInt(s, 16);
-        if (v >= 128) {
-            v = v - 256;
-        }
-        arrBytes.push(v);
-        pos += 2;
-    }
-    return arrBytes;
-}
-
-function bytes2HexStr(b) {
-    let hexs = "";
-    for (let i = 0; i < b.length; i++) {
-
-        let hex = (b[i]).toString(16);
-        if (hex.length === 1) {
-            hex = '0' + hex;
-        }
-        hexs += hex.toUpperCase();
-    }
-    return hexs;
-}
-

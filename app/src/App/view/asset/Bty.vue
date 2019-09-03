@@ -215,12 +215,9 @@ export default {
         this.$refs["address"].addEventListener("scroll", this.addressScroll,false);
       }, 0);
     })
-    // console.log(this.currentAccount)
-    // console.log(this.$store.state.Account.currentAccount)
     this.refreshMainAsset();
     this.refreshParallelAsset();
     this.coin = this.$route.query.coin;
-    // console.log(document.querySelector('#line'))
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url =
       this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
