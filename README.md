@@ -1,8 +1,6 @@
 # 比特元轻钱包
 一个实现了生成助记词、HDWallet、构造交易、交易签名的chrome插件。
 
-## 程序负责人
-梁相邦
 ## 注意事项
 在manifest.json的externally_connectable配置中为了避免出现
 ```

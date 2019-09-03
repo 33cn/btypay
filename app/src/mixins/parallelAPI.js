@@ -93,11 +93,11 @@ export default {
         },
 
         transferBTY2GameCoin(privateKey, amount) {
-            const to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
+            // const to = this.currentAccount.address
+            // let mainUrl = this.currentMain.url
+            // let paraUrl = this.currentParallel.url
 
-            let txs = []
+            // let txs = []
 
             // return this.mainCoins2Paracross(privateKey, amount, mainUrl).then(res => {
             //     return this.main2Parallel(to, amount, paraUrl)
@@ -171,7 +171,6 @@ export default {
             this.sendTransaction(signedTx, paraUrl).then(hash => {
                 console.log(hash)
             })
-
 
             // return this.main2Parallel(to, amount, mainUrl).then(tx => {
             //     return sign.signRawTransaction(tx, privateKey)
