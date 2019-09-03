@@ -84,6 +84,10 @@ export default {
     // 获取最新的区块头
     getLastHeader(url){
       return this.$chain33Sdk.getLastHeader(url)
+    },
+    // 根据hash查询交易
+    queryTx(hash, url){
+      return this.$chain33Sdk.queryTransaction(hash, url)
     }
   }
 }
