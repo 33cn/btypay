@@ -117,6 +117,8 @@ export default {
                     } else {
                         this.txStateTask(hash, url, callback, param)
                     }
+                }).catch(err => {
+                    this.txStateTask(hash, url, callback, param)
                 })
             }, 5000);
         },
@@ -126,17 +128,17 @@ export default {
             let mainUrl = this.currentMain.url
             let paraUrl = this.currentParallel.url
 
-            // this.mainCoins2Paracross(privateKey, amount, mainUrl).then(hash1 => {
-            //     this.txStateCheckTask(hash1, mainUrl, () => {
-            //         this.main2Parallel(privateKey, to, amount, mainUrl).then(hash2 => {
-            //             this.txStateCheckTask(hash2, mainUrl, () => {
-            //                 this.parallelPara2Coins(privateKey, amount, paraUrl).then(hash3 => {
-            //                     console.log(hash3)
-            //                 })
-            //             })
-            //         })
-            //     })
-            // })
+            this.mainCoins2Paracross(privateKey, amount, mainUrl).then(hash1 => {
+                this.txStateCheckTask(hash1, mainUrl, () => {
+                    this.main2Parallel(privateKey, to, amount, mainUrl).then(hash2 => {
+                        this.txStateCheckTask(hash2, mainUrl, () => {
+                            this.parallelPara2Coins(privateKey, amount, paraUrl).then(hash3 => {
+                                console.log(hash3)
+                            })
+                        })
+                    })
+                })
+            })
 
 
             // this.mainCoins2Paracross(privateKey, amount, mainUrl).then(res => {

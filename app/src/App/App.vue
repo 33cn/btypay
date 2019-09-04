@@ -19,27 +19,27 @@ export default {
       if(res.mainNodeList && res.mainNodeList.length > 0){
         // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
       }else{
-        chrome.storage.local.set({ 'mainNodeList': [{url:'http://172.16.103.18:8801'}] }, () => {})
+        chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
         // console.log(this.$store.state.Account.mainNode)
       }
     })
     getChromeStorage('parallelNodeList').then(res=>{
       if(res.parallelNodeList && res.parallelNodeList.length > 0){}else{
-        chrome.storage.local.set({ 'parallelNodeList': [{name:'金比特',coin:"GBT",url:"http://172.16.103.24:8801"}] }, () => {})
+        chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://172.16.103.24:8801",txHeight: -1, txIndex: 0}] }, () => {})
       }
     })
     getChromeStorage('mainNode').then(res=>{
       if(res.mainNode){
         this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
       }else{
-        chrome.storage.local.set({ 'mainNode': {url: 'http://172.16.103.18:8801'} }, () => {})
+        chrome.storage.local.set({ 'mainNode': {url: 'http://47.107.15.126:8801',name: 'user.p.gbttest.',index: 0,txHeight: -1, txIndex: 0, name: "BTY"} }, () => {})
       }
     })
     getChromeStorage('paraNode').then(res=>{
       if(res.paraNode){
         this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
       }else{
-        chrome.storage.local.set({ 'paraNode': {url: 'http://172.16.103.24:8801'} }, () => {})
+        chrome.storage.local.set({ 'paraNode': {url: 'http://172.16.103.24:8801',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0} }, () => {})
       }
     })
   }

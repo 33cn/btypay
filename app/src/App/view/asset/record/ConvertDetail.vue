@@ -9,20 +9,20 @@
         </section>
         <ul>
             <li>
-                <p>转出</p>
-                <p>100 BTY</p>
+                <p>转出数量</p>
+                <p>{{recordDetail.strAmount}}BTY</p>
             </li>
             <li>
-                <p>收到</p>
-                <p>100 Game</p>
+                <p>收到数量</p>
+                <p>{{recordDetail.strAmount | numFilter}}{{parallelAsset.name}}</p>
             </li>
             <li>
                 <p>汇率</p>
-                <p>1BTY=1GAME</p>
+                <p>1BTY=1{{parallelAsset.name}}</p>
             </li>
             <li>
                 <p>矿工费</p>
-                <p>{{recordDetail.fee}}BTY</p>
+                <p>{{recordDetail.fee | numFilter}}BTY</p>
             </li>
             <li>
                 <p>区块</p>
@@ -44,7 +44,10 @@ const { mapState } = createNamespacedHelpers('Records')
 export default {
     components:{AssetBack},
     computed: {
-        ...mapState(['recordDetail'])
+        ...mapState(['recordDetail']),
+        parallelAsset(){
+            return this.$store.state.Account.parallelAsset;
+        }
     },
     methods:{
         copyHandle(event,text){
@@ -61,7 +64,18 @@ export default {
             })
         }
     },
+    filters: {
+        numFilter(val) {
+          if (val || val == 0) {
+            let f = parseFloat(val),
+              result = null;
+            result = Math.floor(f * 10000) / 10000;
+            return parseFloat(result).toFixed(4)
+          }
+        }
+    },
     mounted(){
+        console.log(this.recordDetail)
         // console.log(this.$route.params);
     }
 }

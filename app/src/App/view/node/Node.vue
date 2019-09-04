@@ -109,7 +109,10 @@ export default {
             form:{
                 name:'',
                 coin:'',
-                url:''
+                url:'',
+                index: 0,
+                txHeight: -1, 
+                txIndex: 0
             },
             rules:{
                 name: [{ required: true, message: "请输入平行链名称", trigger: "blur" }],
@@ -130,9 +133,9 @@ export default {
                 if (valid) {
                   console.log("submit!");
                   let obj = JSON.parse(JSON.stringify(this.form))
+                  let arr = this.paraNodeList.concat([obj])
                   this.$store.commit("Account/UPDATE_PARALLEL_NODE", obj);
-                //   let arr = this.paraNodeList.concat([obj])
-                  setChromeStorage('parallelNodeList',this.parallelNode).then(res=>{
+                  setChromeStorage('parallelNodeList',arr).then(res=>{
                     if(res=='success'){
                         // this.paraNodeList = this.mainNode;
                         this.$message.success('平行链节点添加成功');
@@ -159,11 +162,11 @@ export default {
                     return
                 }
             }
-            this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData});
-            // let arr = this.mainNodeList.concat([{'addr':this.mainData}])
+            let arr = this.mainNodeList.concat([{'url':this.mainData,txHeight: -1, txIndex: 0, name: "BTY",index: 0}])
+            this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData,txHeight: -1, txIndex: 0, name: "BTY",index: 0});
             console.log('this.mainData')
             console.log(this.mainData)
-            setChromeStorage('mainNodeList',this.mainNode).then(res=>{
+            setChromeStorage('mainNodeList',arr).then(res=>{
               if(res=='success'){
                 // this.mainNodeList = this.mainNode;
                 this.$message.success('主链节点添加成功');
@@ -176,9 +179,12 @@ export default {
             this.mainData = '';
         },
         setNode(val,target){
+            console.log('setNOde====================')
+            console.log(val)
             if(target == 'main'){
-                this.$store.commit('Account/UPDATE_CURRENT_MAIN',{url: val.url})
-                setChromeStorage('mainNode',{url:val.url}).then(res=>{
+                this.$store.commit('Account/UPDATE_CURRENT_MAIN',val)
+                this.$store.commit('Account/UPDATE_MAIN_CONNECT',1)
+                setChromeStorage('mainNode',val).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getMainNode();//更新视图
@@ -188,8 +194,9 @@ export default {
                     console.log(err)
                 })
             }else if(target == 'para'){
-                this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',{url: val.url})
-                setChromeStorage('paraNode',{url:val.url}).then(res=>{
+                this.$store.commit('Account/UPDATE_CURRENT_PARALLEL',val)
+                this.$store.commit('Account/UPDATE_PARALLEL_CONNECT',1)
+                setChromeStorage('paraNode',val).then(res=>{
                   if(res=='success'){
                     this.$message.success('默认节点设置成功')
                     this.getParaNode();//更新视图

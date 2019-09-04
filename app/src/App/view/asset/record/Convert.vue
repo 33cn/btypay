@@ -1,7 +1,7 @@
 <template>
   <div class="convertD_Container">
     <ul>
-      <li v-for="item in recordData" :key="item.time" @click="toDetail(item)">
+      <li v-for="item in recordData" :key="item.time" @click="toDetail(item,'convert')">
         <div>
           <!-- <img v-if="item.type==1" src="../../../../assets/images/transferLogo.png" alt=""> -->
           <!-- <img src="../../../../assets/images/receiptLogo.png" alt=""> -->

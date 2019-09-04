@@ -1,18 +1,18 @@
 // import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 
 const state = {
-  password: '11111111',
-  seed: 'film finger voyage during alter chat sentence hundred connect riot doctor cash sing nut chat',//助记词
+  password: '',
+  seed: '',//助记词
   accountMap: {},
   currentAccount: {
     // address: "1EscufYUAkgCTTAFVqXmHMvRZMucTepvUM",   //1
     // address: "15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J",   //2
     address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",   //3
     // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",   //4
-    base58PrivateKey: "xprvA3b4zNsRHPgvzSydbftV9acbtKhNui8P69E7B7UNmJCKfWJZ5biLtcnHC9gYWRdGufyhehMcFcaPYpCgNRYznSCBv1gxxGd3xUYAABibgxQ",
-    // hexPrivateKey: "04339cbd3a9981b218dfb042b139714e40e2d72d9357c9e8c940a07ad51e3607",   //1
-    // hexPrivateKey: "910010376d40528ef943df150f419f28d311e5d90751031f9951f1b6cfb5f8d3",   //2
-    hexPrivateKey: '0x76b33cfa093226848e1e979c649778b4a24e040a97bb099007f73afb54b4c2fb', //3
+    base58PrivateKey: "",
+    // hexPrivateKey: "",   //1
+    // hexPrivateKey: "",   //2
+    hexPrivateKey: '', //3
     index: 0,
     name: "创世地址"
   },
@@ -31,11 +31,12 @@ const state = {
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
-  mainNode: [{ index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, coin: "BTY" }],
-  currentMain: { index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, coin: "BTY" },
+  mainNode: [{ index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" }],
+  // mainNode: [{ index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, coin: "BTY" }],
+  currentMain: { index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" },
 
-  parallelNode: [{ index: 0, name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 }],
-  currentParallel: { index: 0, name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 },
+  parallelNode: [{ index: 0, name: 'gbttest', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 }],
+  currentParallel: { index: 0, name: 'gbttest', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 },
 
 }
 
@@ -70,9 +71,9 @@ const mutations = {
     //   }
     // })
   },
-  UPDATE_CURRENT_MAIN(state, { index, url, txHeight, txIndex, coin }) {
+  UPDATE_CURRENT_MAIN(state, payload) {
     // let backup = JSON.parse(JSON.stringify(state.mainNode))
-    let i = state.currentMain.index
+    // let i = state.currentMain.index
     // if (i !== -1) {
     //   index && (state.mainNode[i].index = index)
     //   url && (backup[i].url = url)
@@ -86,13 +87,13 @@ const mutations = {
     //     }
     //   })
     // }
-    index && (state.mainNode[i].index = index)
-    url && (state.mainNode[i].url = url)
-    txHeight && (state.mainNode[i].txHeight = txHeight)
-    txIndex && (state.mainNode[i].txIndex = txIndex)
-    coin && (state.mainNode[i].coin = coin)
+    // index && (state.mainNode[i].index = index)
+    // url && (state.mainNode[i].url = url)
+    // txHeight && (state.mainNode[i].txHeight = txHeight)
+    // txIndex && (state.mainNode[i].txIndex = txIndex)
+    // coin && (state.mainNode[i].coin = coin)
 
-    state.currentMain = state.mainNode[i]
+    state.currentMain = payload
   },
   UPDATE_PARALLEL_NODE(state, payload) {
     let backup = JSON.parse(JSON.stringify(state.parallelNode))
@@ -103,20 +104,21 @@ const mutations = {
       // }
     // })
   },
-  UPDATE_CURRENT_PARALLEL(state, { index, url, txHeight, txIndex, coin }) {
-    let backup = JSON.parse(JSON.stringify(state.parallelNode))
-    let i = state.currentParallel.index
-    index && (backup[i].index = index)
-    url && (backup[i].url = url)
-    txHeight && (backup[i].txHeight = txHeight)
-    txIndex && (backup[i].txIndex = txIndex)
-    coin && (backup[i].coin = coin)
-    // setChromeStorage("parallelNodeList", backup).then(res => {
-      // if (res == "success") {
-        state.parallelNode = backup
-        state.currentParallel = backup[i]
-      // }
-    // })
+  UPDATE_CURRENT_PARALLEL(state, payload) {
+    // let backup = JSON.parse(JSON.stringify(state.parallelNode))
+    // let i = state.currentParallel.index
+    // index && (backup[i].index = index)
+    // url && (backup[i].url = url)
+    // txHeight && (backup[i].txHeight = txHeight)
+    // txIndex && (backup[i].txIndex = txIndex)
+    // coin && (backup[i].coin = coin)
+    // // setChromeStorage("parallelNodeList", backup).then(res => {
+    //   // if (res == "success") {
+    //     state.parallelNode = backup
+    //     state.currentParallel = backup[i]
+    //   // }
+    // // })
+    state.currentParallel = payload
   },
 
   UPDATE_MAIN_ASSET(state, { amt, price }) {
