@@ -1,0 +1,172 @@
+@import "./variables";
+
+.el-button {
+  border-radius: 9999px;
+}
+.el-input__inner {
+  background: #fff;
+}
+
+.el-notification {
+  min-height: 100px;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+
+  &.error-notification .el-notification__content {
+    color: $--color-error;
+  }
+
+  &.success-notification .el-notification__content {
+    color: $--color-primary;
+  }
+  
+}
+
+.el-form-item__label::before{
+  content:''!important;
+ }
+.el-dialog__wrapper{
+  background:rgba(98,119,218,0.65);
+  .el-dialog{
+      background:rgba(251,251,251,1);
+      box-shadow:0px 7px 17px 4px rgba(7,50,98,0.23);
+      border-radius:10px;
+      // padding: 40px 55px;
+      // margin-top: 200px!important;
+      div.el-dialog__header{
+        height: 24px;
+        font-size:18px;
+        font-family:MicrosoftYaHei;
+        font-weight:400;
+        color:rgba(22,42,84,1);
+        line-height:1;
+      }
+      div.el-dialog__body{
+        margin: 24px 0 0px;
+        form{
+          label{
+            font-size:16px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(22,42,84,0.68);
+            line-height:1;
+            // margin-bottom: 5px;
+          }
+          
+        }
+        >p{
+          font-size:16px;
+          font-family:MicrosoftYaHei;
+          font-weight:400;
+          color:rgba(22,42,84,0.68);
+          line-height:1;
+        }
+        input{
+          width: 100%;
+          height: 30px;
+          font-size: 16px;
+          background-color: transparent;
+          border: none;
+          border-bottom: 1px solid rgba(22,42,84,0.23);
+          border-radius: 0px;
+          padding: 10px 0 0 0;
+        }
+        input.mainAddress{
+          margin-top: 20px;
+        }
+      }
+      div.el-dialog__footer{
+        padding: 9px 18px 0;
+        display: flex;
+        justify-content: center;
+        button{
+          width: 78px;
+          padding: 5px;
+          border-radius:10px;
+          font-size:16px;
+          font-family:MicrosoftYaHei;
+          font-weight:400;
+          color:rgba(33,123,244,1);
+          line-height:1;
+          &:nth-of-type(1){
+              margin-right: 46px;
+              border:1px solid rgba(33,123,244,1);
+          }
+          &:nth-of-type(2){
+              color: #fff;
+              background-color: rgba(33,123,244,1)!important;
+              margin: 0px;
+          }
+          &.el-button--primary{
+              background: rgba(33,123,244,1);
+          }
+      }
+      }
+  }
+  &.mainNode{
+    .el-dialog{
+      margin-top: 203px!important;
+      padding: 32px 35px 21px 33px;
+    }
+  }
+  &.paraNode{
+    .el-dialog{
+      margin-top: 105px!important;
+      padding: 35px 45px 32px 43px;
+      div.el-dialog__body{
+        margin: 36px 0 0px;
+        padding-bottom: 0px;
+      }
+      div.el-dialog__footer{
+        padding: 0 16px;
+      }
+    }
+  }
+  .el-button--primary{
+    box-shadow: none!important;
+  }
+}
+
+.el-message-box__wrapper{
+  >div{
+    width: calc(100% - 90px);
+    margin: 0 29px;
+    background:rgba(251,251,251,1);
+    box-shadow:0px 7px 17px 4px rgba(7,50,98,0.23);
+    border-radius:8px;
+    padding: 50px 0 42px;
+    div.el-message-box__header{
+      font-size:16px;
+      font-family:MicrosoftYaHei;
+      font-weight:400;
+      color:rgba(22,42,84,1);
+      line-height:1;
+      padding: 0;
+    }
+    div.el-message-box__content{
+      padding: 24px 0 52px;
+      font-size:14px;
+      font-family:MicrosoftYaHei;
+      font-weight:400;
+      color:rgba(22,42,84,0.68);
+    }
+    div.el-message-box__btns{
+      width: 233px;
+      margin: 0 auto;
+      button{
+        width: 100%;
+        font-size:16px;
+        font-family:MicrosoftYaHei;
+        font-weight:400;
+        color:rgba(255,255,255,1);
+        line-height:1;
+        padding: 5px 0;
+        background:rgba(33,123,244,1);
+        border:1px solid rgba(33,123,244,1);
+        border-radius:10px;
+      }
+    }
+  }
+}

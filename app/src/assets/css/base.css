@@ -1,0 +1,141 @@
+*{
+  box-sizing: border-box!important;
+}
+blockquote,
+body,
+button,
+dd,
+dl,
+dt,
+fieldset,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+input,
+legend,
+li,
+ol,
+p,
+pre,
+td,
+textarea,
+th,
+header,
+input,
+ul {
+  margin: 0;
+  padding: 0;
+  font-family:"pf-regular","Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体";
+}
+p{
+  line-height: 1;
+}
+body{
+  /* background-color: #fff!important; */
+}
+body,
+button,
+input,
+select,
+textarea {
+  font: 12px/1.5 tahoma, arial, 'Hiragino Sans GB', \5b8b\4f53, sans-serif
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%
+}
+
+address,
+cite,
+dfn,
+em,
+var {
+  font-style: normal
+}
+
+code,
+kbd,
+pre,
+samp {
+  /* font-family: courier new, courier, monospace */
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+}
+
+small {
+  font-size: 12px
+}
+
+ol,
+ul {
+  list-style: none
+}
+
+a {
+  text-decoration: none
+}
+
+a:hover {
+  text-decoration: none;
+  cursor: pointer;
+}
+a:visited{
+  color: #000;
+}
+a:active{
+  color: #000;
+}
+
+sup {
+  vertical-align: text-top
+}
+
+sub {
+  vertical-align: text-bottom
+}
+
+legend {
+  color: #000
+}
+
+fieldset,
+img {
+  border: 0
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: 100%
+}
+
+table {
+  /* border-collapse: collapse; */
+  border-collapse: separate;
+  border-spacing: 0
+}
+li{
+  color: black;
+}
+input:focus{
+  outline: none;
+  border:1px solid transparent;
+}
+input[type="number"]{
+  -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
