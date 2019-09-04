@@ -54,8 +54,8 @@ export default {
       if (addr == void 0) { return null }
       if (execer == void 0) { execer = "coins" }
       if (url == void 0) { url = "" }
-      if (asset_exec) { asset_exec = null }
-      if (asset_symbol) { asset_symbol = null }
+      if (asset_exec == void 0) { asset_exec = null }
+      if (asset_symbol == void 0) { asset_symbol = null }
       return this.$chain33Sdk.callPromiseAPI('GetBalance', {
         addresses: [addr],
         execer: execer,
@@ -116,6 +116,10 @@ export default {
     // 根据hash查询交易
     queryTx(hash, url) {
       return this.$chain33Sdk.queryTransaction(hash, url)
+    },
+    // 将合约名转成实际地址
+    convertExecToAddr(name,url){
+      return this.$chain33Sdk.convertExectoAddr(name,url)
     }
   }
 }

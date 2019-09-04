@@ -162,6 +162,8 @@ export default {
                     return
                 }
             }
+            // let index = this.mainNodeList.length;
+            // this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData,txHeight: -1, txIndex: 0, name: "BTY",index});
             let arr = this.mainNodeList.concat([{'url':this.mainData,txHeight: -1, txIndex: 0, name: "BTY",index: 0}])
             this.$store.commit("Account/UPDATE_MAIN_NODE", {'url':this.mainData,txHeight: -1, txIndex: 0, name: "BTY",index: 0});
             console.log('this.mainData')
@@ -179,8 +181,6 @@ export default {
             this.mainData = '';
         },
         setNode(val,target){
-            console.log('setNOde====================')
-            console.log(val)
             if(target == 'main'){
                 this.$store.commit('Account/UPDATE_CURRENT_MAIN',val)
                 this.$store.commit('Account/UPDATE_MAIN_CONNECT',1)
