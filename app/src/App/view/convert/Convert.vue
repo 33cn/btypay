@@ -41,7 +41,7 @@
       <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
     </section>
     <p @click="convertHandle">跨链兑换{{isOperatoring?'...':''}}</p>
-    <!-- <el-button size="mini" @click="showBalance">查余额</el-button> -->
+    <el-button size="mini" @click="showBalance">查余额</el-button>
   </div>
 </template>
 
@@ -98,14 +98,16 @@ export default {
       let paraUrl = this.currentParallel.url;
 
       
-      
+      console.log("=====================================================")
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
         console.log("0.bty", res[0].balance);
       });
 
-      this.getAddrBalance(addr, "paracross", mainUrl).then(res => {
+      this.getAddrBalance(addr, "paracross", mainUrl, "paracross", "coins.bty").then(res => {
         console.log("1.main para", res[0].balance);
       });
+
+      this.$chain33Sdk.getTokenBalance
 
       this.getAddrBalance(
         addr,
@@ -207,26 +209,26 @@ export default {
               //   this.$message.error("发生错误");
               // });
           } else if (this.convert == "G2B") {
-            this.transferGameCoin2BTY1(
+            this.transferGameCoin2BTY(
               this.currentAccount.hexPrivateKey,
               parseFloat(this.exportVal * 1e8)
             )
-              .then(res => {
-                console.log(res);
-                this.isOperatoring = false;
-                this.exportVal = 0;
-                this.$alert("请关注收款地址的资金变动。", "兑换成功", {
-                  confirmButtonText: "确认",
-                  closeOnClickModal: true,
-                  center: true,
-                  showClose: false
-                });
-              })
-              .catch(err => {
-                this.isOperatoring = false;
-                console.log(err);
-                this.$message.error("发生错误");
-              });
+              // .then(res => {
+              //   console.log(res);
+              //   this.isOperatoring = false;
+              //   this.exportVal = 0;
+              //   this.$alert("请关注收款地址的资金变动。", "兑换成功", {
+              //     confirmButtonText: "确认",
+              //     closeOnClickModal: true,
+              //     center: true,
+              //     showClose: false
+              //   });
+              // })
+              // .catch(err => {
+              //   this.isOperatoring = false;
+              //   console.log(err);
+              //   this.$message.error("发生错误");
+              // });
           }
         } else {
           this.isOperatoring = false;

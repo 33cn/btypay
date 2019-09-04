@@ -221,11 +221,6 @@ export default {
     /* 资产相关 -- end */
 
     /* 交易记录相关 --start */
-    getTxCursor(coin, flag, callback) {
-      // let cNode = this.currentNode(coin)
-      // let symbol = cNode.coin
-      // dbHelper.getCursorByIndex(TABLE_NAME, TABLE_DATA.index[0].name, [symbol, flag], callback)
-    },
 
     initTxList(coin) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
