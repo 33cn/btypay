@@ -222,7 +222,7 @@ export default {
 
     /* 交易记录相关 --start */
 
-    initTxList(coin) {
+    initTxList(coin, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
       let symbol = cNode.name
@@ -248,6 +248,8 @@ export default {
           // 重复调用拉取数据
           if (res.txs.length === count) {
             this.initTxList(coin)
+          } else {
+            callback("finish")
           }
         } else {
           this.getLastHeader(cNode.url).then(res => {

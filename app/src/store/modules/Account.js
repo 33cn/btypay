@@ -16,8 +16,8 @@ const state = {
     index: 0,
     name: "创世地址"
   },
-  mainIsConnected:1,//1:连接中；2:连接成功；3:连接失败
-  parallelIsConnected:1,//1:连接中；2:连接成功；3:连接失败
+  mainIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
+  parallelIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
 
 
   mainAsset: {
@@ -44,10 +44,10 @@ const state = {
 }
 
 const mutations = {
-  UPDATE_MAIN_CONNECT(state, payload){
+  UPDATE_MAIN_CONNECT(state, payload) {
     state.mainIsConnected = payload;
   },
-  UPDATE_PARALLEL_CONNECT(state, payload){
+  UPDATE_PARALLEL_CONNECT(state, payload) {
     state.parallelIsConnected = payload;
   },
   UPDATE_PASSWORD(state, payload) {
@@ -103,8 +103,8 @@ const mutations = {
     backup.push(payload)
     // setChromeStorage("parallelNodeList", backup).then(res => {
     //   if (res == "success") {
-        state.parallelNode = backup
-      // }
+    state.parallelNode = backup
+    // }
     // })
   },
   UPDATE_CURRENT_PARALLEL(state, { index, url, txHeight, txIndex, coin }) {
@@ -116,10 +116,10 @@ const mutations = {
     txIndex && (backup[i].txIndex = txIndex)
     coin && (backup[i].coin = coin)
     // setChromeStorage("parallelNodeList", backup).then(res => {
-      // if (res == "success") {
-        state.parallelNode = backup
-        state.currentParallel = backup[i]
-      // }
+    // if (res == "success") {
+    state.parallelNode = backup
+    state.currentParallel = backup[i]
+    // }
     // })
   },
 

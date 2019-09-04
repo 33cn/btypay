@@ -150,16 +150,6 @@ export default {
                 })
             })
 
-            // -----
-            // return this.parallelCoins2Trade(amount, paraUrl).then(tx => {
-            //     return signRawTx(tx, privateKey)
-            // }).then(signedTx => {
-            //     return this.sendTransaction(signedTx, paraUrl)
-            // }).then(res => {
-            //     console.log(res)
-            // })
-
-
             // 挂大买单
             // let params = {
             //     tokenSymbol: "coins.bty", 

@@ -187,7 +187,7 @@ export default {
           showClose: false
         });
         this.isOperatoring = false
-        this.exportVal = 0
+        this.exportVal = ""
       }
     },
     convertHandle() {

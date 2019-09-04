@@ -80,6 +80,11 @@ export default {
           // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
           //   console.log(res)
           // })
+          // this.initTxList('bty', res => {
+          //   if(res === "finish"){
+
+          //   }
+          // })
           setTimeout(() => {
             this.$router.push({ name: 'WalletIndex' })
           }, 500)
