@@ -225,7 +225,7 @@ export default {
     initTxList(coin) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
-      let symbol = cNode.coin
+      let symbol = cNode.name
       let count = 100
 
       // 拉取数据
@@ -259,7 +259,7 @@ export default {
     getTxList(coin, typeTy, advanceNum, refresh, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
-      let symbol = cNode.coin
+      let symbol = cNode.name
       let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
       let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
 
@@ -291,7 +291,7 @@ export default {
 
     filterAndSaveTx(coin, updateMethod, tx) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
-      let symbol = cNode.coin
+      let symbol = cNode.name
       let lastTx = null
       let createNewTx = false
       let blockHeight = tx.height;

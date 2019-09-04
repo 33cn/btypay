@@ -40,8 +40,8 @@
       </div>
       <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
     </section>
-    <p @click="convertHandle">跨链兑换{{isOperatoring?'...':''}}</p>
-    <el-button size="mini" @click="showBalance">查余额</el-button>
+    <p @click="convertHandle">{{isOperatoring?'兑换中，请稍后...':'跨链兑换'}}</p>
+    <!-- <el-button size="mini" @click="showBalance">查余额</el-button> -->
   </div>
 </template>
 
@@ -93,50 +93,52 @@ export default {
   },
   methods: {
     showBalance() {
-      let addr = this.currentAccount.address
+      let addr = this.currentAccount.address;
       let mainUrl = this.currentMain.url;
       let paraUrl = this.currentParallel.url;
 
-      
-      console.log("=====================================================")
+      console.log("=====================================================");
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
         console.log("0.bty", res[0].balance);
       });
 
-      this.getAddrBalance(addr, "paracross", mainUrl, "paracross", "coins.bty").then(res => {
+      this.getAddrBalance(addr, "paracross", mainUrl).then(res => {
         console.log("1.main para", res[0].balance);
       });
 
-      this.$chain33Sdk.getTokenBalance
+      this.$chain33Sdk.getTokenBalance;
+
+      let paraName = "gbttest";
 
       this.getAddrBalance(
         addr,
-        "user.p.gbttest.paracross",
+        "user.p." + paraName + ".paracross",
         paraUrl,
         "paracross",
-        "coins.bty",
+        "coins.bty"
       ).then(res => {
         console.log("2.para para", res[0].balance);
       });
 
       this.getAddrBalance(
         addr,
-        "user.p.gbttest.trade",
+        "user.p." + paraName + ".trade",
         paraUrl,
         "paracross",
-        "coins.bty",
+        "coins.bty"
       ).then(res => {
         console.log("3.trade bty", res[0].balance);
       });
 
-      this.getAddrBalance(addr, "user.p.gbttest.trade", paraUrl).then(res => {
-        console.log("4.trade", res[0].balance);
-      });
-      
+      this.getAddrBalance(addr, "user.p." + paraName + ".trade", paraUrl).then(
+        res => {
+          console.log("4.trade", res[0].balance);
+        }
+      );
+
       this.getAddrBalance(addr, "coins", paraUrl).then(res => {
         console.log("5.gbt", res[0].balance);
       });
-
     },
 
     inputHandle(e, v) {
@@ -166,15 +168,27 @@ export default {
         }
         val = this.asset.amt;
       }
-      // if (e.target.value > val) {
-      //   this.isInput = true;
-      //   this.$message.error("余额不足");
-      //   setTimeout(() => {
-      //     this.exportVal = null;
-      //     this.receiptVal = null;
-      //     this.isInput = false;
-      //   }, 500);
-      // }
+      if (e.target.value > val) {
+        this.isInput = true;
+        this.$message.error("余额不足");
+        setTimeout(() => {
+          this.exportVal = null;
+          this.receiptVal = null;
+          this.isInput = false;
+        }, 500);
+      }
+    },
+    convertResHandle(res) {
+      if (res === "success") {
+        this.$alert("请关注收款地址的资金变动。", "兑换成功", {
+          confirmButtonText: "确认",
+          closeOnClickModal: true,
+          center: true,
+          showClose: false
+        });
+        this.isOperatoring = false
+        this.exportVal = 0
+      }
     },
     convertHandle() {
       if (this.isOperatoring) {
@@ -182,53 +196,20 @@ export default {
       }
       this.isOperatoring = true;
       if (this.exportVal) {
-        this.isOperatoring = false; //待删
         if (this.currentAccount) {
           // B2G
           if (this.convert == "B2G") {
             this.transferBTY2GameCoin(
               this.currentAccount.hexPrivateKey,
-              parseFloat(this.exportVal * 1e8)
-            )
-              // .then(res => {
-              //   console.log(res);
-              //   this.isOperatoring = false;
-              //   this.exportVal = 0;
-              //   this.$alert("请关注收款地址的资金变动。", "兑换成功", {
-              //     confirmButtonText: "确认",
-              //     closeOnClickModal: true,
-              //     center: true,
-              //     showClose: false
-              //   });
-              // })
-              // .catch(err => {
-              //   this.isOperatoring = false;
-              //   console.log(err);
-              //   // console.log(err.id)
-              //   // console.log(typeof err)
-              //   this.$message.error("发生错误");
-              // });
+              parseInt(this.exportVal * 1e8),
+              this.convertResHandle
+            );
           } else if (this.convert == "G2B") {
             this.transferGameCoin2BTY(
               this.currentAccount.hexPrivateKey,
-              parseFloat(this.exportVal * 1e8)
-            )
-              // .then(res => {
-              //   console.log(res);
-              //   this.isOperatoring = false;
-              //   this.exportVal = 0;
-              //   this.$alert("请关注收款地址的资金变动。", "兑换成功", {
-              //     confirmButtonText: "确认",
-              //     closeOnClickModal: true,
-              //     center: true,
-              //     showClose: false
-              //   });
-              // })
-              // .catch(err => {
-              //   this.isOperatoring = false;
-              //   console.log(err);
-              //   this.$message.error("发生错误");
-              // });
+              parseInt(this.exportVal * 1e8),
+              this.convertResHandle
+            );
           }
         } else {
           this.isOperatoring = false;

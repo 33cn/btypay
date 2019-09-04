@@ -1,8 +1,3 @@
-export function initDB() {
-    console.log("xxx")
-}
-
-
 export class DBHelper {
     DB = null
     DBName = ""

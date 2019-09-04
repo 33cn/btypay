@@ -16,7 +16,9 @@ export const TransactionsType = {
   OpenTicket: 9,
   CloseTicket: 10,
 
-  Exchange: 11
+  Exchange: 11,
+  Exchange2Bty: 12,
+  Exchange2Para: 13
 }
 
 export const TransactionFlag = {

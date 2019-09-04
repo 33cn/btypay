@@ -31,11 +31,15 @@ const state = {
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
-  mainNode: [{ index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, coin: "BTY" }],
-  currentMain: { index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, coin: "BTY" },
+  mainNode: [{ index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, name: "BTY" }],
+  currentMain: { index: 0, url: 'http://172.16.103.18:8801', txHeight: -1, txIndex: 0, name: "BTY" },
 
-  parallelNode: [{ index: 0, name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 }],
-  currentParallel: { index: 0, name: '金比特', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 },
+  parallelNode: [
+    { index: 0, name: 'gbttest', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 },
+    { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 },
+  ],
+  currentParallel: { index: 0, name: 'gbttest', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0 },
+  // currentParallel: { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 },
 
 }
 
