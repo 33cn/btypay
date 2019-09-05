@@ -1,5 +1,5 @@
 # 比特元轻钱包
-一个实现了生成助记词、HDWallet、构造交易、交易签名的chrome插件。
+一个实现了生成助记词、公私钥对、地址、构造交易、交易签名、跨链兑换的浏览器插件。
 
 ## 注意事项
 在manifest.json的externally_connectable配置中为了避免出现
@@ -15,12 +15,8 @@ Wildcard domain patterns such as "<all_urls>" are not allowed
 "http://127.0.0.1:*/*"
 ```
 
-- 2019/7/9 
-    - 曾经上架过chrome网上应用商店，不过目前已经被下架。不过签名、创建钱包等功能还能正常使用，可作为开发Dapp的开发工具
-    - 签名功能只能签名单笔普通交易，不能对交易组签名
-
 ## 开始使用
-##### 构建代码
+##### 构建打包代码
 ```
 cd app
 npm install
@@ -32,7 +28,6 @@ npm run build
 3. 点击"加载已解压的扩展程序"
 4. 选择当前项目的BTY Wallet目录
 5. 点击确认
-![install extension](https://gitlab.33.cn/bityuan/wallet-in-chrome/raw/develop/extension-install.png)
 ##### 调用钱包注入方法
 插件会在每个tab 页注入一个全局对象 btyExtensionProvider ，btyExtensionProvider提供了
 <br>
@@ -73,8 +68,3 @@ getCurrentAccount() {
 ```
 
 
-# 开始开发
-
-- 官方文档 https://developer.chrome.com/webstore/get_started_simple
-- 开发者账号 fuzamedev@gmail.com 密码 33fuzamei123 [其它账户信息](./account-info.png)
-- chrome 应用商店上传应用地址 https://chrome.google.com/webstore/developer/dashboard?pli=1&authuser=1
