@@ -18,7 +18,7 @@ export default {
     getChromeStorage('mainNodeList').then(res=>{
       if(res.mainNodeList && res.mainNodeList.length > 0){
         // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
-        chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
+        // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
       }else{
         chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
         // console.log(this.$store.state.Account.mainNode)
