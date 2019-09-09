@@ -3,8 +3,6 @@ import { createNamespacedHelpers } from 'vuex'
 import { signRawTx, signGroupTx } from '@/libs/sign.js'
 
 const { mapState } = createNamespacedHelpers('Account')
-const paracrossAddr = "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe"
-const tradeAddr = "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx"
 const buyId = "5f7a288651fea390c1cd0af6c2605b9e56d1297ede583d437b95e691cd758d42"
 const sellId = "4514d2d53fdfcf534241ff31886d78b8b81f41c2094783ffa321c91cfa21378a"
 
@@ -13,6 +11,12 @@ export default {
     mixins: [chain33API],
     computed: {
         ...mapState(['accountMap', 'currentAccount', 'currentMain', 'currentParallel']),
+        paraAddr(){
+            return this.currentParallel.paraAddr
+        },
+        tradeAddr(){
+            return this.currentParallel.tradeAddr
+        },
         paraExecer(){
             return "user.p." + this.currentParallel.name + ".paracross"
         },
@@ -21,13 +25,13 @@ export default {
         },
         diceExecer(){
             return "user.p." + this.currentParallel.name + ".wasm.dice"
-        }
+        },
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
         mainCoins2Paracross(privateKey, amount, url) {
             let params = {
-                to: paracrossAddr,
+                to: paraAddr,
                 execName: "paracross",
                 amount: amount
             }
@@ -214,7 +218,7 @@ export default {
 
         mainParacross2Coins(privateKey, amount, url) {
             let params = {
-                to: paracrossAddr,
+                to: paraAddr,
                 amount: amount,
                 execName: "paracross",
                 isWithdraw: true

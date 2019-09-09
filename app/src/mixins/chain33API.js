@@ -116,6 +116,10 @@ export default {
     // 根据hash查询交易
     queryTx(hash, url) {
       return this.$chain33Sdk.queryTransaction(hash, url)
+    },
+    // 将合约名转成实际地址
+    convertExecToAddr(name){
+      return this.$chain33Sdk.convertExectoAddr(name)
     }
   }
 }
