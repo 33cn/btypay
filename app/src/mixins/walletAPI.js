@@ -284,6 +284,7 @@ export default {
               }
             }
           }
+          console.log(keyName, keyData)
           dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, advanceNum, callback)
         })
       } else {

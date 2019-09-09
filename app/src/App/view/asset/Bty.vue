@@ -225,6 +225,9 @@ export default {
 
 
     this.getNTxFirstTime(this.currentTypeTy, 5);
+    this.convertExecToAddr('user.p.gbttest.trade',this.currentParallel.url).then(res=>{
+      console.log(res)
+    })
   },
   beforeDestroy() {
     this.$refs["txListWrap"].removeEventListener("scroll", this.onScroll);

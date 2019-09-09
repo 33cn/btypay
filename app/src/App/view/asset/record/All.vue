@@ -1,7 +1,7 @@
 <template>
   <div class="all_Container">
     <ul>
-      <li v-for="item in recordData" :key="item.time" @click="toDetail(item)">
+      <li v-for="item in recordData" :key="item.time" @click="toDetail(item,item.typeTy)">
         <div>
           <img
             v-if="item.typeTy==TX_TYPE.SendToAddress"

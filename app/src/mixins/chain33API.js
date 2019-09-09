@@ -118,8 +118,8 @@ export default {
       return this.$chain33Sdk.queryTransaction(hash, url)
     },
     // 将合约名转成实际地址
-    convertExecToAddr(name){
-      return this.$chain33Sdk.convertExectoAddr(name)
+    convertExecToAddr(name,url){
+      return this.$chain33Sdk.convertExectoAddr(name,url)
     }
   }
 }
