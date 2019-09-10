@@ -22,7 +22,7 @@
         <li @click="toGame" ref="game">
           <div class="left">
             <img src="../../../assets/images/gameLogo.png" alt />
-            <p>{{ parallelAsset.name }}</p>
+            <p>{{ currentParallel.coin }}</p>
           </div>
           <div class="right">
             <p v-if="numIsAnimation" id="game">0.0000</p>

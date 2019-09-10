@@ -84,13 +84,20 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         payload,
       })
       break;
+    case 'create-new-window':
+      if(isWalletUnlock()){
+        createNewWindow('WalletIndex', payload)
+      }else{
+        createNewWindow('importOrCreate', payload)
+      }
+      break;
     default:
       
   }
   return true;
 })
 
-function createNewWindow(route, payload, width = 400, height = 600) {
+function createNewWindow(route, payload, width = 416, height = 636) {
   let baseURL = `${window.chrome.runtime.getURL('/dist/index.html')}#/${route}`
   let url = spliceURL(baseURL, payload)
   chrome.windows.create({url, width, height, type: 'popup'})

@@ -64,5 +64,23 @@ body {
   // background: #dfe7f3;
   background-image: url('../assets/images/indexBg.png');
   background-size: 100% 100%;
+  box-sizing: border-box;
+  /* 设置滚动条的样式 */
+      &::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        background: transparent;
+      }
+      // /* 滚动槽 */
+      // &::-webkit-scrollbar-track {
+      // //   border-radius: $--border-radius-base;
+      //   background: transparent;
+      // }
+      // /* 滚动条滑块 */
+      &::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 0px;
+        opacity: 0.2;
+      }
 }
 </style>

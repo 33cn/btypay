@@ -75,6 +75,40 @@
         window.postMessage({ type: 'GET_CURRENT_ACCOUNT', payload: {} }, '*')
       })
     }
+
+    /**
+     * @description 获取余额
+     * @returns {Promise<any>}
+     */
+    queryGameBalance(){
+      return new Promise((resolve,reject)=>{
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({data: {payload}}) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_QUERY_GAME_BALANCE', signAnswerHandle, true)
+        window.postMessage({ type: 'QUERY_GAME_BALANCE', payload: {} }, '*')
+      })
+    }
+    
+
+    // 测试
+    createNewWindow(){
+      return new Promise((resolve,reject)=>{
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({data: {payload}}) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_CREATE_NEW_WINDOW', signAnswerHandle, true)
+        window.postMessage({ type: 'CREATE_NEW_WINDOW', payload: {} }, '*')
+      })
+    }
   }
 
   window.btyExtensionProvider = new Provider()

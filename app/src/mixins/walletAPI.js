@@ -74,8 +74,8 @@ export default {
     },
     getWallet() {
       return new Promise((resolve) => {
-        console.log('getWallet')
-        console.log(isDev)
+        // console.log('getWallet')
+        // console.log(isDev)
         if (isDev) {
           resolve(window.myChain33WalletInstance)
         } else {
@@ -202,7 +202,6 @@ export default {
       return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
           let payload = { amt: res[0].balance / 1e8 }
-          // console.log(payload)
           this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
           this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
           resolve('success')

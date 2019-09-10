@@ -1,6 +1,6 @@
 <template>
   <div class="transfer_container">
-    <asset-back :title="coin=='bty'?'BTY转账':parallelAsset.name+'转账'"></asset-back>
+    <asset-back :title="coin=='bty'?'BTY转账':currentParallel.coin+'转账'"></asset-back>
     <el-form
       :model="form"
       :rules="rules"
@@ -10,12 +10,12 @@
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
         <p v-if="coin=='bty'" class="balance">余额{{mainAsset.amt| numFilter(2)}}BTY</p>
-        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{parallelAsset.name}}</p>
+        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{currentParallel.coin}}</p>
         <p v-if="coin=='bty'" class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
         <p v-if="coin=='game'" class="mentionAll" @click="form.num=parallelAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+parallelAsset.name+"地址"' auto-complete="off"></el-input>
+        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+currentParallel.coin+"地址"' auto-complete="off"></el-input>
         <!-- <img src="../../../assets/images/scan.png" alt="" class="scan">
         <p class="line"></p> -->
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">

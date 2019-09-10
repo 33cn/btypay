@@ -14,11 +14,11 @@
             </li>
             <li>
                 <p>收到数量</p>
-                <p>{{recordDetail.strAmount | numFilter}}{{parallelAsset.name}}</p>
+                <p>{{recordDetail.strAmount | numFilter}}{{currentParallel.coin}}</p>
             </li>
             <li>
                 <p>汇率</p>
-                <p>1BTY=1{{parallelAsset.name}}</p>
+                <p>1BTY=1{{currentParallel.coin}}</p>
             </li>
             <li>
                 <p>矿工费</p>
