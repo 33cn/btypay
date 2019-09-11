@@ -318,7 +318,7 @@ export default {
     // this.refreshParallelAsset();
     // this.convertExecToAddr(
     //   "user.p.gbttest.paracross",
-    //   'http://172.16.103.24:8801'
+    //   'http://114.55.11.139:1198'
     // ).then(res=>{
     //     console.log(res)
     // })
