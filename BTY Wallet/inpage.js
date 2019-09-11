@@ -93,7 +93,24 @@
         window.postMessage({ type: 'QUERY_GAME_BALANCE', payload: {} }, '*')
       })
     }
-    
+
+    /**
+     * @description 获取平行链节点列表
+     * @returns {Promise<any>}
+     */
+    queryParallelNode(){
+      return new Promise((resolve,reject)=>{
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({data: {payload}}) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_QUERY_PARALLEL_NODE', signAnswerHandle, true)
+        window.postMessage({ type: 'QUERY_PARALLEL_NODE', payload: {} }, '*')
+      })
+    }
 
     // 测试
     createNewWindow(){

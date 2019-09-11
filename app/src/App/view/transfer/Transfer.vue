@@ -42,6 +42,7 @@ import { dMinFee, addrValidate } from '@/libs/bitcoinAmount.js'
 import {eventBus} from '@/libs/eventBus.js'
 
 const {mapState} = createNamespacedHelpers('Account')
+
 export default {
   mixins: [walletAPI, chain33API, backgroundCommuncation],
   components: { AssetBack },

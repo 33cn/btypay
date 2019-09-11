@@ -63,6 +63,12 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
+      case 'QUERY_PARALLEL_NODE':
+        chrome.runtime.sendMessage({
+          action: 'query-parallel-node',
+          payload: data.payload,
+        })
+        break
     }
   })
   // listen message from background page
@@ -76,6 +82,9 @@ function listenForProviderRequest () {
         break
       case 'answer-get-current-account':
         window.postMessage({ type: 'ANSWER_GET_CURRENT_ACCOUNT', payload }, '*')
+        break
+      case 'answer-query-parallel-node':
+        window.postMessage({ type: 'ANSWER_QUERY_PARALLEL_NODE', payload }, '*')
         break
     }
   })

@@ -1,20 +1,10 @@
 chrome.runtime.onInstalled.addListener(()=>{
-  // // alert('BTY钱包插件安装好啦！')
-  // console.log('hello')
-  // window.aaaa = 'fanrui'
   chrome.notifications.create(null, {
     type: 'basic',
     iconUrl: 'icons/logo.png',
     title: 'BTY钱包插件',
     message: 'BTY钱包插件安装成功，快去使用吧！'
   });
-  chrome.storage.local.set({['key']: 'fanrui'}, () => {
-    // console.log('value')
-  })
-  chrome.storage.local.get('key',(val)=>{
-    // console.log(val)
-  })
-  // console.log(Pupop)
 });
 
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
@@ -67,7 +57,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
     case 'sign-tx':
       if (isWalletUnlock()) {
         payload.actionID = action
-        createNewWindow('sign', payload)
+        createNewWindow('CreateWallet', payload)
       } else {
         sendMessage({
           action: 'answer-sign-tx',
@@ -91,6 +81,28 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         createNewWindow('importOrCreate', payload)
       }
       break;
+    case 'query-parallel-node':
+      if (isWalletUnlock()) {
+        window.chrome.storage.local.get('parallelNodeList', (result) => {
+          sendMessage({
+            action: 'answer-query-parallel-node',
+            payload: {
+              error: null,
+              result
+            },
+          })
+        })
+      } else {
+        sendMessage({
+          action: 'answer-query-parallel-node',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      
+      break
     default:
       
   }

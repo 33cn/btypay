@@ -26,9 +26,15 @@ export default {
     })
     getChromeStorage('parallelNodeList').then(res=>{
       if(res.parallelNodeList && res.parallelNodeList.length > 0){
-        // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://172.16.103.24:8801",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+        // window.chrome.runtime.getBackgroundPage(win => {
+        //   console.log('res.parallelNodeList')
+        //   console.log(res.parallelNodeList)
+        //   win.parallelNode = res.parallelNodeList;
+        //   console.log(win.parallelNode)
+        // })
+        // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
       }else{
-        chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://172.16.103.24:8801",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+        chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
       }
     })
     getChromeStorage('mainNode').then(res=>{
@@ -41,8 +47,10 @@ export default {
     getChromeStorage('paraNode').then(res=>{
       if(res.paraNode){
         this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
+        // chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
       }else{
-        chrome.storage.local.set({ 'paraNode': {url: 'http://172.16.103.24:8801',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
+        chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
+        // chrome.storage.local.set({ 'paraNode': {url: 'http://172.16.103.24:8801',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
       }
     })
   }
