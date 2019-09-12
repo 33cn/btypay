@@ -1,6 +1,6 @@
 <template>
     <div class="receipt_container">
-        <asset-back :title='coin=="bty"?"BTY收款":parallelAsset.name+"收款"'></asset-back>
+        <asset-back :title='coin=="bty"?"BTY收款":currentParallel.coin+"收款"'></asset-back>
         <section class="content">
             <canvas id="qrcode"></canvas>
             <div>
@@ -8,7 +8,7 @@
                 <p @click="copyHandle($event, currentAccount.address)">复制</p>
                 <!-- <img @click="copyHandle($event, currentAccount.address)" src="../../../assets/images/copy.png" alt=""> -->
             </div>
-            <p>注意：该地址仅支持{{coin=='bty'?'BTY':parallelAsset.name}}收款，请勿向该地址充值其他币种。</p>
+            <p>注意：该地址仅支持{{coin=='bty'?'BTY':currentParallel.coin}}收款，请勿向该地址充值其他币种。</p>
         </section>
     </div>
 </template>

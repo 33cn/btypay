@@ -72,11 +72,17 @@ export default {
   mounted() {
     this.$refs["pwdInput"] && this.$refs["pwdInput"].focus();
     this.getWallet().then(wallet => {
+      console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
+      console.log(wallet)
+      console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
       if (wallet) {
         // 已创建/导入钱包
         getChromeStorage("loginTime").then(res => {
           if (res.loginTime) {
             let time = 1 * 24 * 60 * 60 * 1000;
+            console.log(res.loginTime)
+            console.log(new Date().valueOf())
+            console.log(new Date().valueOf() - parseInt(res.loginTime))
             if (new Date().valueOf() - parseInt(res.loginTime) >= time) {
               console.log("大于24小时");
               //   this.$router.push({ name: "login" });
@@ -97,6 +103,8 @@ export default {
         });
       }
       this.recoverAccount();
+    }).catch(err=>{
+      console.log(wallet)
     });
   }
 };

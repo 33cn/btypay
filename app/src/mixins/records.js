@@ -13,7 +13,7 @@ export default {
     },
     methods: {
         toDetail(val,from='') {
-            console.log(from)
+            // console.log(from)
             this.$store.commit('Records/RECORD_DETAIL',val);
             if(from == 'convert' || from == 11){
                 this.$router.push({ name: 'convertDetail', params: { hash: val.hash } })

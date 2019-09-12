@@ -11,17 +11,17 @@ export class DBHelper {
 
         request.onsuccess = e => {
             this.DB = e.target.result
-            console.log("init db success")
+            // console.log("init db success")
         }
 
         request.onupgradeneeded = e => {
             this.DB = e.target.result
             this.createTable(tableName, tableData)
-            console.log("db upgrade success")
+            // console.log("db upgrade success")
         }
 
         request.onerror = e => {
-            console.log("init db error")
+            // console.log("init db error")
         }
     }
 
@@ -33,7 +33,7 @@ export class DBHelper {
                     objectStore.createIndex(index.name, index.key, index.payload)
                 }
             }
-            console.log("table create success")
+            // console.log("table create success")
         }
     }
 
@@ -42,11 +42,11 @@ export class DBHelper {
             let request = this.DB.transaction([tableName], 'readwrite').objectStore(tableName).add(data)
 
             request.onsuccess = e => {
-                console.log("insert success")
+                // console.log("insert success")
             }
 
             request.onerror = e => {
-                console.log("insert error")
+                // console.log("insert error")
             }
         }
     }
@@ -67,12 +67,12 @@ export class DBHelper {
                 num--
             } else {
                 callback(list)
-                console.log("end")
+                // console.log("end")
             }
         }
 
         request.onerror = e => {
-            console.log("cursor error")
+            // console.log("cursor error")
         }
     }
 

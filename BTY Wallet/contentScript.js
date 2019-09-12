@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function()
     installNode.id = 'bty-chrome-extension-installed';
     installNode.style.display = 'none';
     // installNode.setAttribute('version', chrome.extension.getManifest().version); // 把版本号放到属性里
-    installNode.innerText=JSON.stringify({key: 'BTY'}); // 把通信的data放到标签的html text里面
+    installNode.innerText=JSON.stringify({'isINstalled': true}); // 把通信的data放到标签的html text里面
     // 创建一个事件，表示从Chrome发送消息给网页
     // var eventFromChrome = document.createEvent('Event');
     // eventFromChrome.initEvent('EventFromChrome', true, true);
@@ -57,6 +57,18 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
+      case 'CREATE_NEW_WINDOW':
+        chrome.runtime.sendMessage({
+          action: 'create-new-window',
+          payload: data.payload,
+        })
+        break
+      case 'QUERY_PARALLEL_NODE':
+        chrome.runtime.sendMessage({
+          action: 'query-parallel-node',
+          payload: data.payload,
+        })
+        break
     }
   })
   // listen message from background page
@@ -70,6 +82,9 @@ function listenForProviderRequest () {
         break
       case 'answer-get-current-account':
         window.postMessage({ type: 'ANSWER_GET_CURRENT_ACCOUNT', payload }, '*')
+        break
+      case 'answer-query-parallel-node':
+        window.postMessage({ type: 'ANSWER_QUERY_PARALLEL_NODE', payload }, '*')
         break
     }
   })

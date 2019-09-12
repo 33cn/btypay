@@ -54,34 +54,34 @@ export default {
       }
     },
     createHDWallet(mnemonic) {
-      console.log(isDev)
+      // console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
-      console.log(wallet)
+      // console.log(wallet)
       // 保存登录时间
       setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
-        console.log(res)
+        // console.log(res)
       })
       if (isDev) {
         window.myChain33WalletInstance = wallet
       } else {
         getBackgroundPage().then(win => {
           win.myChain33WalletInstance = wallet
-          console.log('createHDWallet')
-          console.log(win)
+          // console.log('createHDWallet')
+          // console.log(win)
         })
       }
       return wallet
     },
     getWallet() {
       return new Promise((resolve) => {
-        console.log('getWallet')
-        console.log(isDev)
+        // console.log('getWallet')
+        // console.log(isDev)
         if (isDev) {
           resolve(window.myChain33WalletInstance)
         } else {
           getBackgroundPage().then(win => {
-            console.log(win)
-            console.log(win.myChain33WalletInstance)
+            // console.log(win)
+            // console.log(win.myChain33WalletInstance)
             resolve(win.myChain33WalletInstance)
           })
         }
@@ -89,8 +89,8 @@ export default {
     },
     newAccount(name) {
       return this.getWallet().then(wallet => {
-        console.log('newAccount')
-        console.log(wallet)
+        // console.log('newAccount')
+        // console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
         this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
@@ -103,11 +103,11 @@ export default {
       this.getWallet().then(wallet => {
         //  获取索引恢复账户
         window.chrome.storage.local.get(['accountIndexList'], (result) => {
-          console.log(result)
+          // console.log(result)
           if (result.accountIndexList) {
             wallet.recoverAccount(result.accountIndexList)
-            console.log('wallet.accountMap')
-            console.log(wallet.accountMap)
+            // console.log('wallet.accountMap')
+            // console.log(wallet.accountMap)
             this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
             getChromeStorage(['currentAccountIndex']).then(result => {
               let currentAccount = wallet.accountMap[result['currentAccountIndex']]
@@ -132,10 +132,10 @@ export default {
       })
     },
     getCurrentAccount() {
-      console.log('getCurrentAccount')
+      // console.log('getCurrentAccount')
       return getBackgroundPage().then(win => {
-        console.log('win')
-        console.log(win)
+        // console.log('win')
+        // console.log(win)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
         // this.refreshMainAsset();
         // this.refreshParallelAsset();
@@ -159,13 +159,13 @@ export default {
     },
 
     sendToAddr({ privateKey, to, amount, fee, note }, url) {
-      console.log({ privateKey, to, amount, fee, note })
+      // console.log({ privateKey, to, amount, fee, note })
       return this.createRawTransaction({ to, amount, fee, note }, url)
         .then(tx => {
-          console.log(tx)
+          // console.log(tx)
           return sign.signRawTransaction(tx, privateKey)
         }).then(signedTx => {
-          console.log(signedTx)
+          // console.log(signedTx)
           return this.sendTransaction(signedTx, url)
         })
     },
@@ -175,7 +175,7 @@ export default {
 
     /* 资产相关 -- start */
     refreshMainAsset() {
-      console.log(this.currentAccount)
+      // console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.currentMain.url
       return new Promise((resolve, reject) => {
@@ -202,7 +202,6 @@ export default {
       return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
           let payload = { amt: res[0].balance / 1e8 }
-          // console.log(payload)
           this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
           this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
           resolve('success')
@@ -284,7 +283,7 @@ export default {
               }
             }
           }
-          console.log(keyName, keyData)
+          // console.log(keyName, keyData)
           dbHelper.getCursorByIndex(TABLE_NAME, keyName, keyData, advanceNum, callback)
         })
       } else {

@@ -154,10 +154,10 @@ export default {
       }
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log("submit!");
+          // console.log("submit!");
 
           let index = this.paraNodeList.length;
-          console.log(index);
+          // console.log(index);
           let paraAddr = "";
           let tradeAddr = "";
           const p1 = this.convertExecToAddr(
@@ -170,8 +170,8 @@ export default {
           );
           Promise.all([p1, p2])
             .then(([paraAddr, tradeAddr]) => {
-              console.log(paraAddr)
-              console.log(tradeAddr)
+              // console.log(paraAddr)
+              // console.log(tradeAddr)
               paraAddr = paraAddr;
               tradeAddr = tradeAddr;
               let obj = {
@@ -231,8 +231,8 @@ export default {
 
       let arr = this.mainNodeList.concat([obj]);
       this.$store.commit("Account/UPDATE_MAIN_NODE", arr);
-      console.log("this.mainData");
-      console.log(this.mainData);
+      // console.log("this.mainData");
+      // console.log(this.mainData);
       setChromeStorage("mainNodeList", arr)
         .then(res => {
           if (res == "success") {
@@ -280,14 +280,14 @@ export default {
     },
     getMainNode() {
       getChromeStorage("mainNodeList").then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.mainNodeList) {
           this.mainNodeList = res.mainNodeList;
           this.$store.commit("Account/UPDATE_MAIN_NODE", res.mainNodeList);
         }
       });
       getChromeStorage("mainNode").then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.mainNode) {
           this.currentMainNode = res.mainNode;
         }
@@ -295,14 +295,14 @@ export default {
     },
     getParaNode() {
       getChromeStorage("parallelNodeList").then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.parallelNodeList) {
           this.paraNodeList = res.parallelNodeList;
           this.$store.commit("Account/UPDATE_PARALLEL_NODE", res.parallelNodeList);
         }
       });
       getChromeStorage("paraNode").then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.paraNode) {
           this.currentParaNode = res.paraNode;
         }

@@ -97,7 +97,7 @@ export default {
       // 加密助记词 
       let ciphertext = encrypt(seedString, password)
       window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
-        console.log('ciphertext is set to ' + ciphertext);
+        // console.log('ciphertext is set to ' + ciphertext);
       })
       this.newAccount('创世地址')
       return walletObj

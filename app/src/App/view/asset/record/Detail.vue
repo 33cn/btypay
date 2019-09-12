@@ -70,7 +70,7 @@ export default {
         }
     },
     mounted(){
-        console.log(this.recordDetail)
+        // console.log(this.recordDetail)
         // if(this.$route.params.hash){
         //     this.queryTransaction(this.$route.params.hash).then(res=>{
         //         console.log(res)

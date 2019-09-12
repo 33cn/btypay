@@ -41,7 +41,9 @@ export default {
     getChromeStorage('paraNode').then(res=>{
       if(res.paraNode){
         this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
+        // chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
       }else{
+
         chrome.storage.local.set({ 'paraNode': {url: 'http://114.55.11.139:1198',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
       }
     })
@@ -64,5 +66,23 @@ body {
   // background: #dfe7f3;
   background-image: url('../assets/images/indexBg.png');
   background-size: 100% 100%;
+  box-sizing: border-box;
+  /* 设置滚动条的样式 */
+      &::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        background: transparent;
+      }
+      // /* 滚动槽 */
+      // &::-webkit-scrollbar-track {
+      // //   border-radius: $--border-radius-base;
+      //   background: transparent;
+      // }
+      // /* 滚动条滑块 */
+      &::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 0px;
+        opacity: 0.2;
+      }
 }
 </style>

@@ -45,12 +45,12 @@ export default {
   },
   methods: {
     selectedAddress(ad) {
-      console.log(ad);
+      // console.log(ad);
       // this.$router.push({ path: "/coin?coin=bty" });
       this.$router.push({ path: "/coin/transfer?address=" + ad});
     },
     mouseOverHandle() {
-      console.log("rrrrrrr");
+      // console.log("rrrrrrr");
     },
     delHandle() {
       this.addresses.splice(this.delIndex, 1);
@@ -64,7 +64,7 @@ export default {
     show1(e, item, i) {
       this.delIndex = i;
       // console.log(item)
-      console.log(e)
+      // console.log(e)
       this.delMenu.left = e.clientX +5;
       this.delMenu.top = document.documentElement.scrollTop + e.clientY + 5;
       this.menuIsShow = true;
