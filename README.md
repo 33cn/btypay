@@ -22,9 +22,10 @@ BTYPay是BTY主链和平行链的浏览器插件钱包，它能让你收发主�
 ##### 构建打包代码
 ```
 cd app
-npm install
+npm install （这一步做完，请参考下面的编译安装注意事项）
 npm run build
-```
+```  
+
 ##### 编译安装注意事项  
 ###### 问题原因：  
 JS 遵循 IEEE 754 规范，采用双精度存储（double precision），占用 64 bit。  
