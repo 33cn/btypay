@@ -97,7 +97,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let url = this.coin=='bty'?this.currentMain.url:this.coin=='game'?this.currentParallel.url:'';
-          console.log("submit!!"+url);
+          // console.log("submit!!"+url);
           this.sendToAddr({
             privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
@@ -105,7 +105,7 @@ export default {
             fee: parseInt(dMinFee * 1e8),
             note: this.form.comment+'',
           },url).then(res => {
-            console.log(res)
+            // console.log(res)
             this.isCreating = false;
             this.$alert('请关注您的资金变动。', '转账成功', {
               confirmButtonText: '知道了',
@@ -146,7 +146,7 @@ export default {
   mounted(){
     if(this.$route.query.coin){
       this.coin = this.$route.query.coin;
-      console.log(this.coin)
+      // console.log(this.coin)
     }
     this.coin = this.$store.state.Records.assetType;
     this.form.address = this.$route.query.address || '';

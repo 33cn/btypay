@@ -82,6 +82,10 @@ export default new Router({
       path:'/coin/convertDetail/:hash',
       name:'convertDetail',
       component:() => import('./App/view/asset/record/ConvertDetail')
+    },{
+      path:'/outExtensionPage',
+      name:'outExtensionPage',
+      component:() => import('./App/view/OutExtensionPage')
     },
     // {
     //   path:'/login',

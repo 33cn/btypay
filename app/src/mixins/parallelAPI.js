@@ -142,7 +142,7 @@ export default {
                     this.main2Parallel(privateKey, to, amount, mainUrl).then(hash2 => {
                         this.txStateCheckTask(hash2, mainUrl, () => {
                             this.parallelPara2Coins(privateKey, amount, paraUrl).then(hash3 => {
-                                console.log(hash3)
+                                // console.log(hash3)
                                 callback("success")
                             })
                         })

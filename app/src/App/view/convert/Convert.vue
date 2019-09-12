@@ -87,7 +87,7 @@ export default {
       asset: {
         amt: 10.0
       },
-      rate: 10, //待删
+      rate: 1, //测试
       fee: 0.01
     };
   },
@@ -97,13 +97,13 @@ export default {
       let mainUrl = this.currentMain.url;
       let paraUrl = this.currentParallel.url;
 
-      console.log("=====================================================");
+      // console.log("=====================================================");
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
-        console.log("0.bty", res[0].balance);
+        // console.log("0.bty", res[0].balance);
       });
 
       this.getAddrBalance(addr, "paracross", mainUrl).then(res => {
-        console.log("1.main para", res[0].balance);
+        // console.log("1.main para", res[0].balance);
       });
 
       this.$chain33Sdk.getTokenBalance;
@@ -117,7 +117,7 @@ export default {
         "paracross",
         "coins.bty"
       ).then(res => {
-        console.log("2.para para", res[0].balance);
+        // console.log("2.para para", res[0].balance);
       });
 
       this.getAddrBalance(
@@ -127,17 +127,17 @@ export default {
         "paracross",
         "coins.bty"
       ).then(res => {
-        console.log("3.trade bty", res[0].balance);
+        // console.log("3.trade bty", res[0].balance);
       });
 
       this.getAddrBalance(addr, "user.p." + paraName + ".trade", paraUrl).then(
         res => {
-          console.log("4.trade", res[0].balance);
+          // console.log("4.trade", res[0].balance);
         }
       );
 
       this.getAddrBalance(addr, "coins", paraUrl).then(res => {
-        console.log("5.gbt", res[0].balance);
+        // console.log("5.gbt", res[0].balance);
       });
     },
 
@@ -154,7 +154,7 @@ export default {
       if (v == "to") {
         if (this.convert == "B2G") {
           val = this.asset.amt * this.rate;
-          console.log(val);
+          // console.log(val);
           this.exportVal = this.receiptVal / this.rate;
         } else {
           val = this.asset.amt / this.rate;

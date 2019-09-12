@@ -75,7 +75,7 @@ export default {
         }
     },
     mounted(){
-        console.log(this.recordDetail)
+        // console.log(this.recordDetail)
         // console.log(this.$route.params);
     }
 }

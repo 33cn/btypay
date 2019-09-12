@@ -6,7 +6,8 @@ chrome.runtime.onInstalled.addListener(()=>{
     message: 'BTY钱包插件安装成功，快去使用吧！'
   });
 });
-
+var txObj = {};
+var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
 
   switch(action) {
@@ -57,7 +58,8 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
     case 'sign-tx':
       if (isWalletUnlock()) {
         payload.actionID = action
-        createNewWindow('CreateWallet', payload)
+        txObj = payload;
+        createNewWindow('outExtensionPage', payload)
       } else {
         sendMessage({
           action: 'answer-sign-tx',
@@ -112,8 +114,21 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
 function createNewWindow(route, payload, width = 416, height = 636) {
   let baseURL = `${window.chrome.runtime.getURL('/dist/index.html')}#/${route}`
   let url = spliceURL(baseURL, payload)
-  chrome.windows.create({url, width, height, type: 'popup'})
+  chrome.windows.create({url, width, height, type: 'popup'},function(res){
+    console.log('chrome.windows.create')
+    console.log(res)
+    windowId = res.id
+    // setTimeout(() => {
+    //   closeWindow(res.id)
+    // }, 15000);
+  })
 };
+function closeWindow(id){
+  chrome.windows.remove(id, function(res){
+    console.log('chrome.windows.remove')
+    console.log(res)
+  })
+}
 
 function* entries(obj) {
   for (let key of Object.keys(obj)) {
