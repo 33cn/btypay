@@ -11,27 +11,35 @@ export default {
     mixins: [chain33API],
     computed: {
         ...mapState(['accountMap', 'currentAccount', 'currentMain', 'currentParallel']),
-        paraAddr(){
+        paraAddr() {
             return this.currentParallel.paraAddr
         },
-        tradeAddr(){
+        tradeAddr() {
             return this.currentParallel.tradeAddr
         },
-        paraExecer(){
+        paraExecer() {
             return "user.p." + this.currentParallel.name + ".paracross"
         },
-        tradeExecer(){
+        tradeExecer() {
             return "user.p." + this.currentParallel.name + ".trade"
         },
-        diceExecer(){
+        diceExecer() {
             return "user.p." + this.currentParallel.name + ".wasm.dice"
         },
+    },
+    data() {
+        return {
+            PARA_ERROR: {
+                TRADE_BUY_ORDER_NO_BALANCE: { val: 1, msg: "Trade合约中买单余额不足！" },
+                TRADE_SELL_ORDER_NO_BALANCE: { val: 2, msg: "Trade合约中卖单余额不足！" }
+            }
+        }
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
         mainCoins2Paracross(privateKey, amount, url) {
             let params = {
-                to: paraAddr,
+                to: this.paraAddr,
                 execName: "paracross",
                 amount: amount
             }
@@ -69,7 +77,7 @@ export default {
                 actionName: "TransferToExec",
                 payload: {
                     execName: this.tradeExecer,
-                    to: tradeAddr,
+                    to: this.tradeAddr,
                     amount: amount,
                     cointoken: "coins.bty"
                 }
@@ -78,14 +86,40 @@ export default {
         },
         // 生成卖出指定买单的token的交易（未签名）
         parallelMarketSell(boardlotCnt, url) {
-            return this.createRawTradeSellMarketTx(buyId, boardlotCnt, 0.001 * 1e8, url);
+            let param = {
+                tokenSymbol: "coins.bty",
+                status: this.TRADE_ORDER_STATUS.ON_BUY,
+                count: boardlotCnt
+            }
+            let fee = 0.01 * 1e8;
+            return this.getTokenBuyOrderByStatus(param, url).then(res => {
+                let buyOrders = []
+                if (res && res.orders.length !== 0) {
+                    for (let order of res.orders) {
+                        let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
+                        let buyID = order.txHash.replace(/^(0x|0X)/, '')
+                        if (leftBoardlot > boardlotCnt) {
+                            buyOrders.push({ boardlotCnt: boardlotCnt, buyID: buyID, fee: fee })
+                            return buyOrders
+                        } else {
+                            boardlotCnt -= leftBoardlot
+                            buyOrders.push({ boardlotCnt: leftBoardlot, buyID: buyID, fee: fee })
+                        }
+                    }
+                    let error = new Error("")
+                    throw error
+                }
+                return buyOrders;
+            }).then(buyOrders => {
+                return this.createRawTradeSellMarketTx(buyOrders, url)
+            })
         },
         // 玩家获得的平行链主代币位于trade合约下，提币到coins合约
         parallelTrade2Coins(amount, url) {
             const execName = this.tradeExecer
             const isWithdraw = true
             let params = {
-                to: tradeAddr,
+                to: this.tradeAddr,
                 amount: amount,
                 execName: execName,
                 isWithdraw: isWithdraw
@@ -141,18 +175,26 @@ export default {
             let mainUrl = this.currentMain.url
             let paraUrl = this.currentParallel.url
 
-            this.mainCoins2Paracross(privateKey, amount, mainUrl).then(hash1 => {
-                this.txStateCheckTask(hash1, mainUrl, () => {
-                    this.main2Parallel(privateKey, to, amount, mainUrl).then(hash2 => {
-                        this.txStateCheckTask(hash2, mainUrl, () => {
-                            this.parallelPara2Coins(privateKey, amount, paraUrl).then(hash3 => {
-                                console.log(hash3)
-                                callback("success")
-                            })
-                        })
-                    })
-                })
+            // this.mainCoins2Paracross(privateKey, amount, mainUrl).then(hash1 => {
+            //     this.txStateCheckTask(hash1, mainUrl, () => {
+            //         this.main2Parallel(privateKey, to, amount, mainUrl).then(hash2 => {
+            //             this.txStateCheckTask(hash2, mainUrl, () => {
+            //                 this.parallelPara2Coins(privateKey, amount, paraUrl).then(hash3 => {
+            //                     console.log(hash3)
+            //                     callback("success")
+            //                 }).catch(err => {
+            //                     console.log(err)
+            //                 })
+            //             })
+            //         })
+            //     })
+            // })
+            this.parallelMarketSell(amount, paraUrl).then(tx => {
+                console.log(tx)
+            }).catch(err => {
+                console.log(err)
             })
+
 
             // 挂大买单
             // let params = {
@@ -218,7 +260,7 @@ export default {
 
         mainParacross2Coins(privateKey, amount, url) {
             let params = {
-                to: paraAddr,
+                to: this.paraAddr,
                 amount: amount,
                 execName: "paracross",
                 isWithdraw: true
@@ -251,7 +293,7 @@ export default {
                 execer: this.paraExecer,
                 actionName: "Withdraw",
                 payload: {
-                    to: tradeAddr,
+                    to: this.tradeAddr,
                     execName: this.tradeExecer,
                     amount: amount,
                     cointoken: "coins.bty"
@@ -265,7 +307,7 @@ export default {
         parallelCoins2Trade(amount, url) {
             let params = {
                 execName: this.tradeExecer,
-                to: tradeAddr,
+                to: this.tradeAddr,
                 amount: amount
             }
             return this.createRawTransaction(params, url)

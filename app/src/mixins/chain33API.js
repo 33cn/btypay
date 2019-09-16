@@ -13,6 +13,15 @@ export default {
       TX_DIRECTION: {
         DESC: 0,
         ASC: 1
+      },
+      TRADE_ORDER_STATUS: {
+        ON_SALE: 1,
+        SOLD_OUT: 2,
+        REVOKED: 3,
+        EXPIRED: 4,
+        ON_BUY: 5,
+        BOUGHT_OUT: 6,
+        BUY_REVOKED: 7
       }
     }
   },
@@ -30,8 +39,25 @@ export default {
       }
     },
 
-    createRawTradeSellMarketTx(buyID, boardlotCnt, fee, url) {
-      return this.$chain33Sdk.createRawTradeSellMarketTx(buyID, boardlotCnt, fee, url)
+    // params: {buyID: string, boardlogCnt: int64, fee: int64}
+    createRawTradeSellMarketTx(params, url) {
+      let _this = this
+      return this.$chain33Sdk.httpProvider.doFetch({
+        url: url,
+        postdata: {
+          id: +new Date(),
+          jsonrpc: "2.0",
+          method: "trade.CreateRawTradeSellMarketTx",
+          params: params
+        }
+      }).then(res => {
+        if (_this.$chain33Sdk.resHandler) {
+          return _this.$chain33Sdk.resHandler(res);
+        }
+        else {
+          return res;
+        }
+      })
     },
     createRawTradeBuyMarketTx(sellId, boardlotCnt, fee, url) {
       return this.$chain33Sdk.createRawTradeBuyTx(sellId, boardlotCnt, fee, url)
@@ -118,16 +144,16 @@ export default {
       return this.$chain33Sdk.queryTransaction(hash, url)
     },
     // 将合约名转成实际地址
-    convertExecToAddr(name,url){
-      return this.$chain33Sdk.convertExectoAddr(name,url)
+    convertExecToAddr(name, url) {
+      return this.$chain33Sdk.convertExectoAddr(name, url)
     },
     // 显示一个token指定数量的买单
-    getTokenBuyOrderByStatus(params, url){
-      return this.$chain33Sdk.getTokenBuyOrderByStatus(params, url)
+    getTokenBuyOrderByStatus(param, url) {
+      return this.$chain33Sdk.getTokenBuyOrderByStatus(param, url)
     },
     // 显示一个token指定数量的卖单
-    getTokenSellOrderByStatus(params, url){
-      return this.$chain33Sdk.getTokenSellOrderByStatus(params, url)
+    getTokenSellOrderByStatus(param, url) {
+      return this.$chain33Sdk.getTokenSellOrderByStatus(param, url)
     }
   }
 }
