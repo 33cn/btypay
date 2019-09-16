@@ -120,6 +120,14 @@ export default {
     // 将合约名转成实际地址
     convertExecToAddr(name,url){
       return this.$chain33Sdk.convertExectoAddr(name,url)
+    },
+    // 显示一个token指定数量的买单
+    getTokenBuyOrderByStatus(params, url){
+      return this.$chain33Sdk.getTokenBuyOrderByStatus(params, url)
+    },
+    // 显示一个token指定数量的卖单
+    getTokenSellOrderByStatus(params, url){
+      return this.$chain33Sdk.getTokenSellOrderByStatus(params, url)
     }
   }
 }

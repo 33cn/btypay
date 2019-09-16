@@ -59,7 +59,7 @@ export default {
         top: 0
       },
       menuIsShow: false,
-      numIsAnimation:true,
+      numIsAnimation: true
     };
   },
   computed: {
@@ -94,9 +94,9 @@ export default {
     },
     numFilter(val) {
       if (val || val == 0) {
-        let f = parseFloat(val)
+        let f = parseFloat(val);
         let result = Math.floor(f * 10000) / 10000;
-        return parseFloat(result).toFixed(4)
+        return parseFloat(result).toFixed(4);
       }
     },
     init() {
@@ -116,7 +116,7 @@ export default {
     },
     NumAutoPlusAnimation(ele, options = {}) {
       let time = options.time, //总时间--毫秒为单位
-        finalNum = options.num , //要显示的真实数值
+        finalNum = options.num, //要显示的真实数值
         regulator = options.regulator || 100, //调速器，改变regulator的数值可以调节数字改变的速度
         step = finalNum / (time / regulator) /*每30ms增加的数值--*/,
         count = 0.0, //计数器
@@ -135,10 +135,10 @@ export default {
         if (t == initial) return;
 
         initial = t;
-        if(ele.indexOf('Price') > -1){
-          document.querySelector('#'+ele).innerHTML = '≈￥'+initial;
-        }else{
-          document.querySelector('#'+ele).innerHTML = initial;
+        if (ele.indexOf("Price") > -1) {
+          document.querySelector("#" + ele).innerHTML = "≈￥" + initial;
+        } else {
+          document.querySelector("#" + ele).innerHTML = initial;
         }
       }, 30);
     }
@@ -147,50 +147,54 @@ export default {
     this.init();
     // this.recoverAccount();
     setTimeout(() => {
-      this.refreshMainAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('bty',{
+      this.refreshMainAsset().then(res => {
+        if (res == "success") {
+          if (this.numIsAnimation) {
+            this.NumAutoPlusAnimation("bty", {
               time: 1500,
               num: this.numFilter(this.mainAsset.amt),
               regulator: 50
-            })
-            this.NumAutoPlusAnimation('btyPrice',{
+            });
+            this.NumAutoPlusAnimation("btyPrice", {
               time: 1500,
-              num: this.numFilter(this.mainAsset.amt*10),
+              num: this.numFilter(this.mainAsset.amt * 10),
               regulator: 50
-            })
+            });
           }
         }
-      })
-      this.refreshParallelAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('game',{
+      });
+      this.refreshParallelAsset().then(res => {
+        if (res == "success") {
+          if (this.numIsAnimation) {
+            this.NumAutoPlusAnimation("game", {
               time: 1500,
               num: this.numFilter(this.parallelAsset.amt),
               regulator: 50
-            })
-            this.NumAutoPlusAnimation('gamePrice',{
+            });
+            this.NumAutoPlusAnimation("gamePrice", {
               time: 1500,
-              num: this.numFilter(this.parallelAsset.amt*10),
+              num: this.numFilter(this.parallelAsset.amt * 10),
               regulator: 50
-            })
+            });
           }
         }
       });
     }, 10);
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
   },
-  beforeRouteEnter(to, from, next){
-    next(vm=>{
-        console.log(from)
-        if(from.name == 'login' || from.name == 'ImportWallet' || from.name == 'WordsConfirm'){
-          vm.numIsAnimation = true;
-        }else{
-          vm.numIsAnimation = false
-        }
-    })
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      console.log(from);
+      if (
+        from.name == "login" ||
+        from.name == "ImportWallet" ||
+        from.name == "WordsConfirm"
+      ) {
+        vm.numIsAnimation = true;
+      } else {
+        vm.numIsAnimation = false;
+      }
+    });
   }
 };
 </script>
