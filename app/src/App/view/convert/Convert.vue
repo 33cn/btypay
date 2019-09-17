@@ -186,9 +186,16 @@ export default {
           center: true,
           showClose: false
         });
-        this.isOperatoring = false
-        this.exportVal = ""
+      } else {
+        this.$alert(JSON.parse(res).msg, "兑换失败", {
+          confirmButtonText: "确认",
+          closeOnClickModal: true,
+          center: true,
+          showClose: false
+        });
       }
+      this.isOperatoring = false;
+      this.exportVal = "";
     },
     convertHandle() {
       if (this.isOperatoring) {

@@ -1,10 +1,11 @@
 import chain33API from '@/mixins/chain33API'
 import { createNamespacedHelpers } from 'vuex'
 import { signRawTx, signGroupTx } from '@/libs/sign.js'
+import Long from 'long'
 
 const { mapState } = createNamespacedHelpers('Account')
-const buyId = "5f7a288651fea390c1cd0af6c2605b9e56d1297ede583d437b95e691cd758d42"
-const sellId = "4514d2d53fdfcf534241ff31886d78b8b81f41c2094783ffa321c91cfa21378a"
+// const buyId = "5f7a288651fea390c1cd0af6c2605b9e56d1297ede583d437b95e691cd758d42"
+// const sellId = "4514d2d53fdfcf534241ff31886d78b8b81f41c2094783ffa321c91cfa21378a"
 
 
 export default {
@@ -86,18 +87,22 @@ export default {
         },
         // 生成卖出指定买单的token的交易（未签名）
         parallelMarketSell(boardlotCnt, url) {
-            let param = {
+            let params = {
                 tokenSymbol: "coins.bty",
                 status: this.TRADE_ORDER_STATUS.ON_BUY,
                 count: boardlotCnt
             }
-            let fee = 0.01 * 1e8;
-            return this.getTokenBuyOrderByStatus(param, url).then(res => {
+            const fee = 0.01 * 1e8;
+            return this.getTokenBuyOrderByStatus(params, url).then(res => {
                 let buyOrders = []
                 if (res && res.orders.length !== 0) {
                     for (let order of res.orders) {
                         let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
                         let buyID = order.txHash.replace(/^(0x|0X)/, '')
+                        console.log(parseInt(order.pricePerBoardlot) / parseInt(order.amountPerBoardlot))
+                        if(order.pricePerBoardlot !== order.amountPerBoardlot){
+                            continue
+                        }
                         if (leftBoardlot > boardlotCnt) {
                             buyOrders.push({ boardlotCnt: boardlotCnt, buyID: buyID, fee: fee })
                             return buyOrders
@@ -106,7 +111,7 @@ export default {
                             buyOrders.push({ boardlotCnt: leftBoardlot, buyID: buyID, fee: fee })
                         }
                     }
-                    let error = new Error("")
+                    let error = new Error(JSON.stringify(this.PARA_ERROR.TRADE_BUY_ORDER_NO_BALANCE))
                     throw error
                 }
                 return buyOrders;
@@ -114,6 +119,52 @@ export default {
                 return this.createRawTradeSellMarketTx(buyOrders, url)
             })
         },
+        checkTradeBuyOrder(amt, url){
+            let buyOrders = []
+            let params = {
+                tokenSymbol: "coins.bty",
+                status: this.TRADE_ORDER_STATUS.ON_BUY,
+                count: boardlotCnt
+            }
+            return this.getTokenBuyOrderByStatus(params, url).then(res => {
+                if (res && res.orders.length !== 0) {
+                    for (let order of res.orders) {
+                        let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
+                        let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                        let totalBoardlot = Long.fromString(order.totalBoardlot)
+                        let tradedBoardlot = Long.fromString(order.tradedBoardlot)
+
+                        let minAmt = minBoardlot.multiply(amountPerBoardlot)
+                        let leftAmt = totalBoardlot - tradedBoardlot
+
+                        if(minAmt.compare(amt) > 0){
+                            continue
+                        }
+                        
+                        let leftAmt = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
+                        let buyID = order.txHash.replace(/^(0x|0X)/, '')
+                        if(order.pricePerBoardlot !== order.amountPerBoardlot || boardlotCnt < 0){
+                            continue
+                        }
+                        if (leftAmt > amt) {
+                            buyOrders.push({ boardlotCnt: boardlotCnt, buyID: buyID, fee: fee })
+                            return buyOrders
+                        } else {
+                            boardlotCnt -= leftBoardlot
+                            buyOrders.push({ boardlotCnt: leftBoardlot, buyID: buyID, fee: fee })
+                        }
+                    }
+                    let error = new Error(JSON.stringify(this.PARA_ERROR.TRADE_BUY_ORDER_NO_BALANCE))
+                    throw error
+                }
+                return buyOrders;
+            })
+        },
+        checkTradeSellOrder(url){
+            let sellOrders = []
+
+        },
+
         // 玩家获得的平行链主代币位于trade合约下，提币到coins合约
         parallelTrade2Coins(amount, url) {
             const execName = this.tradeExecer
@@ -183,7 +234,7 @@ export default {
             //                     console.log(hash3)
             //                     callback("success")
             //                 }).catch(err => {
-            //                     console.log(err)
+            //                     callback(err.message)
             //                 })
             //             })
             //         })
@@ -192,7 +243,9 @@ export default {
             this.parallelMarketSell(amount, paraUrl).then(tx => {
                 console.log(tx)
             }).catch(err => {
-                console.log(err)
+                
+                console.log(err.message)
+                callback(err.message)
             })
 
 
@@ -302,7 +355,35 @@ export default {
             return this.createTransaction(params, url)
         },
         parallelMarketBuy(boardlotCnt, url) {
-            return this.createRawTradeBuyMarketTx(sellId, boardlotCnt, 0.001 * 1e8, url);
+            let params = {
+                tokenSymbol: "coins.bty",
+                status: this.TRADE_ORDER_STATUS.ON_SALE,
+                count: boardlotCnt
+            }
+            let fee = 0.01 * 1e8;
+            return this.getTokenSellOrderByStatus(params, url).then(res => {
+                let sellOrders = []
+                if(res && res.orders.length !== 0){
+                    for(let order of res.orders){
+                        let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
+                        let sellID = order.txHash.replace(/^(0x|0X)/, '')
+                        if (leftBoardlot > boardlotCnt) {
+                            sellOrders.push({ boardlotCnt: boardlotCnt, sellID: sellID, fee: fee })
+                            return sellOrders
+                        } else {
+                            boardlotCnt -= leftBoardlot
+                            sellOrders.push({ boardlotCnt: leftBoardlot, sellID: sellID, fee: fee })
+                        }
+                    }
+                    let error = new Error(JSON.stringify(this.PARA_ERROR.TRADE_SELL_ORDER_NO_BALANCE))
+                    throw error
+                }
+                return sellOrders
+            }).then(sellOrders => {
+                return this.createRawTradeBuyMarketTx(sellOrders, url)
+            })
+
+            // return this.createRawTradeBuyMarketTx(sellId, boardlotCnt, 0.001 * 1e8, url);
         },
         parallelCoins2Trade(amount, url) {
             let params = {

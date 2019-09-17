@@ -39,7 +39,27 @@ export default {
       }
     },
 
-    // params: {buyID: string, boardlogCnt: int64, fee: int64}
+    // params: [ { sellID: string, boardlogCnt: int64, fee: int64 } ]
+    createRawTradeBuyMarketTx(params, url) {
+      let _this = this
+      return this.$chain33Sdk.httpProvider.doFetch({
+        url: url,
+        postdata: {
+          id: +new Date(),
+          jsonrpc: "2.0",
+          method: "trade.CreateRawTradeBuyTx",
+          params: params
+        }
+      }).then(res => {
+        if (_this.$chain33Sdk.resHandler) {
+          return _this.$chain33Sdk.resHandler(res);
+        }
+        else {
+          return res;
+        }
+      })
+    },
+    // params: [ { buyID: string, boardlogCnt: int64, fee: int64 } ]
     createRawTradeSellMarketTx(params, url) {
       let _this = this
       return this.$chain33Sdk.httpProvider.doFetch({
@@ -58,9 +78,6 @@ export default {
           return res;
         }
       })
-    },
-    createRawTradeBuyMarketTx(sellId, boardlotCnt, fee, url) {
-      return this.$chain33Sdk.createRawTradeBuyTx(sellId, boardlotCnt, fee, url)
     },
     // 生成发布事件的交易（未签名）
     createTransaction(params, url) {
@@ -147,13 +164,17 @@ export default {
     convertExecToAddr(name, url) {
       return this.$chain33Sdk.convertExectoAddr(name, url)
     },
-    // 显示一个token指定数量的买单
-    getTokenBuyOrderByStatus(param, url) {
-      return this.$chain33Sdk.getTokenBuyOrderByStatus(param, url)
+    /* 显示一个token指定数量的买单
+     * params { tokenSymbol: string, status: TRADE_ORDER_STATUS, count: int64 }
+     */
+    getTokenBuyOrderByStatus(params, url) {
+      return this.$chain33Sdk.getTokenBuyOrderByStatus(params, url)
     },
-    // 显示一个token指定数量的卖单
-    getTokenSellOrderByStatus(param, url) {
-      return this.$chain33Sdk.getTokenSellOrderByStatus(param, url)
+    /* 显示一个token指定数量的卖单
+     * params { tokenSymbol: string, status: TRADE_ORDER_STATUS, count: int64 }
+     */
+    getTokenSellOrderByStatus(params, url) {
+      return this.$chain33Sdk.getTokenSellOrderByStatus(params, url)
     }
   }
 }

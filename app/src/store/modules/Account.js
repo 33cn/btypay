@@ -73,7 +73,7 @@ const state = {
     txHeight: -1, 
     txIndex: 0,
     paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
-    tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
+    tradeAddr: "18UPv6sbbzorMAhdHi3AfxRa1iM16rVpTb",
   },
   // currentParallel: { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 },
 
