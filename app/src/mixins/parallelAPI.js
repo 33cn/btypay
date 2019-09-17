@@ -100,7 +100,7 @@ export default {
                         let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
                         let buyID = order.txHash.replace(/^(0x|0X)/, '')
                         console.log(parseInt(order.pricePerBoardlot) / parseInt(order.amountPerBoardlot))
-                        if(order.pricePerBoardlot !== order.amountPerBoardlot){
+                        if (order.pricePerBoardlot !== order.amountPerBoardlot) {
                             continue
                         }
                         if (leftBoardlot > boardlotCnt) {
@@ -119,7 +119,7 @@ export default {
                 return this.createRawTradeSellMarketTx(buyOrders, url)
             })
         },
-        checkTradeBuyOrder(amt, url){
+        checkTradeBuyOrder(amt, url) {
             let buyOrders = []
             let params = {
                 tokenSymbol: "coins.bty",
@@ -135,15 +135,27 @@ export default {
                         let tradedBoardlot = Long.fromString(order.tradedBoardlot)
 
                         let minAmt = minBoardlot.multiply(amountPerBoardlot)
-                        let leftAmt = totalBoardlot - tradedBoardlot
+                        let leftAmt = totalBoardlot.subtract(tradedBoardlot)
 
-                        if(minAmt.compare(amt) > 0){
+                        if (minAmt.compare(amt) > 0) {
                             continue
                         }
-                        
-                        let leftAmt = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
+                        if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
+                            continue
+                        }
+
                         let buyID = order.txHash.replace(/^(0x|0X)/, '')
-                        if(order.pricePerBoardlot !== order.amountPerBoardlot || boardlotCnt < 0){
+                        let boardlotCnt
+                        if (leftAmt.greaterThan(amt)) {
+                            
+
+                        } else {
+
+                        }
+
+
+
+                        if (order.pricePerBoardlot !== order.amountPerBoardlot || boardlotCnt < 0) {
                             continue
                         }
                         if (leftAmt > amt) {
@@ -160,7 +172,7 @@ export default {
                 return buyOrders;
             })
         },
-        checkTradeSellOrder(url){
+        checkTradeSellOrder(url) {
             let sellOrders = []
 
         },
@@ -240,10 +252,11 @@ export default {
             //         })
             //     })
             // })
+           console.log( Long.fromString("5").divide("2").toString())
             this.parallelMarketSell(amount, paraUrl).then(tx => {
                 console.log(tx)
             }).catch(err => {
-                
+
                 console.log(err.message)
                 callback(err.message)
             })
@@ -363,8 +376,8 @@ export default {
             let fee = 0.01 * 1e8;
             return this.getTokenSellOrderByStatus(params, url).then(res => {
                 let sellOrders = []
-                if(res && res.orders.length !== 0){
-                    for(let order of res.orders){
+                if (res && res.orders.length !== 0) {
+                    for (let order of res.orders) {
                         let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
                         let sellID = order.txHash.replace(/^(0x|0X)/, '')
                         if (leftBoardlot > boardlotCnt) {
