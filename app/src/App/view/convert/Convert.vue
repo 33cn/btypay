@@ -1,5 +1,10 @@
 <template>
-  <div class="convert_container">
+  <div class="convert_container" v-loading="false">
+    <el-button
+      size="mini"
+      @click="showBalance"
+      style="position: absolute;left: 30px;top: 20px;z-index: 1000"
+    >查余额</el-button>
     <asset-back title="兑换"></asset-back>
     <section class="ope">
       <div class="left">
@@ -38,10 +43,21 @@
         <p>手续费</p>
         <p>0%</p>
       </div>
+      <div>
+        <p>最小</p>
+        <p>{{BUY_LIMIT.minAmt | longFilter(2)}}</p>
+      </div>
+      <div>
+        <p>最大</p>
+        <p>{{BUY_LIMIT.maxAmt | longFilter(2)}}</p>
+      </div>
+      <div>
+        <p>每手数量</p>
+        <p>{{BUY_LIMIT.amtPerBoardlot | longFilter(2)}}</p>
+      </div>
       <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
     </section>
     <p @click="convertHandle">{{isOperatoring?'兑换中，请稍后...':'跨链兑换'}}</p>
-    <!-- <el-button size="mini" @click="showBalance">查余额</el-button> -->
   </div>
 </template>
 
@@ -50,9 +66,7 @@ import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import parallelAPI from "@/mixins/parallelAPI.js";
 import { createNamespacedHelpers } from "vuex";
-// var protobufjs = require('protobufjs');
-// var transaction_json_1 = require("@/libs/transaction.json")
-
+import Long from "long";
 const { mapState } = createNamespacedHelpers("Account");
 
 export default {
@@ -87,7 +101,7 @@ export default {
       asset: {
         amt: 10.0
       },
-      rate: 10, //待删
+      rate: 1, //待删
       fee: 0.01
     };
   },
@@ -108,7 +122,7 @@ export default {
 
       this.$chain33Sdk.getTokenBalance;
 
-      let paraName = "gbttest";
+      let paraName = "game";
 
       this.getAddrBalance(
         addr,
@@ -142,8 +156,6 @@ export default {
     },
 
     inputHandle(e, v) {
-      // console.log(e.target.value)
-      // console.log(v)
       this.isInput = false;
       if (!e.target.value || e.target.value < 0) {
         this.exportVal = null;
@@ -154,7 +166,6 @@ export default {
       if (v == "to") {
         if (this.convert == "B2G") {
           val = this.asset.amt * this.rate;
-          console.log(val);
           this.exportVal = this.receiptVal / this.rate;
         } else {
           val = this.asset.amt / this.rate;
@@ -168,14 +179,32 @@ export default {
         }
         val = this.asset.amt;
       }
-      if (e.target.value > val) {
-        this.isInput = true;
-        this.$message.error("余额不足");
-        setTimeout(() => {
-          this.exportVal = null;
-          this.receiptVal = null;
-          this.isInput = false;
-        }, 500);
+
+      if (this.convert == "B2G") {
+        let exportLong = Long.fromValue(parseInt(this.exportVal * 1e8));
+        let errMsg = null;
+        // if (e.target.value > val){
+        //   errMsg = "余额不足";
+        // }
+        // if (exportLong.lessThan(this.BUY_LIMIT.minAmt)) {
+        //   errMsg = "兑换最小数量为 " + parseInt(this.BUY_LIMIT.minAmt / 1e8);
+        // }
+        // if (exportLong.greaterThan(this.BUY_LIMIT.maxAmt)) {
+        //   errMsg = "可兑换最大数量为 " + parseInt(this.BUY_LIMIT.maxAmt / 1e8);
+        // }
+        // if (exportLong.modulo(this.BUY_LIMIT.amtPerBoardlot).notEquals(Long.ZERO)) {
+        //   errMsg = "输入数量应为 " + parseInt(this.BUY_LIMIT.amtPerBoardlot / 1e8) + " 的倍数";
+        // }
+        if (errMsg) {
+          this.isInput = true;
+          this.$message.error(errMsg);
+          setTimeout(() => {
+            this.exportVal = null;
+            this.receiptVal = null;
+            this.isInput = false;
+          }, 500);
+        }
+      } else {
       }
     },
     convertResHandle(res) {
@@ -187,7 +216,8 @@ export default {
           showClose: false
         });
       } else {
-        this.$alert(JSON.parse(res).msg, "兑换失败", {
+        // JSON.parse(res).msg
+        this.$alert("xxxx", "兑换失败", {
           confirmButtonText: "确认",
           closeOnClickModal: true,
           center: true,
@@ -196,6 +226,7 @@ export default {
       }
       this.isOperatoring = false;
       this.exportVal = "";
+      this.receiptVal = "";
     },
     convertHandle() {
       if (this.isOperatoring) {
@@ -248,6 +279,12 @@ export default {
     setTimeout(() => {
       this.asset = this.mainAsset;
     }, 0);
+    this.getTradeBuyOrder(this.currentParallel.url).then(() => {
+      console.log("BUY_ID:" + this.BUY_ID);
+    });
+    this.getTradeSellOrder(this.currentParallel.url).then(() => {
+      console.log("SELL_ID:" + this.SELL_ID);
+    });
   }
 };
 </script>
@@ -315,9 +352,10 @@ export default {
   section.desc {
     margin: 0 56px 0 55px;
     div {
-      &:nth-of-type(2) {
-        margin: 17px 0 20px;
-      }
+      margin-bottom: 9px;
+      // &:nth-of-type(2) {
+      //   margin: 17px 0 20px;
+      // }
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -342,7 +380,7 @@ export default {
     }
   }
   > p {
-    margin: 55px 26px 0 29px;
+    margin: 12px 26px 0 29px;
     height: 66px;
     background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;

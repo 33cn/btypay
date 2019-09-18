@@ -380,8 +380,13 @@ export default {
         } else {
           result = Math.floor(f * 100) / 100;
         }
-
         return parseFloat(result).toFixed(num)
+      }
+    },
+    longFilter(val, num){
+      if(val || val== 0){
+        let f = parseFloat(val)
+        return (f / 1e8).toFixed(num)
       }
     }
   }

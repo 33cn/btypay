@@ -33,7 +33,20 @@ export default {
             PARA_ERROR: {
                 TRADE_BUY_ORDER_NO_BALANCE: { val: 1, msg: "Trade合约中买单余额不足！" },
                 TRADE_SELL_ORDER_NO_BALANCE: { val: 2, msg: "Trade合约中卖单余额不足！" }
+            },
+            BUY_ID: "",
+            SELL_ID: "",
+            BUY_LIMIT: {
+                minAmt: 0,
+                maxAmt: 0,
+                amtPerBoardlot: 1
+            },
+            SELL_LIMIT: {
+                minAmt: 0,
+                maxAmt: 0,
+                pricePerBoardlot: 1
             }
+
         }
     },
     methods: {
@@ -86,95 +99,49 @@ export default {
             return this.createTransaction(params, url)
         },
         // 生成卖出指定买单的token的交易（未签名）
-        parallelMarketSell(boardlotCnt, url) {
-            let params = {
-                tokenSymbol: "coins.bty",
-                status: this.TRADE_ORDER_STATUS.ON_BUY,
-                count: boardlotCnt
-            }
-            const fee = 0.01 * 1e8;
-            return this.getTokenBuyOrderByStatus(params, url).then(res => {
-                let buyOrders = []
-                if (res && res.orders.length !== 0) {
-                    for (let order of res.orders) {
-                        let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
-                        let buyID = order.txHash.replace(/^(0x|0X)/, '')
-                        console.log(parseInt(order.pricePerBoardlot) / parseInt(order.amountPerBoardlot))
-                        if (order.pricePerBoardlot !== order.amountPerBoardlot) {
-                            continue
-                        }
-                        if (leftBoardlot > boardlotCnt) {
-                            buyOrders.push({ boardlotCnt: boardlotCnt, buyID: buyID, fee: fee })
-                            return buyOrders
-                        } else {
-                            boardlotCnt -= leftBoardlot
-                            buyOrders.push({ boardlotCnt: leftBoardlot, buyID: buyID, fee: fee })
-                        }
-                    }
-                    let error = new Error(JSON.stringify(this.PARA_ERROR.TRADE_BUY_ORDER_NO_BALANCE))
-                    throw error
-                }
-                return buyOrders;
-            }).then(buyOrders => {
-                return this.createRawTradeSellMarketTx(buyOrders, url)
-            })
+        parallelMarketSell(amt, url) {
+            let boardlotCnt = Long.fromValue(amt).divide(this.BUY_LIMIT.amtPerBoardlot).toInt()
+            let buyID = this.BUY_ID
+            return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID}], url)
         },
-        checkTradeBuyOrder(amt, url) {
-            let buyOrders = []
+        getTradeBuyOrder(url) {
             let params = {
                 tokenSymbol: "coins.bty",
                 status: this.TRADE_ORDER_STATUS.ON_BUY,
-                count: boardlotCnt
+                count: "10000000"
             }
             return this.getTokenBuyOrderByStatus(params, url).then(res => {
                 if (res && res.orders.length !== 0) {
+                    let maxAmt = Long.ZERO
                     for (let order of res.orders) {
                         let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
                         let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                        let minBoardlot = Long.fromString(order.minBoardlot)
                         let totalBoardlot = Long.fromString(order.totalBoardlot)
                         let tradedBoardlot = Long.fromString(order.tradedBoardlot)
 
                         let minAmt = minBoardlot.multiply(amountPerBoardlot)
-                        let leftAmt = totalBoardlot.subtract(tradedBoardlot)
+                        let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(amountPerBoardlot)
 
-                        if (minAmt.compare(amt) > 0) {
-                            continue
-                        }
                         if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
                             continue
                         }
-
-                        let buyID = order.txHash.replace(/^(0x|0X)/, '')
-                        let boardlotCnt
-                        if (leftAmt.greaterThan(amt)) {
-                            
-
-                        } else {
-
-                        }
-
-
-
-                        if (order.pricePerBoardlot !== order.amountPerBoardlot || boardlotCnt < 0) {
+                        if(minAmt.greaterThan("300000000")){
                             continue
                         }
-                        if (leftAmt > amt) {
-                            buyOrders.push({ boardlotCnt: boardlotCnt, buyID: buyID, fee: fee })
-                            return buyOrders
-                        } else {
-                            boardlotCnt -= leftBoardlot
-                            buyOrders.push({ boardlotCnt: leftBoardlot, buyID: buyID, fee: fee })
+                        if (amountPerBoardlot.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (leftAmt.greaterThan(maxAmt)) {
+                            maxAmt = leftAmt
+                            this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
+                            this.BUY_LIMIT.minAmt = minAmt.toString()
+                            this.BUY_LIMIT.maxAmt = leftAmt.toString()
+                            this.BUY_LIMIT.amtPerBoardlot = amountPerBoardlot.toString()
                         }
                     }
-                    let error = new Error(JSON.stringify(this.PARA_ERROR.TRADE_BUY_ORDER_NO_BALANCE))
-                    throw error
                 }
-                return buyOrders;
             })
-        },
-        checkTradeSellOrder(url) {
-            let sellOrders = []
-
         },
 
         // 玩家获得的平行链主代币位于trade合约下，提币到coins合约
@@ -233,94 +200,26 @@ export default {
             }, 5000);
         },
 
-        transferBTY2GameCoin(privateKey, amount, callback) {
+        transferBTY2GameCoin(privateKey, amt, callback) {
             const to = this.currentAccount.address
             let mainUrl = this.currentMain.url
             let paraUrl = this.currentParallel.url
 
-            // this.mainCoins2Paracross(privateKey, amount, mainUrl).then(hash1 => {
-            //     this.txStateCheckTask(hash1, mainUrl, () => {
-            //         this.main2Parallel(privateKey, to, amount, mainUrl).then(hash2 => {
-            //             this.txStateCheckTask(hash2, mainUrl, () => {
-            //                 this.parallelPara2Coins(privateKey, amount, paraUrl).then(hash3 => {
-            //                     console.log(hash3)
-            //                     callback("success")
-            //                 }).catch(err => {
-            //                     callback(err.message)
-            //                 })
-            //             })
-            //         })
-            //     })
-            // })
-           console.log( Long.fromString("5").divide("2").toString())
-            this.parallelMarketSell(amount, paraUrl).then(tx => {
-                console.log(tx)
-            }).catch(err => {
-
-                console.log(err.message)
-                callback(err.message)
+            this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
+                this.txStateCheckTask(hash1, mainUrl, () => {
+                    this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
+                        this.txStateCheckTask(hash2, mainUrl, () => {
+                            this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
+                                console.log(hash3)
+                                callback("success")
+                            }).catch(err => {
+                                callback("xxx")
+                                console.log(err)
+                            })
+                        })
+                    })
+                })
             })
-
-
-            // 挂大买单
-            // let params = {
-            //     tokenSymbol: "coins.bty", 
-            //     amountPerBoardlot: 1, 
-            //     minBoardlot: 1, 
-            //     pricePerBoardlot: 1,
-            //     totalBoardlot: amount, 
-            //     assetExec: "paracross"
-            // }
-            // return this.$chain33Sdk.createRawTradeBuyLimitTx(params, paraUrl).then(tx => {
-            //     return signRawTx(tx, privateKey)
-            // }).then(signedTx => {
-            //     return this.sendTransaction(signedTx, paraUrl)
-            // }).then(res => {
-            //     console.log(res)
-            // })
-
-            // 撤销买单
-            // return this.$chain33Sdk.createRawTradeRevokeBuyTx("67d2ef4f3e3d3711177bdf0d68d66043c69da183e03854f3784929bbac3dcafd", 0.001 * 1e8, paraUrl).then(tx => {
-            //     return signRawTx(tx, privateKey)
-            // }).then(signedTx => {
-            //     return this.sendTransaction(signedTx, paraUrl)
-            // }).then(res => {
-            //     console.log(res)
-            // })
-
-            // 查询买单
-            // return this.$chain33Sdk.getOnesBuyOrder(to, ["coins.bty"], paraUrl).then(res => {
-            //     console.log(res)
-            // })
-
-            // 挂大卖单
-            // let params = {
-            //     tokenSymbol: "coins.bty",
-            //     amountPerBoardlot: 1,
-            //     minBoardlot: 1,
-            //     pricePerBoardlot: 1,
-            //     totalBoardlot: amount,
-            //     assetExec: "paracross"
-            // }
-            // return this.$chain33Sdk.createRawTradeSellTx(params, paraUrl).then(tx => {
-            //     return signRawTx(tx, privateKey)
-            // }).then(signedTx => {
-            //     return this.sendTransaction(signedTx, paraUrl)
-            // }).then(hash => {
-            //     console.log(hash)
-            // })
-
-            // 撤销卖单
-            // return this.$chain33Sdk.createRawTradeRevokeTx("e540628b2730fa77d0bc0e710c3779e49a24085b25741b49927d8f9e91d3d3c1", 0.001 * 1e8, paraUrl).then(tx => {
-            //     return signRawTx(tx, privateKey)
-            // }).then(signedTx => {
-            //     return this.sendTransaction(signedTx, paraUrl)
-            // }).then(res => {
-            //     console.log(res)
-            // })
-
-            // 查询卖单
-
         },
 
 
@@ -367,36 +266,49 @@ export default {
             }
             return this.createTransaction(params, url)
         },
-        parallelMarketBuy(boardlotCnt, url) {
+        parallelMarketBuy(amt, url) {
+            let boardlotCnt = Long.fromValue(amt).divide(this.SELL_LIMIT.pricePerBoardlot).toInt()
+            let sellID = this.SELL_ID;
+            return this.createRawTradeBuyMarketTx([{sellID, boardlotCnt}], url);
+        },
+        getTradeSellOrder(url){
             let params = {
                 tokenSymbol: "coins.bty",
                 status: this.TRADE_ORDER_STATUS.ON_SALE,
-                count: boardlotCnt
+                count: "10000000"
             }
-            let fee = 0.01 * 1e8;
             return this.getTokenSellOrderByStatus(params, url).then(res => {
-                let sellOrders = []
-                if (res && res.orders.length !== 0) {
-                    for (let order of res.orders) {
-                        let leftBoardlot = parseInt(parseInt(order.totalBoardlot) - parseInt(order.tradedBoardlot))
-                        let sellID = order.txHash.replace(/^(0x|0X)/, '')
-                        if (leftBoardlot > boardlotCnt) {
-                            sellOrders.push({ boardlotCnt: boardlotCnt, sellID: sellID, fee: fee })
-                            return sellOrders
-                        } else {
-                            boardlotCnt -= leftBoardlot
-                            sellOrders.push({ boardlotCnt: leftBoardlot, sellID: sellID, fee: fee })
+                if(res && res.orders.length !== 0){
+                    let maxAmt = Long.ZERO;
+                    for(let order of res.orders){
+                        let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
+                        let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                        let minBoardlot = Long.fromString(order.minBoardlot)
+                        let totalBoardlot = Long.fromString(order.totalBoardlot)
+                        let tradedBoardlot = Long.fromString(order.tradedBoardlot)
+
+                        let minAmt = minBoardlot.multiply(pricePerBoardlot)
+                        let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(pricePerBoardlot)
+
+                        if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
+                            continue
+                        }
+                        if(minAmt.greaterThan("300000000")){
+                            continue
+                        }
+                        if (amountPerBoardlot.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (leftAmt.greaterThan(maxAmt)) {
+                            maxAmt = leftAmt
+                            this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')
+                            this.SELL_LIMIT.minAmt = minAmt.toString()
+                            this.SELL_LIMIT.maxAmt = leftAmt.toString()
+                            this.SELL_LIMIT.pricePerBoardlot = pricePerBoardlot.toString()
                         }
                     }
-                    let error = new Error(JSON.stringify(this.PARA_ERROR.TRADE_SELL_ORDER_NO_BALANCE))
-                    throw error
                 }
-                return sellOrders
-            }).then(sellOrders => {
-                return this.createRawTradeBuyMarketTx(sellOrders, url)
             })
-
-            // return this.createRawTradeBuyMarketTx(sellId, boardlotCnt, 0.001 * 1e8, url);
         },
         parallelCoins2Trade(amount, url) {
             let params = {
@@ -408,6 +320,7 @@ export default {
         },
         // 打包交易组
         parallelCoins2Para(privateKey, amount, url) {
+            console.log(amount)
             let txs = []
             return this.parallelCoins2Trade(amount, url).then(tx => {
                 txs.push(tx)
@@ -441,10 +354,12 @@ export default {
             this.parallelCoins2Para(privateKey, amount, paraUrl).then(hash1 => {
                 this.txStateCheckTask(hash1, paraUrl, () => {
                     this.parallel2Main(privateKey, to, amount, mainUrl).then(hash2 => {
-                        this.txStateCheckTask(hash2, mainUrl, () => {
+                        this.txStateCheckTask(hash2, paraUrl, () => {
                             this.mainParacross2Coins(privateKey, amount, mainUrl).then(hash3 => {
-                                console.log(hash3)
+                                console.log("hash3", hash3)
                                 callback("success")
+                            }).catch(err => {
+                                console.log(err)
                             })
                         })
                     })
