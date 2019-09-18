@@ -2,7 +2,7 @@ const state = {
   // loadingData: [],
   recordData: [],
   recordDetail:{},
-  assetType: ''
+  assetType: 'game'
 }
 
 const mutations = {

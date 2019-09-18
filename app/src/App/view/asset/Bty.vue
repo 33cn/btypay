@@ -80,6 +80,7 @@ import Convert from "@/App/view/asset/record/Convert.vue";
 import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
+import recover from "@/mixins/recover.js";
 import { createNamespacedHelpers } from "vuex";
 import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
 import { timeFormat } from "@/libs/common";
@@ -88,7 +89,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
-  mixins: [walletAPI, chain33API],
+  mixins: [walletAPI, chain33API,recover],
   data() {
     return {
       view: "All",

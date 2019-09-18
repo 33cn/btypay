@@ -67,6 +67,13 @@ export default {
           }, 500);
         }
       })
+    },
+    getElements(path){
+      getChromeStorage('element').then(ele=>{
+        if(path = '/node'){
+
+        }
+      })
     }
   },
   mounted() {
@@ -80,14 +87,37 @@ export default {
         getChromeStorage("loginTime").then(res => {
           if (res.loginTime) {
             let time = 1 * 24 * 60 * 60 * 1000;
-            console.log(res.loginTime)
-            console.log(new Date().valueOf())
-            console.log(new Date().valueOf() - parseInt(res.loginTime))
+            // console.log(res.loginTime)
+            // console.log(new Date().valueOf())
+            // console.log(new Date().valueOf() - parseInt(res.loginTime))
             if (new Date().valueOf() - parseInt(res.loginTime) >= time) {
               console.log("大于24小时");
               //   this.$router.push({ name: "login" });
             } else {
-              this.$router.push("/WalletIndex");
+              // this.$router.push("/WalletIndex");
+              getChromeStorage('beforePath').then(res=>{
+                console.log('res.beforePath.path')
+                console.log(res)
+                if(res.beforePath&&res.beforePath.path){
+                  if(res.beforePath.haveWallet){
+                    console.log('进来了1')
+                    return
+                  }
+                  let queryArr = Object.keys(res.beforePath.query)
+                  if(queryArr.length>0){
+                    this.$router.push(res.beforePath.path+'?'+queryArr[0]+'='+res.beforePath.query[queryArr[0]]);
+                    return
+                  }else if(Object.keys(res.beforePath.params).length>0){
+
+                  }else{
+                    this.$router.push(res.beforePath.path);
+                  }
+                }else{
+                  this.$router.push("/WalletIndex");
+                }
+                // this.getElements(res.beforePath.path)
+              })
+
             }
           }
         });
@@ -97,14 +127,56 @@ export default {
           console.log(result);
           if (result.ciphertext) {
             this.cipherMnemonic = result.ciphertext;
+            getChromeStorage('beforePath').then(res=>{
+              console.log('--beforePath---')
+              console.log(res)
+              if(res.beforePath&&res.beforePath.path){
+                if(res.beforePath.haveWallet){
+                  console.log('进来了2')
+                  return
+                }
+                let queryArr = Object.keys(res.beforePath.query)
+                if(queryArr.length>0){
+                  this.$router.push(res.beforePath.path+'?'+queryArr[0]+'='+res.beforePath.query[queryArr[0]]);
+                  return
+                }else if(Object.keys(res.beforePath.params).length>0){
+                }else{
+                  this.$router.push(res.beforePath.path);
+                }
+              }else{
+                // console.log('跳转了')
+                // this.$router.push("/ImportOrCreate");
+              }
+            })
           } else {
-            this.$router.push("/ImportOrCreate");
+            // this.$router.push("/ImportOrCreate");
+            getChromeStorage('beforePath').then(res=>{
+              console.log('--beforePath')
+              console.log(res)
+              if(res.beforePath&&res.beforePath.path){
+                if(res.beforePath.haveWallet){
+                  console.log('进来了3')
+                  return
+                }
+                let queryArr = Object.keys(res.beforePath.query)
+                if(queryArr.length>0){
+                  this.$router.push(res.beforePath.path+'?'+queryArr[0]+'='+res.beforePath.query[queryArr[0]]);
+                  return
+                }else if(Object.keys(res.beforePath.params).length>0){
+                }else{
+                  this.$router.push(res.beforePath.path);
+                }
+              }else{
+                // console.log('跳转了')
+                this.$router.push("/ImportOrCreate");
+              }
+            })
           }
         });
       }
       this.recoverAccount();
     }).catch(err=>{
-      console.log(wallet)
+      // console.log(wallet)
     });
   }
 };

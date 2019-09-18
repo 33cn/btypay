@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function()
 {
-    console.log('BTY钱包插件运行...！');
+    console.log('BTYPAY钱包插件运行...！');
     let installNode = document.createElement('div');
     document.body.appendChild(installNode)
     installNode.id = 'bty-chrome-extension-installed';

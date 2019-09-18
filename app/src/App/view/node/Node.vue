@@ -21,6 +21,13 @@
                 src="../../../assets/images/selected.png"
                 alt
               />
+              <img
+                @click.stop="delNode(item,'main')"
+                v-if="item.url!=currentMainNode.url&&i>0"
+                src="../../../assets/images/deleteNode.png"
+                style="width:17px;height:19px"
+                alt
+              />
               <span
                 :style="mainIsConnected==3?'color:#EF394A':mainIsConnected==1?'color:#f4c36a':''"
                 v-if="item.url==currentMainNode.url"
@@ -28,7 +35,7 @@
               <p class="line"></p>
             </div>
           </section>
-          <p class="add" @click="mainDialog=true;mainIsInput=false;mainData=''">添加自定义节点</p>
+          <p class="add" @click="test">添加自定义节点</p>
         </div>
       </li>
       <li>
@@ -41,6 +48,13 @@
               <img
                 v-if="item.url==currentParaNode.url"
                 src="../../../assets/images/selected.png"
+                alt
+              />
+              <img
+                @click.stop="delNode(item,'para')"
+                v-if="item.url!=currentParaNode.url&&i>0"
+                src="../../../assets/images/deleteNode.png"
+                style="width:17px;height:19px"
                 alt
               />
               <span
@@ -62,7 +76,7 @@
       class="mainNode"
     >
       <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
-      <input type="text" class="mainAddress" ref="mainName" v-model="mainData" />
+      <input type="text" class="mainAddress" ref="mainName" v-model="mainData" @input.prevent="inputHandle($event,'main')"/>
       <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
       <div slot="footer" class="dialog-footer">
         <el-button @click="mainDialog = false">取消</el-button>
@@ -78,13 +92,13 @@
     >
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-form-item label="平行链名称" prop="name">
-          <el-input v-model="form.name" ref="paraName" autocomplete="off"></el-input>
+          <el-input v-model="form.name" ref="paraName" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
         </el-form-item>
         <el-form-item label="代币名称" prop="coin">
-          <el-input v-model="form.coin" autocomplete="off"></el-input>
+          <el-input v-model="form.coin" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
         </el-form-item>
         <el-form-item label="节点地址" prop="url">
-          <el-input v-model="form.url" autocomplete="off"></el-input>
+          <el-input v-model="form.url" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -98,13 +112,14 @@
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
 import walletAPI from "@/mixins/walletAPI.js";
+import recover from "@/mixins/recover.js";
 import { createNamespacedHelpers } from "vuex";
 import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil";
 
 const { mapState } = createNamespacedHelpers("Account");
 
 export default {
-  mixins: [walletAPI],
+  mixins: [walletAPI,recover],
   components: { HomeHeader },
   computed: {
     ...mapState([
@@ -145,6 +160,21 @@ export default {
     };
   },
   methods: {
+    inputHandle(e,node){
+      // console.log(e)
+      // console.log(node)
+      if(node == 'main'){
+        this.getAndSet('mainData',e.target.value)
+      }else if(node == 'para'){
+        this.getAndSet('form',this.form)
+      }
+    },
+    test(){
+      this.mainDialog=true;
+      this.mainIsInput=false;
+      this.mainData=''
+      this.getAndSet('mainDialog',true)
+    },
     paraSubmit(formName) {
       for (let i = 0; i < this.paraNodeList.length; i++) {
         if (this.paraNodeList[i].url == this.form.url) {
@@ -155,8 +185,8 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log("submit!");
-
-          let index = this.paraNodeList.length;
+          let length = this.paraNodeList.length
+          let index = this.paraNodeList[length-1].index+1;
           // console.log(index);
           let paraAddr = "";
           let tradeAddr = "";
@@ -219,7 +249,8 @@ export default {
           return;
         }
       }
-      let index = this.mainNodeList.length;
+      let length = this.mainNodeList.length
+      let index = this.mainNodeList[length-1].index+1;
       let obj = {
         url: this.mainData,
         txHeight: -1,
@@ -248,6 +279,7 @@ export default {
       this.mainData = "";
     },
     setNode(val, target) {
+      // console.log('setNode')
       if (target == "main") {
         this.$store.commit("Account/UPDATE_CURRENT_MAIN", val);
         this.$store.commit("Account/UPDATE_MAIN_CONNECT", 1);
@@ -278,6 +310,39 @@ export default {
           });
       }
     },
+    delNode(val,target){
+      console.log(val)
+      console.log(target)
+      if (target == "main"){
+        for(let i = 0; i < this.mainNodeList.length; i++){
+          if(val.url == this.mainNodeList[i].url){
+            this.mainNodeList.splice(i,1);
+            break
+          }
+        }
+        setChromeStorage("mainNodeList", this.mainNodeList).then(res=>{
+          if (res == "success") {
+            // this.mainNodeList = this.mainNode;
+            this.$message.success("主链节点删除成功");
+            this.getMainNode(); //更新视图
+          }
+        })
+      }else if (target == "para"){
+        for(let i = 0; i < this.paraNodeList.length; i++){
+          if(val.url == this.paraNodeList[i].url){
+            this.paraNodeList.splice(i,1);
+            break
+          }
+        }
+        setChromeStorage("parallelNodeList", this.paraNodeList).then(res=>{
+          if (res == "success") {
+            // this.mainNodeList = this.mainNode;
+            this.$message.success("平行链节点删除成功");
+            this.getParaNode(); //更新视图
+          }
+        })
+      }
+    },
     getMainNode() {
       getChromeStorage("mainNodeList").then(res => {
         // console.log(res);
@@ -287,7 +352,7 @@ export default {
         }
       });
       getChromeStorage("mainNode").then(res => {
-        // console.log(res);
+        console.log(res);
         if (res.mainNode) {
           this.currentMainNode = res.mainNode;
         }
@@ -302,7 +367,7 @@ export default {
         }
       });
       getChromeStorage("paraNode").then(res => {
-        // console.log(res);
+        console.log(res);
         if (res.paraNode) {
           this.currentParaNode = res.paraNode;
         }
@@ -314,8 +379,8 @@ export default {
     this.paraNodeList = this.parallelNode;
     this.getMainNode();
     this.getParaNode();
-    // this.refreshMainAsset();
-    // this.refreshParallelAsset();
+    this.refreshMainAsset();
+    this.refreshParallelAsset();
     // this.convertExecToAddr(
     //   "user.p.gbttest.paracross",
     //   'http://172.16.103.24:8801'
@@ -325,6 +390,7 @@ export default {
   },
   watch: {
     paraDialog(val) {
+      this.getAndSet('paraDialog',val)
       if (!val) {
         this.$refs["ruleForm"].resetFields();
       } else {
@@ -334,13 +400,14 @@ export default {
       }
     },
     mainDialog(val) {
+      this.getAndSet('mainDialog',val)
       if (val) {
         setTimeout(() => {
           this.$refs["mainName"] && this.$refs["mainName"].focus();
         }, 50);
       }
     }
-  }
+  },
 };
 </script>
 

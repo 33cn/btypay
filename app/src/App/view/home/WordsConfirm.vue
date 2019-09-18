@@ -1,6 +1,6 @@
 <template>
   <div class="wordsConfirm_container">
-    <asset-back title style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0" backPath="/WordsShow"></asset-back>
     <section class="content">
       <p class="desc">请按顺序确认您的助记词</p>
       <div class="mnemonic">
@@ -29,10 +29,11 @@ import AssetBack from "@/components/AssetBack.vue";
 import { randomSort, addPropToArrElem } from "@/libs/common.js";
 import { encrypt } from "@/libs/crypto.js";
 import {setChromeStorage} from '@/libs/chromeUtil.js'
+import recover from "@/mixins/recover.js";
 import walletAPI from "@/mixins/walletAPI.js";
 export default {
   components: { AssetBack, DargableBtnGroup },
-  mixins:[walletAPI],
+  mixins:[walletAPI,recover],
   data() {
     return {
       isConfirming:false,

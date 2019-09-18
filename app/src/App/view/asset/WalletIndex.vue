@@ -75,6 +75,9 @@ export default {
   methods: {
     toBty() {
       this.$store.commit("Records/ASSET_TYPE", "bty");
+      setChromeStorage('currentPageCoin','bty').then(res=>{
+
+      })
       // if(this.currentMain && this.currentMain.url){
       //   console.log(this.currentMain)
       //   eventBus.$emit('node-change', this.currentMain.url)
@@ -83,6 +86,9 @@ export default {
     },
     toGame() {
       this.$store.commit("Records/ASSET_TYPE", "game");
+      setChromeStorage('currentPageCoin','game').then(res=>{
+        
+      })
       // if(this.currentParallel && this.currentParallel.url){
       //   console.log(this.currentParallel)
       //   eventBus.$emit('node-change', this.currentParallel.url)
@@ -102,8 +108,7 @@ export default {
     init() {
       this.getWallet().then(wallet => {
         if (wallet) {
-          console.log("walletIndex-wallet");
-          console.log(wallet);
+          // console.log("walletInd////
           this.$store.commit("Account/UPDATE_ACCOUNTS", wallet.accountMap);
         }
       });
@@ -181,10 +186,16 @@ export default {
       });
     }, 10);
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
+    setChromeStorage('element',{}).then(res=>{
+        // console.log(res)
+    })
+    setChromeStorage('beforePath',{}).then(res=>{
+      // console.log(res)
+    })
   },
   beforeRouteEnter(to, from, next){
     next(vm=>{
-        console.log(from)
+        // console.log(from)
         if(from.name == 'login' || from.name == 'ImportWallet' || from.name == 'WordsConfirm'){
           vm.numIsAnimation = true;
         }else{

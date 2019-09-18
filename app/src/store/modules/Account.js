@@ -28,7 +28,7 @@ const state = {
   parallelAsset: {
     name: "GBT",
     amt: 0.0000,
-    price: 10
+    price: 1
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
@@ -36,11 +36,11 @@ const state = {
   currentMain: { index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" },
 
   parallelNode: [
-    { index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''},
+    {index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''},
     { index: 1, name: 'gbttest', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
   ],
   // currentParallel: { index: 0, name: 'gbttest', coin: "GBT", url: "http://172.16.103.24:8801", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
-  currentParallel: { index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''},
+  currentParallel: {index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''},
 
 }
 

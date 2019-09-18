@@ -25,10 +25,16 @@
 </template>
 
 <script>
-// import {getChromeStorage} from '@/libs/chromeUtil.js'
+import {setChromeStorage} from '@/libs/chromeUtil.js'
 export default {
     mounted(){
-        
+        console.log('ImportOrCreate')
+        setChromeStorage('beforePath',{}).then(res=>{
+            // console.log(res)
+        })
+        setChromeStorage('element',{}).then(res=>{
+            // console.log(res)
+        })
     }
 }
 </script>
