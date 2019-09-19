@@ -29,7 +29,7 @@ export default {
         return {
             PARA_ERROR: {
                 PARAM_ERROR: { code: 1, desc: "参数错误" },
-                NO_TRADE_CONTRACT: { code: 2, desc: "未部署Trade合约" },
+                TRADE_CONTRACT_NOT_SUPPORT: { code: 2, desc: "未部署Trade合约" },
                 TRADE_BUY_NO_ORDER: { code: 3, desc: "Trade合约中没有合适的买单" },
                 TRADE_SELL_NO_ORDER: { code: 4, desc: "Trade合约中没有合适的卖单" },
 
@@ -117,42 +117,51 @@ export default {
                 status: this.TRADE_ORDER_STATUS.ON_BUY,
                 count: "10000000"
             }
-            return this.getTokenBuyOrderByStatus(params, url).then(res => {
-                let maxAmt = Long.ZERO
-                if (res && res.orders.length !== 0) {
-                    for (let order of res.orders) {
-                        let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
-                        let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
-                        let minBoardlot = Long.fromString(order.minBoardlot)
-                        let totalBoardlot = Long.fromString(order.totalBoardlot)
-                        let tradedBoardlot = Long.fromString(order.tradedBoardlot)
+            return this.getOnesBuyOrder(this.currentAccount.address, url).then(res => { return }).catch(err => {
+                if (err.message == "ErrNotSupport") {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
+                }
+            }).then(err => {
+                if (err) {
+                    return err
+                }
+                return this.getTokenBuyOrderByStatus(params, url).then(res => {
+                    let maxAmt = Long.ZERO
+                    if (res && res.orders.length !== 0) {
+                        for (let order of res.orders) {
+                            let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
+                            let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                            let minBoardlot = Long.fromString(order.minBoardlot)
+                            let totalBoardlot = Long.fromString(order.totalBoardlot)
+                            let tradedBoardlot = Long.fromString(order.tradedBoardlot)
 
-                        let minAmt = minBoardlot.multiply(amountPerBoardlot)
-                        let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(amountPerBoardlot)
+                            let minAmt = minBoardlot.multiply(amountPerBoardlot)
+                            let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(amountPerBoardlot)
 
-                        if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
-                            continue
-                        }
-                        if (minAmt.greaterThan("300000000")) {
-                            continue
-                        }
-                        if (amountPerBoardlot.greaterThan("300000000")) {
-                            continue
-                        }
-                        if (leftAmt.greaterThan(maxAmt)) {
-                            maxAmt = leftAmt
-                            this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
-                            this.BUY_LIMIT.minAmt = minAmt.toString()
-                            this.BUY_LIMIT.maxAmt = leftAmt.toString()
-                            this.BUY_LIMIT.amtPerBoardlot = amountPerBoardlot.toString()
+                            if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
+                                continue
+                            }
+                            if (minAmt.greaterThan("300000000")) {
+                                continue
+                            }
+                            if (amountPerBoardlot.greaterThan("300000000")) {
+                                continue
+                            }
+                            if (leftAmt.greaterThan(maxAmt)) {
+                                maxAmt = leftAmt
+                                this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
+                                this.BUY_LIMIT.minAmt = minAmt.toString()
+                                this.BUY_LIMIT.maxAmt = leftAmt.toString()
+                                this.BUY_LIMIT.amtPerBoardlot = amountPerBoardlot.toString()
+                            }
                         }
                     }
-                }
-                if (maxAmt.notEquals(Long.ZERO)) {
-                    return "success"
-                } else {
-                    return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
-                }
+                    if (maxAmt.notEquals(Long.ZERO)) {
+                        return "success"
+                    } else {
+                        return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
+                    }
+                })
             })
         },
 
@@ -251,7 +260,7 @@ export default {
                 })
             }).catch(err => {
                 if (err.message == "ErrNotSupport") {
-                    callback(JSON.stringify(this.PARA_ERROR.NO_TRADE_CONTRACT))
+                    callback(JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT))
                 }
             })
         },
@@ -413,7 +422,7 @@ export default {
                         this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
                             this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
 
-                                if(err2){
+                                if (err2) {
                                     this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
                                     callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
                                     return

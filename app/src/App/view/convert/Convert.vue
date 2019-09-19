@@ -284,9 +284,10 @@ export default {
     requestTradeOrder() {
       this.getTradeBuyOrder(this.currentParallel.url).then(res => {
         setTimeout(() => {
+          console.log(res)
           this.tradeBuyLoading = false;
           if(res !== "success"){
-            this.$message.error(JSON.parse(res).msg);
+            this.$message.error(JSON.parse(res).desc);
           }
         }, 600);
         console.log("BUY_ID:" + this.BUY_ID);
@@ -295,7 +296,7 @@ export default {
         setTimeout(() => {
           this.tradeSellLoading = false;
           if(res !== "success"){
-            this.$message.error(JSON.parse(res).msg);
+            this.$message.error(JSON.parse(res).desc);
           }
         }, 600);
         console.log("SELL_ID:" + this.SELL_ID);
