@@ -1,6 +1,6 @@
 <template>
   <div class="createWallet_container">
-    <asset-back title style="padding-top:0" backPath="/ImportOrCreate"></asset-back>
+    <asset-back title style="padding-top:0" :backPath="haveWallet?'/':'/ImportOrCreate'"></asset-back>
     <el-form
       label-position="top"
       :rules="createRules"
@@ -24,6 +24,7 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import recover from "@/mixins/recover.js";
+import {getChromeStorage} from '@/libs/chromeUtil.js'
 export default {
   mixins:[recover],
   components: { AssetBack },
@@ -49,7 +50,8 @@ export default {
           { required: true, message: "请输入您的确认密码", trigger: "blur" },
           { validator: confirmPwdValidate, trigger: "blur" }
         ]
-      }
+      },
+      haveWallet:false
     };
   },
   methods: {
@@ -64,6 +66,16 @@ export default {
         }
       });
     }
+  },
+  mounted(){
+    getChromeStorage("ciphertext").then(res=>{
+      console.log(res)
+      if (res.ciphertext){
+        this.haveWallet = true;
+      }else{
+        this.haveWallet = false;
+      }
+    })
   }
 };
 </script>

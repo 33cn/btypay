@@ -26,7 +26,7 @@
 <script>
 // import HomeHeader from "@/components/HomeHeader.vue";
 import walletAPI from "@/mixins/walletAPI.js";
-import { getChromeStorage } from "@/libs/chromeUtil.js";
+import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
 import { decrypt } from "@/libs/crypto.js";
 export default {
   //   components: { HomeHeader },
@@ -45,6 +45,11 @@ export default {
         ]
       }
     };
+  },
+  computed:{
+    pageIsClose(){
+      return this.$store.state.Records.pageIsClose
+    }
   },
   methods: {
     loginHandle() {
@@ -74,6 +79,14 @@ export default {
 
         }
       })
+    },
+    clearPath(){
+      // setChromeStorage('element',{}).then(res=>{
+      //     console.log(res)
+      // })
+      setChromeStorage('beforePath',{}).then(res=>{
+          console.log(res)
+      })
     }
   },
   mounted() {
@@ -99,8 +112,15 @@ export default {
                 console.log('res.beforePath.path')
                 console.log(res)
                 if(res.beforePath&&res.beforePath.path){
-                  if(res.beforePath.haveWallet){
-                    console.log('进来了1')
+                  if(res.beforePath.path == '/ImportWallet' || res.beforePath.path == '/CreateWallet'){
+                    console.log('进来了1'+this.pageIsClose)
+                    if(this.pageIsClose){
+                      let path = res.beforePath.path;
+                      this.clearPath();
+                      this.$router.push(path);
+                    }else{
+                      this.clearPath();
+                    }
                     return
                   }
                   let queryArr = Object.keys(res.beforePath.query)
@@ -131,10 +151,17 @@ export default {
               console.log('--beforePath---')
               console.log(res)
               if(res.beforePath&&res.beforePath.path){
-                if(res.beforePath.haveWallet){
-                  console.log('进来了2')
-                  return
-                }
+                if(res.beforePath.path == '/ImportWallet' || res.beforePath.path == '/CreateWallet'){
+                    console.log('进来了2'+this.pageIsClose)
+                    if(this.pageIsClose){
+                      let path = res.beforePath.path;
+                      this.clearPath();
+                      this.$router.push(path);
+                    }else{
+                      this.clearPath();
+                    }
+                    return
+                  }
                 let queryArr = Object.keys(res.beforePath.query)
                 if(queryArr.length>0){
                   this.$router.push(res.beforePath.path+'?'+queryArr[0]+'='+res.beforePath.query[queryArr[0]]);
@@ -154,10 +181,17 @@ export default {
               console.log('--beforePath')
               console.log(res)
               if(res.beforePath&&res.beforePath.path){
-                if(res.beforePath.haveWallet){
-                  console.log('进来了3')
-                  return
-                }
+                if(res.beforePath.path == '/ImportWallet' || res.beforePath.path == '/CreateWallet'){
+                    console.log('进来了3'+this.pageIsClose)
+                    if(this.pageIsClose){
+                      let path = res.beforePath.path;
+                      this.clearPath();
+                      this.$router.push(path);
+                    }else{
+                      this.clearPath();
+                    }
+                    return
+                  }
                 let queryArr = Object.keys(res.beforePath.query)
                 if(queryArr.length>0){
                   this.$router.push(res.beforePath.path+'?'+queryArr[0]+'='+res.beforePath.query[queryArr[0]]);

@@ -43,9 +43,9 @@ import {clip} from '@/libs/clip.js'
 // import { TransactionsListEntry, formatTxType } from '@/libs/bitcoinAmount.js'
 import { createNamespacedHelpers } from 'vuex'
 const { mapState } = createNamespacedHelpers('Records')
-import recover from "@/mixins/recover.js";
+// import recover from "@/mixins/recover.js";
 export default {
-    mixins: [recover],
+    // mixins: [recover],
     components:{AssetBack},
     computed: {
         ...mapState(['recordDetail'])
@@ -71,6 +71,7 @@ export default {
         }
     },
     mounted(){
+        this.coin = this.$store.state.Records.assetType;
         // console.log(this.recordDetail)
         // if(this.$route.params.hash){
         //     this.queryTransaction(this.$route.params.hash).then(res=>{

@@ -179,7 +179,7 @@ export default {
           this.isInput = false;
         }, 500);
       }
-      this.getAndSet('exportVal',this.exportVal)
+      this.getAndSet('exportVal',this.receiptVal)
       this.getAndSet('receiptVal',this.receiptVal)
     },
     convertResHandle(res,title='兑换成功',content='请关注收款地址的资金变动。') {
@@ -191,7 +191,11 @@ export default {
           showClose: false,
         });
         this.isOperatoring = false
-        this.exportVal = ""
+        if(title == '兑换成功'){
+          this.exportVal = null
+          this.receiptVal = null
+        }
+        
       }
     },
     convertHandle() {

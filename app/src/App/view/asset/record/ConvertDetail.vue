@@ -40,10 +40,10 @@
 import AssetBack from '@/components/AssetBack.vue'
 import {clip} from '@/libs/clip.js'
 import { createNamespacedHelpers } from 'vuex'
-import recover from "@/mixins/recover.js";
+// import recover from "@/mixins/recover.js";
 const { mapState } = createNamespacedHelpers('Records')
 export default {
-    mixins:[recover],
+    // mixins:[recover],
     components:{AssetBack},
     computed: {
         ...mapState(['recordDetail']),
@@ -77,6 +77,7 @@ export default {
         }
     },
     mounted(){
+        this.coin = this.$store.state.Records.assetType;
         // console.log(this.recordDetail)
         // console.log(this.$route.params);
     }

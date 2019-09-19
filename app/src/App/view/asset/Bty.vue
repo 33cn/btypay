@@ -410,7 +410,8 @@ export default {
     > div.history {
       overflow-y: auto;
       max-height: 219px;
-      margin: 0px 21px 0 20px;
+      margin: 0px 13px 0 20px;
+      padding-right: 8px;
       /* 设置滚动条的样式 */
       &::-webkit-scrollbar {
         width: 2px;
@@ -424,9 +425,9 @@ export default {
       // }
       // /* 滚动条滑块 */
       &::-webkit-scrollbar-thumb {
-        background: red;
+        background: rgba(249,250,251,1);;
         border-radius: 2px;
-        opacity: 0.2;
+        opacity: 0.7;
       }
       // &::-webkit-scrollbar-thumb:window-inactive {
       //   background:rgba(74,125,180,.2);

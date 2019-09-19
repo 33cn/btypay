@@ -2,7 +2,8 @@ const state = {
   // loadingData: [],
   recordData: [],
   recordDetail:{},
-  assetType: 'game'
+  assetType: 'game',
+  pageIsClose:true
 }
 
 const mutations = {
@@ -18,6 +19,9 @@ const mutations = {
   },
   RECORD_DETAIL(state,payload){
     state.recordDetail = payload;
+  },
+  PAGE_IS_CLOSE(state,payload){
+    state.pageIsClose = payload;
   }
 }
 

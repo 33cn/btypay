@@ -29,10 +29,7 @@ export default {
         // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
       }else{
         chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-<<<<<<< HEAD
         // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
-=======
->>>>>>> 19d23b8657c8aea01e26246c8ee2da1b7895da1c
       }
     })
     getChromeStorage('mainNode').then(res=>{

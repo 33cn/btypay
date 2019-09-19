@@ -42,7 +42,8 @@ export default{
                 vm.beforePath.path = to.path
             }
             if((from.path=='/'&&to.path=='/ImportWallet')||(from.path=='/'&&to.path=='/CreateWallet')){
-                vm.beforePath.haveWallet = true
+                // vm.beforePath.haveWallet = true
+                vm.$store.commit('Records/PAGE_IS_CLOSE', false)
             }
             vm.beforePath.name = to.name
             vm.beforePath.query = to.query

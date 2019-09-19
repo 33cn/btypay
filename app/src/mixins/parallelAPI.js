@@ -21,7 +21,10 @@ export default {
         },
         diceExecer(){
             return "user.p." + this.currentParallel.name + ".wasm.dice"
-        }
+        },
+        lotteryExecer(){
+            return "user.p." + this.currentParallel.name + ".lottery"
+        },
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
@@ -122,10 +125,10 @@ export default {
             console.log('parallelCoins2Dice')
             const execName = this.diceExecer
             const isWithdraw = false
-            to = this.currentAccount.address
+            to = "1DBucY6mWHmnpbQWLP1wTaB1VvpU6B3sCJ"
             let params = {
                 to,
-                execName: this.diceExecer,
+                execName: this.lotteryExecer,
                 amount: amount
             }
             return this.createRawTransactionWithExec(params,url)

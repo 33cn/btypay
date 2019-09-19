@@ -40,27 +40,28 @@ export default {
         }
       }, 10000);
       this.parallelCoins2Dice(win.currentAccount.hexPrivateKey,null,win.txObj.amount*1e8,0.001*1e8,win.txObj.url).then(res=>{
-        console.log('outExtension')
-        console.log(res)
+        // console.log('outExtension')
+        // console.log(res)
+        // console.log("xxxxxx", win.txObj.tx)
         let txs = [res,win.txObj.tx]
         return this.createRawTxGroup(txs)
       }).then(tx => {
-        console.log('createRawTxGroup')
-        console.log(tx)
+        // console.log('createRawTxGroup')
+        // console.log(tx)
         return signGroupTx(tx, win.currentAccount.hexPrivateKey)
       }).then(signedTx => {
-        console.log('signGroupTx')
-        console.log(signedTx)
+        // console.log('signGroupTx')
+        // console.log(signedTx)
         return this.sendTransaction(signedTx, win.txObj.url)
       }).then(res=>{
-        console.log('sendTransactionvvvvvvvv')
-        console.log(res)
+        // console.log('sendTransactionvvvvvvvv')
+        // console.log(res)
         setTimeout(() => {
           this.successed = "yes";
           setTimeout(() => {
             win.closeWindow(win.windowId);
           }, 500);
-        }, 400);
+        }, 300);
       }).catch(err=>{
         console.log('发生错误了')
         console.log(err)
@@ -70,7 +71,7 @@ export default {
           setTimeout(() => {
             win.closeWindow(win.windowId);
           }, 500);
-        }, 400);
+        }, 300);
       })
       // return Promise.resolve()
       //   .then(() => {
@@ -83,7 +84,7 @@ export default {
       //     setTimeout(() => {
       //       this.successed = "yes";
       //       setTimeout(() => {
-      //         win.closeWindow(win.windowId);
+      //         // win.closeWindow(win.windowId);
       //       }, 500);
       //     }, 100);
       //   });
