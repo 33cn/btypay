@@ -1,5 +1,5 @@
 <template>
-  <div class="convert_container" v-loading="false">
+  <div class="convert_container" v-loading="tradeBuyLoading || tradeSellLoading">
     <el-button
       size="mini"
       @click="showBalance"
@@ -41,7 +41,7 @@
       </div>
       <div>
         <p>手续费</p>
-        <p>0%</p>
+        <p>0.01</p>
       </div>
       <div>
         <p>最小</p>
@@ -102,7 +102,10 @@ export default {
         amt: 10.0
       },
       rate: 1, //待删
-      fee: 0.01
+      fee: 0.01,
+
+      tradeBuyLoading: true,
+      tradeSellLoading: true
     };
   },
   methods: {
@@ -183,7 +186,7 @@ export default {
       if (this.convert == "B2G") {
         let exportLong = Long.fromValue(parseInt(this.exportVal * 1e8));
         let errMsg = null;
-        // if (e.target.value > val){
+        // if (e.target.value > val) {
         //   errMsg = "余额不足";
         // }
         // if (exportLong.lessThan(this.BUY_LIMIT.minAmt)) {
@@ -192,8 +195,13 @@ export default {
         // if (exportLong.greaterThan(this.BUY_LIMIT.maxAmt)) {
         //   errMsg = "可兑换最大数量为 " + parseInt(this.BUY_LIMIT.maxAmt / 1e8);
         // }
-        // if (exportLong.modulo(this.BUY_LIMIT.amtPerBoardlot).notEquals(Long.ZERO)) {
-        //   errMsg = "输入数量应为 " + parseInt(this.BUY_LIMIT.amtPerBoardlot / 1e8) + " 的倍数";
+        // if (
+        //   exportLong.modulo(this.BUY_LIMIT.amtPerBoardlot).notEquals(Long.ZERO)
+        // ) {
+        //   errMsg =
+        //     "输入数量应为 " +
+        //     parseInt(this.BUY_LIMIT.amtPerBoardlot / 1e8) +
+        //     " 的倍数";
         // }
         if (errMsg) {
           this.isInput = true;
@@ -216,8 +224,8 @@ export default {
           showClose: false
         });
       } else {
-        // JSON.parse(res).msg
-        this.$alert("xxxx", "兑换失败", {
+        let resObject = JSON.parse(res)
+        this.$alert(resObject.desc + " " + resObject.msg, "兑换失败", {
           confirmButtonText: "确认",
           closeOnClickModal: true,
           center: true,
@@ -271,6 +279,27 @@ export default {
       }
       this.exportVal = null;
       this.receiptVal = null;
+    },
+
+    requestTradeOrder() {
+      this.getTradeBuyOrder(this.currentParallel.url).then(res => {
+        setTimeout(() => {
+          this.tradeBuyLoading = false;
+          if(res !== "success"){
+            this.$message.error(JSON.parse(res).msg);
+          }
+        }, 600);
+        console.log("BUY_ID:" + this.BUY_ID);
+      });
+      this.getTradeSellOrder(this.currentParallel.url).then(res => {
+        setTimeout(() => {
+          this.tradeSellLoading = false;
+          if(res !== "success"){
+            this.$message.error(JSON.parse(res).msg);
+          }
+        }, 600);
+        console.log("SELL_ID:" + this.SELL_ID);
+      });
     }
   },
   mounted() {
@@ -279,12 +308,7 @@ export default {
     setTimeout(() => {
       this.asset = this.mainAsset;
     }, 0);
-    this.getTradeBuyOrder(this.currentParallel.url).then(() => {
-      console.log("BUY_ID:" + this.BUY_ID);
-    });
-    this.getTradeSellOrder(this.currentParallel.url).then(() => {
-      console.log("SELL_ID:" + this.SELL_ID);
-    });
+    this.requestTradeOrder();
   }
 };
 </script>

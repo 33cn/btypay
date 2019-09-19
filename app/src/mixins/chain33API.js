@@ -175,6 +175,9 @@ export default {
      */
     getTokenSellOrderByStatus(params, url) {
       return this.$chain33Sdk.getTokenSellOrderByStatus(params, url)
+    },
+    getOnesBuyOrder(addr, url) {
+      return this.$chain33Sdk.getOnesBuyOrder(addr, ["coins.bty"], url)
     }
   }
 }
