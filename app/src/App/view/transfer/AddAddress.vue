@@ -1,6 +1,6 @@
 <template>
   <div class="addAddress_container">
-    <asset-back title="添加地址"></asset-back>
+    <asset-back title="添加地址" backPath="/coin/address"></asset-back>
     <!-- <section class="content">
             <div>
                 <p>地址标签</p>
@@ -14,10 +14,10 @@
     </section>-->
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
       <el-form-item label="地址标签" prop="label">
-        <el-input v-model="ruleForm.label" placeholder="请输入标签内容" autocomplete="off"></el-input>
+        <el-input v-model="ruleForm.label" placeholder="请输入标签内容" autocomplete="off" @input="inputHandle"></el-input>
       </el-form-item>
       <el-form-item label="地址" prop="address">
-        <el-input v-model="ruleForm.address" placeholder="请输入地址" autocomplete="off"></el-input>
+        <el-input v-model="ruleForm.address" placeholder="请输入地址" autocomplete="off" @input="inputHandle"></el-input>
         <!-- <img src="../../../assets/images/scan.png" alt /> -->
       </el-form-item>
     </el-form>
@@ -28,9 +28,10 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from '@/mixins/walletAPI.js'
+import recover from "@/mixins/recover.js";
 import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 export default {
-  mixins: [walletAPI],
+  mixins: [walletAPI,recover],
   components: { AssetBack },
   data() {
     return {
@@ -45,6 +46,9 @@ export default {
     };
   },
   methods: {
+    inputHandle(){
+      this.getAndSet('ruleForm',this.ruleForm)
+    },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {

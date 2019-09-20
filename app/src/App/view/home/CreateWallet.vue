@@ -1,6 +1,6 @@
 <template>
   <div class="createWallet_container">
-    <asset-back title style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0" :backPath="haveWallet?'/':'/ImportOrCreate'"></asset-back>
     <el-form
       label-position="top"
       :rules="createRules"
@@ -9,10 +9,10 @@
       class="content"
     >
       <el-form-item label="请输入您的密码（8-16位字符）" prop="pwd" >
-        <el-input v-model="createForm.pwd" type="password"></el-input>
+        <el-input v-model="createForm.pwd" type="password" @input="inputHandle"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPwd">
-        <el-input v-model="createForm.confirmPwd" type="password"></el-input>
+        <el-input v-model="createForm.confirmPwd" type="password" @input="inputHandle"></el-input>
       </el-form-item>
     </el-form>
     <div class="btn">
@@ -23,7 +23,10 @@
 
 <script>
 import AssetBack from "@/components/AssetBack.vue";
+import recover from "@/mixins/recover.js";
+import {getChromeStorage} from '@/libs/chromeUtil.js'
 export default {
+  mixins:[recover],
   components: { AssetBack },
   data() {
     let confirmPwdValidate = (rule, value, callback) => {
@@ -47,10 +50,14 @@ export default {
           { required: true, message: "请输入您的确认密码", trigger: "blur" },
           { validator: confirmPwdValidate, trigger: "blur" }
         ]
-      }
+      },
+      haveWallet:false
     };
   },
   methods: {
+    inputHandle(){
+      this.getAndSet('createForm',this.createForm)
+    },
     handleCreate() {
       this.$refs.createForm.validate(valid => {
         if (valid) {
@@ -59,6 +66,16 @@ export default {
         }
       });
     }
+  },
+  mounted(){
+    getChromeStorage("ciphertext").then(res=>{
+      console.log(res)
+      if (res.ciphertext){
+        this.haveWallet = true;
+      }else{
+        this.haveWallet = false;
+      }
+    })
   }
 };
 </script>

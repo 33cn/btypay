@@ -1,6 +1,6 @@
 <template>
   <div class="address_container" :class="addresses.length==0?'noAddress':'haveAddress'">
-    <asset-back title="地址簿"></asset-back>
+    <asset-back title="地址簿" :backPath='"/coin/transfer?coin="+coin'></asset-back>
     <ul v-if="addresses.length>0">
       <li
         v-for="(item,i) in addresses"
@@ -25,9 +25,10 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
+import recover from "@/mixins/recover.js";
 import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 export default {
-  mixins: [walletAPI],
+  mixins: [walletAPI,recover],
   components: { AssetBack },
   data() {
     return {
@@ -45,12 +46,12 @@ export default {
   },
   methods: {
     selectedAddress(ad) {
-      console.log(ad);
+      // console.log(ad);
       // this.$router.push({ path: "/coin?coin=bty" });
       this.$router.push({ path: "/coin/transfer?address=" + ad});
     },
     mouseOverHandle() {
-      console.log("rrrrrrr");
+      // console.log("rrrrrrr");
     },
     delHandle() {
       this.addresses.splice(this.delIndex, 1);
@@ -64,7 +65,7 @@ export default {
     show1(e, item, i) {
       this.delIndex = i;
       // console.log(item)
-      console.log(e)
+      // console.log(e)
       this.delMenu.left = e.clientX +5;
       this.delMenu.top = document.documentElement.scrollTop + e.clientY + 5;
       this.menuIsShow = true;
@@ -80,7 +81,7 @@ export default {
     }
   },
   mounted() {
-      console.log(this.$store.state.Records.assetType)
+      // console.log(this.$store.state.Records.assetType)
     this.getAddress()
   }
 };

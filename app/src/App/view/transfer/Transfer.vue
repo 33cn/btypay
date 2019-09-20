@@ -1,6 +1,6 @@
 <template>
   <div class="transfer_container">
-    <asset-back :title="coin=='bty'?'BTY转账':parallelAsset.name+'转账'"></asset-back>
+    <asset-back :title="coin=='bty'?'BTY转账':currentParallel.coin+'转账'" :backPath='"/coin?coin="+coin'></asset-back>
     <el-form
       :model="form"
       :rules="rules"
@@ -8,20 +8,20 @@
       class="demo-ruleForm"
     >
       <el-form-item label="转账金额" prop="num">
-        <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" ></el-input>
+        <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" @input="inputHandle"></el-input>
         <p v-if="coin=='bty'" class="balance">余额{{mainAsset.amt| numFilter(2)}}BTY</p>
-        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{parallelAsset.name}}</p>
+        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{currentParallel.coin}}</p>
         <p v-if="coin=='bty'" class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
         <p v-if="coin=='game'" class="mentionAll" @click="form.num=parallelAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+parallelAsset.name+"地址"' auto-complete="off"></el-input>
+        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+currentParallel.coin+"地址"' auto-complete="off" @input="inputHandle"></el-input>
         <!-- <img src="../../../assets/images/scan.png" alt="" class="scan">
         <p class="line"></p> -->
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
       </el-form-item>
       <el-form-item label="备注" prop="comment">
-        <el-input v-model.number="form.comment" type="text" placeholder='选填'></el-input>
+        <el-input v-model.number="form.comment" type="text" placeholder='选填' @input="inputHandle"></el-input>
         <div class="fee">
             <p>矿工费</p>
             <p>0.001BTY</p>
@@ -37,13 +37,15 @@ import AssetBack from "@/components/AssetBack.vue";
 import {createNamespacedHelpers} from 'vuex'
 import walletAPI from '@/mixins/walletAPI.js'
 import chain33API from '@/mixins/chain33API.js'
+import recover from "@/mixins/recover.js";
 import backgroundCommuncation from '@/mixins/backgroundCommuncation.js'
 import { dMinFee, addrValidate } from '@/libs/bitcoinAmount.js'
 import {eventBus} from '@/libs/eventBus.js'
 
 const {mapState} = createNamespacedHelpers('Account')
+
 export default {
-  mixins: [walletAPI, chain33API, backgroundCommuncation],
+  mixins: [walletAPI, chain33API, backgroundCommuncation,recover],
   components: { AssetBack },
   data() {
     let validateAddress = (rule, value, callback) => {
@@ -88,6 +90,9 @@ export default {
     };
   },
   methods: {
+    inputHandle(){
+      this.getAndSet('form',this.form)
+    },
     submitForm(formName) {
       if(this.isCreating){
         return
@@ -96,7 +101,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let url = this.coin=='bty'?this.currentMain.url:this.coin=='game'?this.currentParallel.url:'';
-          console.log("submit!!"+url);
+          // console.log("submit!!"+url);
           this.sendToAddr({
             privateKey: this.currentAccount.hexPrivateKey,
             to: this.form.address,
@@ -104,7 +109,7 @@ export default {
             fee: parseInt(dMinFee * 1e8),
             note: this.form.comment+'',
           },url).then(res => {
-            console.log(res)
+            // console.log(res)
             this.isCreating = false;
             this.$alert('请关注您的资金变动。', '转账成功', {
               confirmButtonText: '知道了',
@@ -145,7 +150,7 @@ export default {
   mounted(){
     if(this.$route.query.coin){
       this.coin = this.$route.query.coin;
-      console.log(this.coin)
+      // console.log(this.coin)
     }
     this.coin = this.$store.state.Records.assetType;
     this.form.address = this.$route.query.address || '';

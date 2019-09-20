@@ -1,6 +1,6 @@
 <template>
     <div class="convertDetail_container">
-        <asset-back title='订单详情'></asset-back>
+        <asset-back title='订单详情' :backPath='"/coin?coin="+coin'></asset-back>
         <section class="status">
             <img v-if="recordDetail.typeTy==8" src="../../../../assets/images/fail.png" alt="">
             <img v-else src="../../../../assets/images/success.png" alt="">
@@ -14,11 +14,11 @@
             </li>
             <li>
                 <p>收到数量</p>
-                <p>{{recordDetail.strAmount | numFilter}}{{parallelAsset.name}}</p>
+                <p>{{recordDetail.strAmount | numFilter}}{{currentParallel.coin}}</p>
             </li>
             <li>
                 <p>汇率</p>
-                <p>1BTY=1{{parallelAsset.name}}</p>
+                <p>1BTY=1{{currentParallel.coin}}</p>
             </li>
             <li>
                 <p>矿工费</p>
@@ -40,8 +40,10 @@
 import AssetBack from '@/components/AssetBack.vue'
 import {clip} from '@/libs/clip.js'
 import { createNamespacedHelpers } from 'vuex'
+// import recover from "@/mixins/recover.js";
 const { mapState } = createNamespacedHelpers('Records')
 export default {
+    // mixins:[recover],
     components:{AssetBack},
     computed: {
         ...mapState(['recordDetail']),
@@ -75,7 +77,8 @@ export default {
         }
     },
     mounted(){
-        console.log(this.recordDetail)
+        this.coin = this.$store.state.Records.assetType;
+        // console.log(this.recordDetail)
         // console.log(this.$route.params);
     }
 }

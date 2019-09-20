@@ -1,6 +1,6 @@
 <template>
   <div class="wordsConfirm_container">
-    <asset-back title style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0" backPath="/WordsShow"></asset-back>
     <section class="content">
       <p class="desc">请按顺序确认您的助记词</p>
       <div class="mnemonic">
@@ -29,10 +29,11 @@ import AssetBack from "@/components/AssetBack.vue";
 import { randomSort, addPropToArrElem } from "@/libs/common.js";
 import { encrypt } from "@/libs/crypto.js";
 import {setChromeStorage} from '@/libs/chromeUtil.js'
+import recover from "@/mixins/recover.js";
 import walletAPI from "@/mixins/walletAPI.js";
 export default {
   components: { AssetBack, DargableBtnGroup },
-  mixins:[walletAPI],
+  mixins:[walletAPI,recover],
   data() {
     return {
       isConfirming:false,
@@ -78,11 +79,11 @@ export default {
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
       const walletObj = this.createHDWallet(seedString);
-      console.log(walletObj)
+      // console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
       window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
-        console.log('ciphertext is set to ' + ciphertext);
+        // console.log('ciphertext is set to ' + ciphertext);
       })
       this.newAccount("创世地址");
       return walletObj;

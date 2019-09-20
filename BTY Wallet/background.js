@@ -1,39 +1,40 @@
 chrome.runtime.onInstalled.addListener(()=>{
-  // // alert('BTY钱包插件安装好啦！')
-  // console.log('hello')
-  // window.aaaa = 'fanrui'
   chrome.notifications.create(null, {
     type: 'basic',
     iconUrl: 'icons/logo.png',
     title: 'BTY钱包插件',
     message: 'BTY钱包插件安装成功，快去使用吧！'
   });
-  chrome.storage.local.set({['key']: 'fanrui'}, () => {
-    // console.log('value')
-  })
-  chrome.storage.local.get('key',(val)=>{
-    // console.log(val)
-  })
-  // console.log(Pupop)
 });
-
+var txObj = {};
+var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
 
   switch(action) {
     case 'get-current-account':
       if (isWalletUnlock()) {
-        sendMessage({
-          action: 'answer-get-current-account',
-          payload: {
-            error: null,
-            result: {
-              account: {
-                name: window.currentAccount.name,
-                address: window.currentAccount.address,
+        if(window.currentAccount&&window.currentAccount.name&&window.currentAccount.address){
+          sendMessage({
+            action: 'answer-get-current-account',
+            payload: {
+              error: null,
+              result: {
+                account: {
+                  name: window.currentAccount.name,
+                  address: window.currentAccount.address,
+                }
               }
-            }
-          },
-        })
+            },
+          })
+        }else{
+          sendMessage({
+            action: 'answer-get-current-account',
+            payload: {
+              error: '发生异常',
+              result: null
+            },
+          })
+        }
       } else {
         sendMessage({
           action: 'answer-get-current-account',
@@ -67,7 +68,9 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
     case 'sign-tx':
       if (isWalletUnlock()) {
         payload.actionID = action
-        createNewWindow('sign', payload)
+        txObj = payload;
+        console.log(payload)
+        createNewWindow('outExtensionPage', payload)
       } else {
         sendMessage({
           action: 'answer-sign-tx',
@@ -84,17 +87,59 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         payload,
       })
       break;
+    case 'create-new-window':
+      if(isWalletUnlock()){
+        createNewWindow('WalletIndex', payload)
+      }else{
+        createNewWindow('importOrCreate', payload)
+      }
+      break;
+    case 'query-parallel-node':
+      if (isWalletUnlock()) {
+        window.chrome.storage.local.get('parallelNodeList', (result) => {
+          sendMessage({
+            action: 'answer-query-parallel-node',
+            payload: {
+              error: null,
+              result
+            },
+          })
+        })
+      } else {
+        sendMessage({
+          action: 'answer-query-parallel-node',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      
+      break
     default:
       
   }
   return true;
 })
 
-function createNewWindow(route, payload, width = 400, height = 600) {
+function createNewWindow(route, payload, width = 416, height = 636) {
   let baseURL = `${window.chrome.runtime.getURL('/dist/index.html')}#/${route}`
   let url = spliceURL(baseURL, payload)
-  chrome.windows.create({url, width, height, type: 'popup'})
+  chrome.windows.create({url, width, height, type: 'popup'},function(res){
+    // console.log('chrome.windows.create')
+    // console.log(res)
+    windowId = res.id
+    // setTimeout(() => {
+    //   closeWindow(res.id)
+    // }, 15000);
+  })
 };
+function closeWindow(id){
+  chrome.windows.remove(id, function(res){
+    // console.log('chrome.windows.remove')
+    // console.log(res)
+  })
+}
 
 function* entries(obj) {
   for (let key of Object.keys(obj)) {
