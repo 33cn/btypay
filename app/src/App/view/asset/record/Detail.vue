@@ -1,6 +1,6 @@
 <template>
     <div class="detail_container">
-        <asset-back title='订单详情'></asset-back>
+        <asset-back title='订单详情' :backPath='"/coin?coin="+coin'></asset-back>
         <section class="status">
             <img v-if="recordDetail.typeTy==8" src="../../../../assets/images/fail.png" alt="">
             <img v-else src="../../../../assets/images/success.png" alt="">
@@ -43,8 +43,9 @@ import {clip} from '@/libs/clip.js'
 // import { TransactionsListEntry, formatTxType } from '@/libs/bitcoinAmount.js'
 import { createNamespacedHelpers } from 'vuex'
 const { mapState } = createNamespacedHelpers('Records')
+// import recover from "@/mixins/recover.js";
 export default {
-    // mixins: [chain33API],
+    // mixins: [recover],
     components:{AssetBack},
     computed: {
         ...mapState(['recordDetail'])
@@ -70,6 +71,7 @@ export default {
         }
     },
     mounted(){
+        this.coin = this.$store.state.Records.assetType;
         // console.log(this.recordDetail)
         // if(this.$route.params.hash){
         //     this.queryTransaction(this.$route.params.hash).then(res=>{

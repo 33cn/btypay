@@ -1,6 +1,6 @@
 <template>
     <div class="receipt_container">
-        <asset-back :title='coin=="bty"?"BTY收款":currentParallel.coin+"收款"'></asset-back>
+        <asset-back :title='coin=="bty"?"BTY收款":currentParallel.coin+"收款"' :backPath='"/coin?coin="+coin'></asset-back>
         <section class="content">
             <canvas id="qrcode"></canvas>
             <div>
@@ -17,9 +17,11 @@
 import AssetBack from '@/components/AssetBack.vue'
 import QRious from 'qrious'
 import {clip} from '@/libs/clip.js'
+import recover from "@/mixins/recover.js";
 import {createNamespacedHelpers} from 'vuex'
 const {mapState} = createNamespacedHelpers('Account')
 export default {
+    mixins:[recover],
     components:{AssetBack},
     computed:{
         ...mapState(['accountMap', 'currentAccount','parallelAsset']),

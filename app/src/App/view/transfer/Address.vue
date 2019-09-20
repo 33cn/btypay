@@ -1,6 +1,6 @@
 <template>
   <div class="address_container" :class="addresses.length==0?'noAddress':'haveAddress'">
-    <asset-back title="地址簿"></asset-back>
+    <asset-back title="地址簿" :backPath='"/coin/transfer?coin="+coin'></asset-back>
     <ul v-if="addresses.length>0">
       <li
         v-for="(item,i) in addresses"
@@ -25,9 +25,10 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
+import recover from "@/mixins/recover.js";
 import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
 export default {
-  mixins: [walletAPI],
+  mixins: [walletAPI,recover],
   components: { AssetBack },
   data() {
     return {
@@ -80,7 +81,7 @@ export default {
     }
   },
   mounted() {
-      console.log(this.$store.state.Records.assetType)
+      // console.log(this.$store.state.Records.assetType)
     this.getAddress()
   }
 };

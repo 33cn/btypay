@@ -80,6 +80,7 @@ import Convert from "@/App/view/asset/record/Convert.vue";
 import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
+import recover from "@/mixins/recover.js";
 import { createNamespacedHelpers } from "vuex";
 import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
 import { timeFormat } from "@/libs/common";
@@ -88,7 +89,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
-  mixins: [walletAPI, chain33API],
+  mixins: [walletAPI, chain33API,recover],
   data() {
     return {
       view: "All",
@@ -409,7 +410,8 @@ export default {
     > div.history {
       overflow-y: auto;
       max-height: 219px;
-      margin: 0px 21px 0 20px;
+      margin: 0px 13px 0 20px;
+      padding-right: 8px;
       /* 设置滚动条的样式 */
       &::-webkit-scrollbar {
         width: 2px;
@@ -423,9 +425,9 @@ export default {
       // }
       // /* 滚动条滑块 */
       &::-webkit-scrollbar-thumb {
-        background: red;
+        background: rgba(249,250,251,1);;
         border-radius: 2px;
-        opacity: 0.2;
+        opacity: 0.7;
       }
       // &::-webkit-scrollbar-thumb:window-inactive {
       //   background:rgba(74,125,180,.2);

@@ -13,18 +13,28 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
   switch(action) {
     case 'get-current-account':
       if (isWalletUnlock()) {
-        sendMessage({
-          action: 'answer-get-current-account',
-          payload: {
-            error: null,
-            result: {
-              account: {
-                name: window.currentAccount.name,
-                address: window.currentAccount.address,
+        if(window.currentAccount&&window.currentAccount.name&&window.currentAccount.address){
+          sendMessage({
+            action: 'answer-get-current-account',
+            payload: {
+              error: null,
+              result: {
+                account: {
+                  name: window.currentAccount.name,
+                  address: window.currentAccount.address,
+                }
               }
-            }
-          },
-        })
+            },
+          })
+        }else{
+          sendMessage({
+            action: 'answer-get-current-account',
+            payload: {
+              error: '发生异常',
+              result: null
+            },
+          })
+        }
       } else {
         sendMessage({
           action: 'answer-get-current-account',
@@ -59,6 +69,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       if (isWalletUnlock()) {
         payload.actionID = action
         txObj = payload;
+        console.log(payload)
         createNewWindow('outExtensionPage', payload)
       } else {
         sendMessage({
@@ -115,8 +126,8 @@ function createNewWindow(route, payload, width = 416, height = 636) {
   let baseURL = `${window.chrome.runtime.getURL('/dist/index.html')}#/${route}`
   let url = spliceURL(baseURL, payload)
   chrome.windows.create({url, width, height, type: 'popup'},function(res){
-    console.log('chrome.windows.create')
-    console.log(res)
+    // console.log('chrome.windows.create')
+    // console.log(res)
     windowId = res.id
     // setTimeout(() => {
     //   closeWindow(res.id)
@@ -125,8 +136,8 @@ function createNewWindow(route, payload, width = 416, height = 636) {
 };
 function closeWindow(id){
   chrome.windows.remove(id, function(res){
-    console.log('chrome.windows.remove')
-    console.log(res)
+    // console.log('chrome.windows.remove')
+    // console.log(res)
   })
 }
 

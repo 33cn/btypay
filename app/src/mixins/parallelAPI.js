@@ -21,7 +21,10 @@ export default {
         },
         diceExecer(){
             return "user.p." + this.currentParallel.name + ".wasm.dice"
-        }
+        },
+        lotteryExecer(){
+            return "user.p." + this.currentParallel.name + ".lottery"
+        },
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
@@ -108,14 +111,32 @@ export default {
         },
 
         // 余额从coins执行器转到dice合约,游戏币充值完成
-        parallelCoins2Dice(privateKey, to, amount, fee) {
+        parallelCoins2Dic(privateKey, to, amount, fee) {
             const execName = this.diceExecer
             const isWithdraw = false
+            to = this.currentAccount.address
             return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
                 return signRawTx(tx, privateKey)
             }).then(signedTx => {
                 return this.sendTransaction(signedTx)
             })
+        },
+        parallelCoins2Dice(privateKey, to, amount, fee,url) {
+            console.log('parallelCoins2Dice')
+            const execName = this.diceExecer
+            const isWithdraw = false
+            to = "1DBucY6mWHmnpbQWLP1wTaB1VvpU6B3sCJ"
+            let params = {
+                to,
+                execName: this.lotteryExecer,
+                amount: amount
+            }
+            return this.createRawTransactionWithExec(params,url)
+            // .then(tx => {
+            //     return signRawTx(tx, privateKey)
+            // }).then(signedTx => {
+            //     return this.sendTransaction(signedTx)
+            // })
         },
 
         txStateCheckTask(hash, url, callback) {
@@ -303,7 +324,7 @@ export default {
                     this.parallel2Main(privateKey, to, amount, mainUrl).then(hash2 => {
                         this.txStateCheckTask(hash2, mainUrl, () => {
                             this.mainParacross2Coins(privateKey, amount, mainUrl).then(hash3 => {
-                                console.log(hash3)
+                                // console.log(hash3)
                                 callback("success")
                             })
                         })

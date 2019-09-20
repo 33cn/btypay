@@ -11,21 +11,26 @@ export default {
         'title':{
 			type:String,
 			require:true
+        },
+        'backPath':{
+			type:String,
+			require:true
 		}
     },
     methods:{
         backHandle(){
-            if(this.title.indexOf('转账') > -1){
-                // console.log(this.$store.state.Records.assetType)
-                if(this.$store.state.Records.assetType == 'bty'){
-                    this.$router.push({ path: "/coin?coin=bty" });
-                }else{
-                    this.$router.push({ path: "/coin?coin=game" });
-                }
-                // this.$router.push({name:'bty'})
-                return
-            }
-            this.$router.go(-1)
+            this.$router.push(this.backPath)
+            // if(this.title.indexOf('转账') > -1){
+            //     // console.log(this.$store.state.Records.assetType)
+            //     if(this.$store.state.Records.assetType == 'bty'){
+            //         this.$router.push({ path: "/coin?coin=bty" });
+            //     }else{
+            //         this.$router.push({ path: "/coin?coin=game" });
+            //     }
+            //     // this.$router.push({name:'bty'})
+            //     return
+            // }
+            // this.$router.go(-1)
         }
     },
 }

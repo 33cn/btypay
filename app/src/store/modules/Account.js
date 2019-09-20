@@ -28,7 +28,7 @@ const state = {
   parallelAsset: {
     name: "GBT",
     amt: 0.0000,
-    price: 10
+    price: 1
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a

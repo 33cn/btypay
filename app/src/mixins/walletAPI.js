@@ -101,11 +101,15 @@ export default {
 
     recoverAccount() {
       this.getWallet().then(wallet => {
+        console.log('获取索引恢复账户')
+        console.log(wallet)
         //  获取索引恢复账户
         window.chrome.storage.local.get(['accountIndexList'], (result) => {
           // console.log(result)
           if (result.accountIndexList) {
-            wallet.recoverAccount(result.accountIndexList)
+            if(wallet.recoverAccount){
+              wallet.recoverAccount(result.accountIndexList)
+            }
             // console.log('wallet.accountMap')
             // console.log(wallet.accountMap)
             this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)

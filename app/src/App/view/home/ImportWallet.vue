@@ -1,6 +1,6 @@
 <template>
   <div class="importWallet_container">
-    <asset-back title style="padding-top:0"></asset-back>
+    <asset-back title style="padding-top:0" :backPath="haveWallet?'/':'/ImportOrCreate'"></asset-back>
     <section class="content">
       <div class="words">
         <p>请输入您12位钱包助记词，用空格分隔！</p>
@@ -8,7 +8,7 @@
           <one-box-one-word :box-num="15" v-model="seedStringInput"></one-box-one-word>
         </div>-->
         <div class="seed-ui__word-group_en">
-          <textarea  v-model="seedStringInput" @keydown.enter="$event.preventDefault()"></textarea>
+          <textarea  v-model="seedStringInput" @keydown.enter="$event.preventDefault()" @input="inputHandle"></textarea>
         </div>
       </div>
       <el-form
@@ -19,10 +19,10 @@
         class="password"
       >
         <el-form-item label="请输入您的密码（8-16位字符）" prop="pwd">
-          <el-input v-model="createForm.pwd" type="password"></el-input>
+          <el-input v-model="createForm.pwd" type="password" @input="inputHandle"></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="confirmPwd">
-          <el-input v-model="createForm.confirmPwd" type="password"></el-input>
+          <el-input v-model="createForm.confirmPwd" type="password" @input="inputHandle"></el-input>
         </el-form-item>
       </el-form>
       <div class="btn">
@@ -35,12 +35,13 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import OneBoxOneWord from "@/components/OneBoxOneWord.vue";
-import {setChromeStorage} from '@/libs/chromeUtil.js'
+import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
 import { encrypt } from "@/libs/crypto.js";
 import walletAPI from "@/mixins/walletAPI.js";
+import recover from "@/mixins/recover.js";
 export default {
   components: { AssetBack, OneBoxOneWord },
-  mixins:[walletAPI],
+  mixins:[walletAPI,recover],
   data() {
     let confirmPwdValidate = (rule, value, callback) => {
       if (value !== this.createForm.pwd) {
@@ -64,10 +65,15 @@ export default {
           { required: true, message: "请输入您的确认密码", trigger: "blur" },
           { validator: confirmPwdValidate, trigger: "blur" }
         ]
-      }
+      },
+      haveWallet:false
     };
   },
   methods: {
+    inputHandle(){
+      this.getAndSet('createForm',this.createForm)
+      this.getAndSet('seedStringInput',this.seedStringInput)
+    },
     importWallet(){
       if(!this.seedStringInput){
         this.$message.error('请输入助记词')
@@ -102,6 +108,16 @@ export default {
       this.newAccount('创世地址')
       return walletObj
     },
+  },
+  mounted(){
+    getChromeStorage("ciphertext").then(res=>{
+      console.log(res)
+      if (res.ciphertext){
+        this.haveWallet = true;
+      }else{
+        this.haveWallet = false;
+      }
+    })
   }
 };
 </script>
