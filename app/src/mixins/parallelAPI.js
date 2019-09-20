@@ -24,9 +24,6 @@ export default {
         diceExecer() {
             return "user.p." + this.currentParallel.name + ".wasm.dice"
         },
-        lotteryExecer(){
-            return "user.p." + this.currentParallel.name + ".lottery"
-        },
     },
     data() {
         return {
@@ -223,49 +220,49 @@ export default {
                 callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                 return
             }
-            // 检查是否部署Trade合约
-            this.getOnesBuyOrder(to, paraUrl).then(res => {
-                // 跨链兑换
-                this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
-                    this.txStateCheckTask(hash1, mainUrl, err1 => {
+            // 跨链兑换
+            this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
+                this.txStateCheckTask(hash1, mainUrl, err1 => {
 
-                        if (err1) {
-                            this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
-                            callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
-                            return
-                        }
+                    if (err1) {
+                        this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
+                        callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
+                        return
+                    }
 
-                        this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
-                            this.txStateCheckTask(hash2, mainUrl, err2 => {
+                    this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
+                        this.txStateCheckTask(hash2, mainUrl, err2 => {
 
-                                if (err2) {
-                                    this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
-                                    callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
-                                    return
-                                }
+                            if (err2) {
+                                this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
+                                callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
+                                return
+                            }
 
-                                this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
-                                    this.txStateCheckTask(hash3, paraUrl, err3 => {
+                            this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
+                                this.txStateCheckTask(hash3, paraUrl, err3 => {
 
-                                        if (err3) {
-                                            this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
-                                            callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
-                                            return
-                                        }
+                                    if (err3) {
+                                        this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
+                                        callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
+                                        return
+                                    }
 
-                                        callback("success")
-                                    })
-
+                                    callback("success")
                                 })
+
                             })
                         })
                     })
                 })
-            }).catch(err => {
-                if (err.message == "ErrNotSupport") {
-                    callback(JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT))
-                }
             })
+
+            // this.parallel2Main(privateKey, to, amt, paraUrl).then(hash => {
+            //     console.log(hash)
+            // })
+            // this.mainParacross2Coins(privateKey, amt, mainUrl).then(hash => {
+            //     console.log(hash)
+            // })
         },
 
 
@@ -323,43 +320,53 @@ export default {
                 status: this.TRADE_ORDER_STATUS.ON_SALE,
                 count: "10000000"
             }
-            return this.getTokenSellOrderByStatus(params, url).then(res => {
-                let maxAmt = Long.ZERO
-                if (res && res.orders.length !== 0) {
-                    for (let order of res.orders) {
-                        let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
-                        let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
-                        let minBoardlot = Long.fromString(order.minBoardlot)
-                        let totalBoardlot = Long.fromString(order.totalBoardlot)
-                        let tradedBoardlot = Long.fromString(order.tradedBoardlot)
+            return this.getOnesBuyOrder(this.currentAccount.address, url).then(res => { return }).catch(err => {
+                if (err.message == "ErrNotSupport") {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
+                }
+            }).then(err => {
+                if (err) {
+                    return err
+                }
+                return this.getTokenSellOrderByStatus(params, url).then(res => {
+                    let maxAmt = Long.ZERO
+                    if (res && res.orders.length !== 0) {
+                        for (let order of res.orders) {
+                            let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
+                            let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                            let minBoardlot = Long.fromString(order.minBoardlot)
+                            let totalBoardlot = Long.fromString(order.totalBoardlot)
+                            let tradedBoardlot = Long.fromString(order.tradedBoardlot)
 
-                        let minAmt = minBoardlot.multiply(pricePerBoardlot)
-                        let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(pricePerBoardlot)
+                            let minAmt = minBoardlot.multiply(pricePerBoardlot)
+                            let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(pricePerBoardlot)
 
-                        if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
-                            continue
-                        }
-                        if (minAmt.greaterThan("300000000")) {
-                            continue
-                        }
-                        if (amountPerBoardlot.greaterThan("300000000")) {
-                            continue
-                        }
-                        if (leftAmt.greaterThan(maxAmt)) {
-                            maxAmt = leftAmt
-                            this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')
-                            this.SELL_LIMIT.minAmt = minAmt.toString()
-                            this.SELL_LIMIT.maxAmt = leftAmt.toString()
-                            this.SELL_LIMIT.pricePerBoardlot = pricePerBoardlot.toString()
+                            if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
+                                continue
+                            }
+                            if (minAmt.greaterThan("300000000")) {
+                                continue
+                            }
+                            if (amountPerBoardlot.greaterThan("300000000")) {
+                                continue
+                            }
+                            if (leftAmt.greaterThan(maxAmt)) {
+                                maxAmt = leftAmt
+                                this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')
+                                this.SELL_LIMIT.minAmt = minAmt.toString()
+                                this.SELL_LIMIT.maxAmt = leftAmt.toString()
+                                this.SELL_LIMIT.pricePerBoardlot = pricePerBoardlot.toString()
+                            }
                         }
                     }
-                }
-                if (maxAmt.notEquals(Long.ZERO)) {
-                    return "success"
-                } else {
-                    return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
-                }
+                    if (maxAmt.notEquals(Long.ZERO)) {
+                        return "success"
+                    } else {
+                        return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
+                    }
+                })
             })
+
         },
         parallelCoins2Trade(amount, url) {
             let params = {
@@ -409,55 +416,48 @@ export default {
                 callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                 return
             }
+            // 跨链兑换
+            this.parallelCoins2Para(privateKey, amt, paraUrl).then(hash1 => {
+                this.txStateCheckTask(hash1, paraUrl, err1 => {
 
-            // 检查是否部署Trade合约
-            this.getOnesBuyOrder(to, paraUrl).then(res => {
-                // 跨链兑换
-                this.parallelCoins2Para(privateKey, amt, paraUrl).then(hash1 => {
-                    this.txStateCheckTask(hash1, paraUrl, err1 => {
+                    if (err1) {
+                        this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
+                        callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
+                        return
+                    }
 
-                        if (err1) {
-                            this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                            callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                            return
-                        }
+                    this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
+                        this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
 
-                        this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
-                            this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
+                            if (err2) {
+                                this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
+                                callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
+                                return
+                            }
 
-                                if (err2) {
-                                    this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
-                                    callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
-                                    return
-                                }
+                            this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
+                                this.txStateCheckTask(hash3, mainUrl, err3 => {
 
-                                this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
-                                    this.txStateCheckTask(hash3, mainUrl, err3 => {
-
-                                        if (err3) {
-                                            this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
-                                            callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
-                                            return
-                                        }
-                                        callback("success")
-
-                                    })
+                                    if (err3) {
+                                        this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
+                                        callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
+                                        return
+                                    }
+                                    callback("success")
 
                                 })
+
                             })
                         })
                     })
                 })
-            }).catch(err => {
-                if (err.message == "ErrNotSupport") {
-                    callback(JSON.stringify(this.PARA_ERROR.NO_TRADE_CONTRACT))
-                }
             })
         },
 
 
 
-        txStateCheckTask(hash, url, callback) {
+        txStateCheckTask(hash, url, callback, times) {
+            if (times === void 0) times = 0
             setTimeout(() => {
                 this.queryTx(hash, url).then(res => {
                     if (res && res.receipt.ty === 2) {
@@ -473,25 +473,30 @@ export default {
                         callback(errMsg)
                     }
                 }).catch(err => {
-                    if (err.message == "tx not exist") {
-                        this.txStateCheckTask(hash, url, callback)
+                    if (err.message == "tx not exist" && times < 12) {
+                        this.txStateCheckTask(hash, url, callback, ++times)
                     }
                 })
             }, 5000);
         },
 
-        mainParaBalanceCheckTask(addr, callback) {
+        mainParaBalanceCheckTask(addr, callback, times) {
+            if (times === void 0) times = 0
             setTimeout(() => {
                 this.getAddrBalance(addr, "paracross", this.currentMain.url).then(res => {
                     if (res[0].balance) {
                         callback(res[0].balance)
-                    } else {
-                        this.mainParaBalanceCheckTask(addr, callback)
+                    } else if (times < 12) {
+                        this.mainParaBalanceCheckTask(addr, callback, ++times)
                     }
                 }).catch(err => {
                     callback(0, err)
                 })
             }, 5000);
         },
+
+    },
+    mounted() {
+        
     }
 }

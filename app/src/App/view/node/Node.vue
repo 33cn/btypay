@@ -191,7 +191,7 @@ export default {
           let paraAddr = "";
           let tradeAddr = "";
           const p1 = this.convertExecToAddr(
-            "user.p." + this.form.name + ".paracross",
+            "paracross",
             this.currentParallel.url
           );
           const p2 = this.convertExecToAddr(
