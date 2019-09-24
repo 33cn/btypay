@@ -53,9 +53,7 @@ export default {
               this.name = res.parallelNodeList[i].name;
               break
             }
-            if(i == res.parallelNodeList.length-1&&this.name == ''){
-
-            }
+            // if(i == res.parallelNodeList.length-1&&this.name == ''){}
           }
           setTimeout(() => {
             if(this.name == ''){
@@ -78,10 +76,6 @@ export default {
               }).then(signedTx => {
                 console.log('signGroupTx')
                 console.log(signedTx)
-                this.txStateCheckTask(signedTx,win.txObj.url,(res)=>{
-                  console.log('signedTx=callback')
-                  console.log(res)
-                })
                 return this.sendTransaction(signedTx, win.txObj.url)
               }).then(res=>{
                 console.log('sendTransaction')
