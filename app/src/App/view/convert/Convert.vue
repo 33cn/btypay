@@ -1,11 +1,16 @@
 <template>
-  <div class="convert_container">
+  <div class="convert_container" v-loading="tradeBuyLoading || tradeSellLoading">
+    <!-- <el-button
+      size="mini"
+      @click="showBalance"
+      style="position: absolute;left: 30px;top: 20px;z-index: 1000"
+    >查余额</el-button> -->
     <asset-back title="兑换" backPath="/coin?coin=game"></asset-back>
     <section class="ope">
       <div class="left">
         <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt />
         <img v-else src="../../../assets/images/gameLogo.png" alt />
-        <p class="coin">{{convert=='B2G'?'BTY':currentParallel.coin}}</p>
+        <p class="coin">{{convert=='B2G'?'BTY':'GAME'}}</p>
         <input
           :class="isInput?'error':''"
           v-model="exportVal"
@@ -13,13 +18,13 @@
           type="number"
           placeholder="转出数量"
         />
-        <p class="balance">余额{{asset.amt| numFilter(2)}}{{convert=='B2G'?'BTY':currentParallel.coin}}</p>
+        <p class="balance">余额{{asset.amt| numFilter(2)}}{{convert=='B2G'?'BTY':'GAME'}}</p>
       </div>
       <img @click="exchangeHandle" src="../../../assets/images/exchange.png" alt />
       <div class="right">
         <img v-if="convert=='B2G'" src="../../../assets/images/gameLogo.png" alt />
         <img v-else src="../../../assets/images/btyLogo.png" alt />
-        <p class="coin">{{convert=='G2B'?'BTY':currentParallel.coin}}</p>
+        <p class="coin">{{convert=='G2B'?'BTY':'GAME'}}</p>
         <input
           :class="isInput?'error':''"
           v-model="receiptVal"
@@ -32,16 +37,27 @@
     <section class="desc">
       <div>
         <p>汇率</p>
-        <p>1{{convert=='B2G'?'BTY':currentParallel.coin}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':currentParallel.coin}}</p>
+        <p>1{{convert=='B2G'?'BTY':'GAME'}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':'GAME'}}</p>
       </div>
       <div>
         <p>手续费</p>
-        <p>0%</p>
+        <p>0.01</p>
       </div>
-      <p>温馨提示：跨链兑换支持使用BTY兑换{{currentParallel.coin}}，也可将{{currentParallel.coin}}兑换成BTY。</p>
+      <div>
+        <p>最小</p>
+        <p>{{BUY_LIMIT.minAmt | longFilter(2)}}</p>
+      </div>
+      <div>
+        <p>最大</p>
+        <p>{{BUY_LIMIT.maxAmt | longFilter(2)}}</p>
+      </div>
+      <div>
+        <p>每手数量</p>
+        <p>{{BUY_LIMIT.amtPerBoardlot | longFilter(2)}}</p>
+      </div>
+      <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
     </section>
-    <p @click="convertHandle">{{isOperatoring?'兑换中，请稍候...':'跨链兑换'}}</p>
-    <!-- <el-button size="mini" @click="showBalance">查余额</el-button> -->
+    <p @click="convertHandle">{{isOperatoring?'兑换中，请稍后...':'跨链兑换'}}</p>
   </div>
 </template>
 
@@ -50,14 +66,10 @@ import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import parallelAPI from "@/mixins/parallelAPI.js";
 import { createNamespacedHelpers } from "vuex";
-import recover from "@/mixins/recover.js";
-// var protobufjs = require('protobufjs');
-// var transaction_json_1 = require("@/libs/transaction.json")
-
+import Long from "long";
 const { mapState } = createNamespacedHelpers("Account");
-
 export default {
-  mixins: [walletAPI, parallelAPI,recover],
+  mixins: [walletAPI, parallelAPI],
   components: { AssetBack },
   computed: {
     ...mapState([
@@ -88,8 +100,10 @@ export default {
       asset: {
         amt: 10.0
       },
-      rate: 1, //测试
-      fee: 0.01
+      rate: 1, //待删
+      fee: 0.01,
+      tradeBuyLoading: true,
+      tradeSellLoading: true
     };
   },
   methods: {
@@ -97,20 +111,15 @@ export default {
       let addr = this.currentAccount.address;
       let mainUrl = this.currentMain.url;
       let paraUrl = this.currentParallel.url;
-
-      // console.log("=====================================================");
+      console.log("=====================================================");
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
-        // console.log("0.bty", res[0].balance);
+        console.log("0.bty", res[0].balance);
       });
-
       this.getAddrBalance(addr, "paracross", mainUrl).then(res => {
-        // console.log("1.main para", res[0].balance);
+        console.log("1.main para", res[0].balance);
       });
-
       this.$chain33Sdk.getTokenBalance;
-
-      let paraName = "gbttest";
-
+      let paraName = "game";
       this.getAddrBalance(
         addr,
         "user.p." + paraName + ".paracross",
@@ -118,9 +127,8 @@ export default {
         "paracross",
         "coins.bty"
       ).then(res => {
-        // console.log("2.para para", res[0].balance);
+        console.log("2.para para", res[0].balance);
       });
-
       this.getAddrBalance(
         addr,
         "user.p." + paraName + ".trade",
@@ -128,23 +136,18 @@ export default {
         "paracross",
         "coins.bty"
       ).then(res => {
-        // console.log("3.trade bty", res[0].balance);
+        console.log("3.trade bty", res[0].balance);
       });
-
       this.getAddrBalance(addr, "user.p." + paraName + ".trade", paraUrl).then(
         res => {
-          // console.log("4.trade", res[0].balance);
+          console.log("4.trade", res[0].balance);
         }
       );
-
       this.getAddrBalance(addr, "coins", paraUrl).then(res => {
-        // console.log("5.gbt", res[0].balance);
+        console.log("5.gbt", res[0].balance);
       });
     },
-
     inputHandle(e, v) {
-      // console.log(e.target.value)
-      // console.log(v)
       this.isInput = false;
       if (!e.target.value || e.target.value < 0) {
         this.exportVal = null;
@@ -155,13 +158,11 @@ export default {
       if (v == "to") {
         if (this.convert == "B2G") {
           val = this.asset.amt * this.rate;
-          // console.log(val);
           this.exportVal = this.receiptVal / this.rate;
         } else {
           val = this.asset.amt / this.rate;
           this.exportVal = this.receiptVal * this.rate;
         }
-
       } else {
         if (this.convert == "B2G") {
           this.receiptVal = this.exportVal * this.rate;
@@ -170,33 +171,58 @@ export default {
         }
         val = this.asset.amt;
       }
-      if (e.target.value > val) {
-        this.isInput = true;
-        this.$message.error("余额不足");
-        setTimeout(() => {
-          this.exportVal = null;
-          this.receiptVal = null;
-          this.isInput = false;
-        }, 500);
+      if (this.convert == "B2G") {
+        let exportLong = Long.fromValue(parseInt(this.exportVal * 1e8));
+        let errMsg = null;
+        // if (e.target.value > val) {
+        //   errMsg = "余额不足";
+        // }
+        // if (exportLong.lessThan(this.BUY_LIMIT.minAmt)) {
+        //   errMsg = "兑换最小数量为 " + parseInt(this.BUY_LIMIT.minAmt / 1e8);
+        // }
+        // if (exportLong.greaterThan(this.BUY_LIMIT.maxAmt)) {
+        //   errMsg = "可兑换最大数量为 " + parseInt(this.BUY_LIMIT.maxAmt / 1e8);
+        // }
+        // if (
+        //   exportLong.modulo(this.BUY_LIMIT.amtPerBoardlot).notEquals(Long.ZERO)
+        // ) {
+        //   errMsg =
+        //     "输入数量应为 " +
+        //     parseInt(this.BUY_LIMIT.amtPerBoardlot / 1e8) +
+        //     " 的倍数";
+        // }
+        if (errMsg) {
+          this.isInput = true;
+          this.$message.error(errMsg);
+          setTimeout(() => {
+            this.exportVal = null;
+            this.receiptVal = null;
+            this.isInput = false;
+          }, 500);
+        }
+      } else {
       }
-      this.getAndSet('exportVal',this.receiptVal)
-      this.getAndSet('receiptVal',this.receiptVal)
     },
-    convertResHandle(res,title='兑换成功',content='请关注收款地址的资金变动。') {
+    convertResHandle(res) {
       if (res === "success") {
-        this.$alert(content, title, {
-          confirmButtonText: "知道了",
+        this.$alert("请关注收款地址的资金变动。", "兑换成功", {
+          confirmButtonText: "确认",
           closeOnClickModal: true,
           center: true,
-          showClose: false,
+          showClose: false
         });
-        this.isOperatoring = false
-        if(title == '兑换成功'){
-          this.exportVal = null
-          this.receiptVal = null
-        }
-        
+      } else {
+        let resObject = JSON.parse(res)
+        this.$alert(resObject.desc + " " + resObject.msg, "兑换失败", {
+          confirmButtonText: "确认",
+          closeOnClickModal: true,
+          center: true,
+          showClose: false
+        });
       }
+      this.isOperatoring = false;
+      this.exportVal = "";
+      this.receiptVal = "";
     },
     convertHandle() {
       if (this.isOperatoring) {
@@ -206,20 +232,6 @@ export default {
       if (this.exportVal) {
         if (this.currentAccount) {
           // B2G
-          this.convertResHandle('success','跨链兑换中','预计需要15秒，兑成功前请勿离开当前页面。')
-          // setTimeout(() => {
-          //   document.body.removeChild(document.querySelector('.el-message-box__wrapper'))
-          //   document.body.removeChild(document.querySelector('.v-modal'))
-          //   // document.querySelector('.el-message-box__wrapper').style.display = 'none'
-          //   // document.querySelector('.v-modal').style.display = 'none'
-          //   // console.log('33333333333')
-          //   setTimeout(() => {
-          //   //   document.querySelector('.el-message-box__wrapper').style.display = 'block'
-          //   // document.querySelector('.v-modal').style.display = 'block'
-          //     this.convertResHandle('success','跨链兑换中....','预计需要15秒，兑成功前请勿离开当前页面。')
-          //     console.log('33333')
-          //   }, 2000);
-          // }, 3000);
           if (this.convert == "B2G") {
             this.transferBTY2GameCoin(
               this.currentAccount.hexPrivateKey,
@@ -255,25 +267,28 @@ export default {
       }
       this.exportVal = null;
       this.receiptVal = null;
-      this.getAndSet('convert',this.convert)
-      this.getAndSet('asset',this.asset)
+    },
+    requestTradeOrder() {
+      this.getTradeBuyOrder(this.currentParallel.url).then(res => {
+        setTimeout(() => {
+          console.log(res)
+          this.tradeBuyLoading = false;
+          if(res !== "success"){
+            this.$message.error(JSON.parse(res).desc);
+          }
+        }, 600);
+        console.log("BUY_ID:" + this.BUY_ID);
+      });
+      this.getTradeSellOrder(this.currentParallel.url).then(res => {
+        setTimeout(() => {
+          this.tradeSellLoading = false;
+          if(res !== "success"){
+            this.$message.error(JSON.parse(res).desc);
+          }
+        }, 600);
+        console.log("SELL_ID:" + this.SELL_ID);
+      });
     }
-  },
-  watch:{
-    // exportVal(val){
-    //   if (this.convert == "B2G") {
-    //     this.receiptVal = val * this.rate;
-    //   } else {
-    //     this.receiptVal = val / this.rate;
-    //   }
-    // },
-    // receiptVal(val){
-    //   if (this.convert == "B2G") {
-    //     this.exportVal = val / this.rate;
-    //   } else {
-    //     this.exportVal = val * this.rate;
-    //   }
-    // }
   },
   mounted() {
     this.refreshMainAsset();
@@ -281,6 +296,7 @@ export default {
     setTimeout(() => {
       this.asset = this.mainAsset;
     }, 0);
+    this.requestTradeOrder();
   }
 };
 </script>
@@ -348,9 +364,10 @@ export default {
   section.desc {
     margin: 0 56px 0 55px;
     div {
-      &:nth-of-type(2) {
-        margin: 17px 0 20px;
-      }
+      margin-bottom: 9px;
+      // &:nth-of-type(2) {
+      //   margin: 17px 0 20px;
+      // }
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -375,7 +392,7 @@ export default {
     }
   }
   > p {
-    margin: 55px 26px 0 29px;
+    margin: 12px 26px 0 29px;
     height: 66px;
     background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;

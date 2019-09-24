@@ -10,23 +10,27 @@
     </div>
     <div v-if="successed=='no'">
       <i class="el-icon-close"></i>
-      <p>投注失败,请稍后重试</p>
+      <p>{{errMsg}}</p>
     </div>
+    <!-- <div>{{name}}</div> -->
   </div>
 </template>
 <script>
 import { signRawTx, signGroupTx } from "@/libs/sign.js";
 import parallelAPI from "@/mixins/parallelAPI.js"
-// import { createNamespacedHelpers } from "vuex";
-// const { mapState } = createNamespacedHelpers("Account");
+import { createNamespacedHelpers } from "vuex";
+const { mapState } = createNamespacedHelpers("Account");
+import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil";
 export default {
   mixins:[parallelAPI],
-  //   computed: {
-  //     ...mapState(["currentAccount"])
-  //   },
+    computed: {
+      ...mapState(["parallelNode"])
+    },
   data() {
     return {
-      successed: "waiting"
+      successed: "waiting",
+      errMsg:'投注失败,请稍后重试。',
+      name:''
     };
   },
   mounted() {
@@ -39,40 +43,77 @@ export default {
           }, 800);
         }
       }, 10000);
-      this.parallelCoins2Dice(win.currentAccount.hexPrivateKey,null,win.txObj.amount*1e8,0.001*1e8,win.txObj.url).then(res=>{
-        // console.log('outExtension')
-        // console.log(res)
-        // console.log("xxxxxx", win.txObj.tx)
-        let txs = [res,win.txObj.tx]
-        return this.createRawTxGroup(txs)
-      }).then(tx => {
-        // console.log('createRawTxGroup')
-        // console.log(tx)
-        return signGroupTx(tx, win.currentAccount.hexPrivateKey)
-      }).then(signedTx => {
-        // console.log('signGroupTx')
-        // console.log(signedTx)
-        return this.sendTransaction(signedTx, win.txObj.url)
-      }).then(res=>{
-        // console.log('sendTransactionvvvvvvvv')
-        // console.log(res)
-        setTimeout(() => {
-          this.successed = "yes";
+      getChromeStorage("parallelNodeList").then(res => {
+        console.log(res)
+        if (res.parallelNodeList) {
+          // this.paraNodeList = res.parallelNodeList;
+          // this.$store.commit("Account/UPDATE_PARALLEL_NODE", res.parallelNodeList);
+          for(let i = 0; i < res.parallelNodeList.length; i++){
+            if(res.parallelNodeList[i].url == win.txObj.url){
+              this.name = res.parallelNodeList[i].name;
+              break
+            }
+            if(i == res.parallelNodeList.length-1&&this.name == ''){
+
+            }
+          }
           setTimeout(() => {
-            win.closeWindow(win.windowId);
-          }, 500);
-        }, 300);
-      }).catch(err=>{
-        console.log('发生错误了')
-        console.log(err)
-        clearTimeout(time)
-        setTimeout(() => {
-          this.successed = "no";
-          setTimeout(() => {
-            win.closeWindow(win.windowId);
-          }, 500);
-        }, 300);
-      })
+            if(this.name == ''){
+              setTimeout(() => {
+                this.successed = "no";
+                this.errMsg = '请在钱包中添加游戏节点。'
+              }, 3000);
+              return
+            }else{
+              this.parallelCoins2Dice(win.txObj.amount*1e8,win.txObj.url,this.name).then(res=>{
+                console.log('outExtension')
+                console.log(res)
+                console.log("xxxxxx", win.txObj.tx)
+                let txs = [res,win.txObj.tx]
+                return this.createRawTxGroup(txs)
+              }).then(tx => {
+                console.log('createRawTxGroup')
+                console.log(tx)
+                return signGroupTx(tx, win.currentAccount.hexPrivateKey)
+              }).then(signedTx => {
+                console.log('signGroupTx')
+                console.log(signedTx)
+                this.txStateCheckTask(signedTx,win.txObj.url,(res)=>{
+                  console.log('signedTx=callback')
+                  console.log(res)
+                })
+                return this.sendTransaction(signedTx, win.txObj.url)
+              }).then(res=>{
+                console.log('sendTransaction')
+                console.log(res)
+                this.txStateCheckTask(res,win.txObj.url,(res)=>{
+                  console.log('callback')
+                  console.log(res)
+                })
+                setTimeout(() => {
+                  this.successed = "yes";
+                  setTimeout(() => {
+                    // win.closeWindow(win.windowId);
+                  }, 500);
+                }, 300);
+              }).catch(err=>{
+                console.log('发生错误了')
+                console.log(err)
+                clearTimeout(time)
+                setTimeout(() => {
+                  this.successed = "no";
+                  this.errMsg = '您的燃料BTY不够，请充值。'
+                  setTimeout(() => {
+                    // win.closeWindow(win.windowId);
+                  }, 500);
+                }, 300);
+              })
+            }
+          }, 300);
+        }
+      });
+      
+      
       // return Promise.resolve()
       //   .then(() => {
       //     return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);

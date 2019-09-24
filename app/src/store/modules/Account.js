@@ -77,7 +77,15 @@ const mutations = {
   },
   UPDATE_CURRENT_MAIN(state, { index, url, txHeight, txIndex, name }) {
     let backup = JSON.parse(JSON.stringify(state.mainNode))
-    let i = state.currentMain.index
+    let length = state.mainNode.length;
+    // let i = state.currentMain.index
+    let i = 0;
+    for(let j = 0; j < length; j++){
+      if(state.mainNode[j].index == index){
+        i = j
+        break
+      }
+    }
     if (i !== -1) {
       index && (backup[i].index = index)
       url && (backup[i].url = url)
@@ -113,7 +121,15 @@ const mutations = {
   },
   UPDATE_CURRENT_PARALLEL(state, { index, url, txHeight, txIndex, coin,name,paraAddr,tradeAddr }) {
     let backup = JSON.parse(JSON.stringify(state.parallelNode))
-    let i = state.currentParallel.index
+    let length = state.parallelNode.length;
+    // let i = state.currentParallel.index
+    let i = 0;
+    for(let j = 0; j < length; j++){
+      if(state.parallelNode[j].index == index){
+        i = j
+        break
+      }
+    }
     index && (backup[i].index = index)
     url && (backup[i].url = url)
     txHeight && (backup[i].txHeight = txHeight)
@@ -126,6 +142,10 @@ const mutations = {
     // if (res == "success") {
       state.parallelNode = backup
       state.currentParallel = backup[i]
+      // console.log("----------------------")
+      // console.log(state.parallelNode)
+      // console.log(state.currentParallel)
+      // console.log("----------------------")
     // }
     // })
     // state.parallelNode = {...{ index, url, txHeight, txIndex, coin,name,paraAddr,tradeAddr }}

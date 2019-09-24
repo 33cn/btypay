@@ -295,6 +295,8 @@ export default {
             console.log(err);
           });
       } else if (target == "para") {
+        console.log('设置平行链默认节点')
+        console.log(val)
         this.$store.commit("Account/UPDATE_CURRENT_PARALLEL", val);
         this.$store.commit("Account/UPDATE_PARALLEL_CONNECT", 1);
         setChromeStorage("paraNode", val)

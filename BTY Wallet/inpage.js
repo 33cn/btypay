@@ -38,7 +38,7 @@
         window.postMessage({ type: 'SEND_TO_ADDRESS', payload }, '*')
       })
     }
-
+    
     /**
      * @description 交易签名
      * @param {*} payload {tx: 未签名的交易字符串}
