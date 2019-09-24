@@ -1,10 +1,5 @@
 <template>
   <div class="convert_container" v-loading="tradeBuyLoading || tradeSellLoading">
-    <!-- <el-button
-      size="mini"
-      @click="showBalance"
-      style="position: absolute;left: 30px;top: 20px;z-index: 1000"
-    >查余额</el-button> -->
     <asset-back title="兑换" backPath="/coin?coin=game"></asset-back>
     <section class="ope">
       <div class="left">
@@ -111,7 +106,6 @@ export default {
       let addr = this.currentAccount.address;
       let mainUrl = this.currentMain.url;
       let paraUrl = this.currentParallel.url;
-      console.log("=====================================================");
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
         console.log("0.bty", res[0].balance);
       });
@@ -119,6 +113,7 @@ export default {
         console.log("1.main para", res[0].balance);
       });
       this.$chain33Sdk.getTokenBalance;
+
       let paraName = "game";
       this.getAddrBalance(
         addr,

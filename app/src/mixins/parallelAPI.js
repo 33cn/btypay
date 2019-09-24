@@ -256,7 +256,6 @@ export default {
 
                                     callback("success")
                                 })
-
                             })
                         })
                     })
@@ -367,7 +366,7 @@ export default {
                     return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
                 } else if (err.message === "ErrNotSupport") {
                     return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
-                }
+                
             })
 
         },
@@ -500,6 +499,5 @@ export default {
 
     },
     mounted() {
-
     }
 }

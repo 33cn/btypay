@@ -58,7 +58,7 @@ function signTxData(txData, priKeyStr) {
     var data = Transaction.encode(txData).finish();
     // hash transaction
     var hash = sha256js.sha256(data);
-    var keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));;
+    var keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));
 
     // sign
     var signature = keypair.sign(Buffer.from(fromHexString(hash)));
