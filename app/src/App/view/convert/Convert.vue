@@ -1,11 +1,6 @@
 <template>
   <div class="convert_container" v-loading="tradeBuyLoading || tradeSellLoading">
-    <el-button
-      size="mini"
-      @click="showBalance"
-      style="position: absolute;left: 30px;top: 20px;z-index: 1000"
-    >查余额</el-button>
-    <asset-back title="兑换"></asset-back>
+    <asset-back title="兑换" backPath="/coin?coin=game"></asset-back>
     <section class="ope">
       <div class="left">
         <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt />
@@ -68,7 +63,6 @@ import parallelAPI from "@/mixins/parallelAPI.js";
 import { createNamespacedHelpers } from "vuex";
 import Long from "long";
 const { mapState } = createNamespacedHelpers("Account");
-
 export default {
   mixins: [walletAPI, parallelAPI],
   components: { AssetBack },
@@ -103,7 +97,6 @@ export default {
       },
       rate: 1, //待删
       fee: 0.01,
-
       tradeBuyLoading: true,
       tradeSellLoading: true
     };
@@ -113,20 +106,15 @@ export default {
       let addr = this.currentAccount.address;
       let mainUrl = this.currentMain.url;
       let paraUrl = this.currentParallel.url;
-
-      console.log("=====================================================");
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
         console.log("0.bty", res[0].balance);
       });
-
       this.getAddrBalance(addr, "paracross", mainUrl).then(res => {
         console.log("1.main para", res[0].balance);
       });
-
       this.$chain33Sdk.getTokenBalance;
 
       let paraName = "game";
-
       this.getAddrBalance(
         addr,
         "user.p." + paraName + ".paracross",
@@ -136,7 +124,6 @@ export default {
       ).then(res => {
         console.log("2.para para", res[0].balance);
       });
-
       this.getAddrBalance(
         addr,
         "user.p." + paraName + ".trade",
@@ -146,18 +133,15 @@ export default {
       ).then(res => {
         console.log("3.trade bty", res[0].balance);
       });
-
       this.getAddrBalance(addr, "user.p." + paraName + ".trade", paraUrl).then(
         res => {
           console.log("4.trade", res[0].balance);
         }
       );
-
       this.getAddrBalance(addr, "coins", paraUrl).then(res => {
         console.log("5.gbt", res[0].balance);
       });
     },
-
     inputHandle(e, v) {
       this.isInput = false;
       if (!e.target.value || e.target.value < 0) {
@@ -182,7 +166,6 @@ export default {
         }
         val = this.asset.amt;
       }
-
       if (this.convert == "B2G") {
         let exportLong = Long.fromValue(parseInt(this.exportVal * 1e8));
         let errMsg = null;
@@ -280,7 +263,6 @@ export default {
       this.exportVal = null;
       this.receiptVal = null;
     },
-
     requestTradeOrder() {
       this.getTradeBuyOrder(this.currentParallel.url).then(res => {
         setTimeout(() => {

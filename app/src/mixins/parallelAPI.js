@@ -117,51 +117,48 @@ export default {
                 status: this.TRADE_ORDER_STATUS.ON_BUY,
                 count: "10000000"
             }
-            return this.getOnesBuyOrder(this.currentAccount.address, url).then(res => { return }).catch(err => {
-                if (err.message == "ErrNotSupport") {
-                    return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
-                }
-            }).then(err => {
-                if (err) {
-                    return err
-                }
-                return this.getTokenBuyOrderByStatus(params, url).then(res => {
-                    let maxAmt = Long.ZERO
-                    if (res && res.orders.length !== 0) {
-                        for (let order of res.orders) {
-                            let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
-                            let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
-                            let minBoardlot = Long.fromString(order.minBoardlot)
-                            let totalBoardlot = Long.fromString(order.totalBoardlot)
-                            let tradedBoardlot = Long.fromString(order.tradedBoardlot)
+            return this.getTokenBuyOrderByStatus(params, url).then(res => {
+                let maxAmt = Long.ZERO
+                if (res && res.orders.length !== 0) {
+                    for (let order of res.orders) {
+                        let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
+                        let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                        let minBoardlot = Long.fromString(order.minBoardlot)
+                        let totalBoardlot = Long.fromString(order.totalBoardlot)
+                        let tradedBoardlot = Long.fromString(order.tradedBoardlot)
 
-                            let minAmt = minBoardlot.multiply(amountPerBoardlot)
-                            let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(amountPerBoardlot)
+                        let minAmt = minBoardlot.multiply(amountPerBoardlot)
+                        let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(amountPerBoardlot)
 
-                            if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
-                                continue
-                            }
-                            if (minAmt.greaterThan("300000000")) {
-                                continue
-                            }
-                            if (amountPerBoardlot.greaterThan("300000000")) {
-                                continue
-                            }
-                            if (leftAmt.greaterThan(maxAmt)) {
-                                maxAmt = leftAmt
-                                this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
-                                this.BUY_LIMIT.minAmt = minAmt.toString()
-                                this.BUY_LIMIT.maxAmt = leftAmt.toString()
-                                this.BUY_LIMIT.amtPerBoardlot = amountPerBoardlot.toString()
-                            }
+                        if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
+                            continue
+                        }
+                        if (minAmt.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (amountPerBoardlot.lessThan("100000") || amountPerBoardlot.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (leftAmt.greaterThan(maxAmt)) {
+                            maxAmt = leftAmt
+                            this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
+                            this.BUY_LIMIT.minAmt = minAmt.toString()
+                            this.BUY_LIMIT.maxAmt = leftAmt.toString()
+                            this.BUY_LIMIT.amtPerBoardlot = amountPerBoardlot.toString()
                         }
                     }
-                    if (maxAmt.notEquals(Long.ZERO)) {
-                        return "success"
-                    } else {
-                        return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
-                    }
-                })
+                }
+                if (maxAmt.notEquals(Long.ZERO)) {
+                    return "success"
+                } else {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
+                }
+            }).catch(err => {
+                if (err.message == "ErrNotFound") {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_BUY_NO_ORDER)
+                } else if (err.message === "ErrNotSupport") {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
+                }
             })
         },
 
@@ -197,14 +194,23 @@ export default {
         },
 
         // 余额从coins执行器转到dice合约,游戏币充值完成
-        parallelCoins2Dice(privateKey, to, amount, fee) {
-            const execName = this.diceExecer
-            const isWithdraw = false
-            return this.createRawTransactionWithExec(to, amount, fee, execName, isWithdraw).then(tx => {
-                return signRawTx(tx, privateKey)
-            }).then(signedTx => {
-                return this.sendTransaction(signedTx)
-            })
+        parallelCoins2Dice(amount, url, name) {
+            console.log('parallelCoins2Dice')
+            // const execName = this.diceExecer
+            // const isWithdraw = false
+            let to = "1DBucY6mWHmnpbQWLP1wTaB1VvpU6B3sCJ"
+            let params = {
+                to,
+                execName: "user.p." + name + ".lottery",
+                amount: amount
+            }
+            console.log(params)
+            return this.createRawTransactionWithExec(params, url)
+            // .then(tx => {
+            //     return signRawTx(tx, privateKey)
+            // }).then(signedTx => {
+            //     return this.sendTransaction(signedTx)
+            // })
         },
 
         transferBTY2GameCoin(privateKey, amt, callback) {
@@ -250,7 +256,6 @@ export default {
 
                                     callback("success")
                                 })
-
                             })
                         })
                     })
@@ -320,51 +325,48 @@ export default {
                 status: this.TRADE_ORDER_STATUS.ON_SALE,
                 count: "10000000"
             }
-            return this.getOnesBuyOrder(this.currentAccount.address, url).then(res => { return }).catch(err => {
-                if (err.message == "ErrNotSupport") {
-                    return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
-                }
-            }).then(err => {
-                if (err) {
-                    return err
-                }
-                return this.getTokenSellOrderByStatus(params, url).then(res => {
-                    let maxAmt = Long.ZERO
-                    if (res && res.orders.length !== 0) {
-                        for (let order of res.orders) {
-                            let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
-                            let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
-                            let minBoardlot = Long.fromString(order.minBoardlot)
-                            let totalBoardlot = Long.fromString(order.totalBoardlot)
-                            let tradedBoardlot = Long.fromString(order.tradedBoardlot)
+            return this.getTokenSellOrderByStatus(params, url).then(res => {
+                let maxAmt = Long.ZERO
+                if (res && res.orders.length !== 0) {
+                    for (let order of res.orders) {
+                        let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
+                        let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
+                        let minBoardlot = Long.fromString(order.minBoardlot)
+                        let totalBoardlot = Long.fromString(order.totalBoardlot)
+                        let tradedBoardlot = Long.fromString(order.tradedBoardlot)
 
-                            let minAmt = minBoardlot.multiply(pricePerBoardlot)
-                            let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(pricePerBoardlot)
+                        let minAmt = minBoardlot.multiply(pricePerBoardlot)
+                        let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(pricePerBoardlot)
 
-                            if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
-                                continue
-                            }
-                            if (minAmt.greaterThan("300000000")) {
-                                continue
-                            }
-                            if (amountPerBoardlot.greaterThan("300000000")) {
-                                continue
-                            }
-                            if (leftAmt.greaterThan(maxAmt)) {
-                                maxAmt = leftAmt
-                                this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')
-                                this.SELL_LIMIT.minAmt = minAmt.toString()
-                                this.SELL_LIMIT.maxAmt = leftAmt.toString()
-                                this.SELL_LIMIT.pricePerBoardlot = pricePerBoardlot.toString()
-                            }
+                        if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
+                            continue
+                        }
+                        if (minAmt.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (pricePerBoardlot.lessThan("100000") || pricePerBoardlot.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (leftAmt.greaterThan(maxAmt)) {
+                            maxAmt = leftAmt
+                            this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')
+                            this.SELL_LIMIT.minAmt = minAmt.toString()
+                            this.SELL_LIMIT.maxAmt = leftAmt.toString()
+                            this.SELL_LIMIT.pricePerBoardlot = pricePerBoardlot.toString()
                         }
                     }
-                    if (maxAmt.notEquals(Long.ZERO)) {
-                        return "success"
-                    } else {
-                        return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
-                    }
-                })
+                }
+                if (maxAmt.notEquals(Long.ZERO)) {
+                    return "success"
+                } else {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
+                }
+            }).catch(err => {
+                if (err.message === "ErrNotFound") {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
+                } else if (err.message === "ErrNotSupport") {
+                    return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
+                
             })
 
         },
@@ -497,6 +499,5 @@ export default {
 
     },
     mounted() {
-        
     }
 }

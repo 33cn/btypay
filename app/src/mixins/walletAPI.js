@@ -42,6 +42,7 @@ export default {
       "currentAccount",
       "currentMain",
       "currentParallel",
+
     ])
   },
   methods: {
@@ -102,12 +103,12 @@ export default {
     recoverAccount() {
       this.getWallet().then(wallet => {
         console.log('获取索引恢复账户')
-        console.log(wallet)
+        // console.log(wallet)
         //  获取索引恢复账户
         window.chrome.storage.local.get(['accountIndexList'], (result) => {
           // console.log(result)
           if (result.accountIndexList) {
-            if(wallet.recoverAccount){
+            if(wallet && wallet.recoverAccount){
               wallet.recoverAccount(result.accountIndexList)
             }
             // console.log('wallet.accountMap')
@@ -228,6 +229,7 @@ export default {
     initTxList(coin, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
+      let index = coin === "bty" ? this.currentMain.index : this.currentParallel.index
       let symbol = cNode.name
       let count = 100
 
@@ -243,7 +245,7 @@ export default {
         if (res.txs) {
           for (let tx of res.txs) {
             // 过滤 存储
-            if (!this.filterAndSaveTx(symbol, updateMethod, tx)) {
+            if (!this.filterAndSaveTx(symbol, updateMethod, tx,index)) {
               continue
             }
           }
@@ -256,7 +258,7 @@ export default {
           }
         } else {
           this.getLastHeader(cNode.url).then(res => {
-            this.$store.commit(updateMethod, { txHeight: res.height, txIndex: res.txCount })
+            this.$store.commit(updateMethod, { txHeight: res.height, txIndex: res.txCount,index })
           })
         }
       })
@@ -264,6 +266,7 @@ export default {
     getTxList(coin, typeTy, advanceNum, refresh, callback) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
+      let index = coin === "bty" ? this.currentMain.index : this.currentParallel.index
       let symbol = cNode.name
       let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
       let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
@@ -282,7 +285,7 @@ export default {
           if (res.txs) {
             for (let tx of res.txs) {
               // 过滤 存储
-              if (!this.filterAndSaveTx(coin, updateMethod, tx)) {
+              if (!this.filterAndSaveTx(coin, updateMethod, tx,index)) {
                 continue
               }
             }
@@ -295,7 +298,7 @@ export default {
       }
     },
 
-    filterAndSaveTx(coin, updateMethod, tx) {
+    filterAndSaveTx(coin, updateMethod, tx,index) {
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let symbol = cNode.name
       let lastTx = null
@@ -367,7 +370,7 @@ export default {
         dbHelper.insert(TABLE_NAME, lastTx)
       }
 
-      this.$store.commit(updateMethod, { txHeight: blockHeight, txIndex: txIndex })
+      this.$store.commit(updateMethod, { txHeight: blockHeight, txIndex: txIndex ,index})
       return lastTx
     }
     /* 交易记录相关 --end */
