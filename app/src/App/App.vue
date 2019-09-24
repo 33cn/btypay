@@ -20,7 +20,7 @@ export default {
         // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
         // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
       }else{
-        chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
+        chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://114.55.11.139:1193',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
         // console.log(this.$store.state.Account.mainNode)
       }
     })
@@ -28,7 +28,7 @@ export default {
       if(res.parallelNodeList && res.parallelNodeList.length > 0){
         // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
       }else{
-        chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+        chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gameTest',coin:"GBT",url:" http://114.55.11.139:1200",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
         // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
       }
     })
@@ -36,7 +36,7 @@ export default {
       if(res.mainNode){
         this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
       }else{
-        chrome.storage.local.set({ 'mainNode': {url: 'http://47.107.15.126:8801',name: 'user.p.gbttest.',index: 0,txHeight: -1, txIndex: 0, name: "BTY"} }, () => {})
+        chrome.storage.local.set({ 'mainNode': {url: 'http://114.55.11.139:1193',index: 0,txHeight: -1, txIndex: 0, name: "BTY"} }, () => {})
       }
     })
     getChromeStorage('paraNode').then(res=>{
@@ -45,7 +45,7 @@ export default {
         // chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
       }else{
 
-        chrome.storage.local.set({ 'paraNode': {url: 'http://114.55.11.139:1198',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
+        chrome.storage.local.set({ 'paraNode': {url: ' http://114.55.11.139:1200',index: 0, name: 'gameTest', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
       }
     })
   }
