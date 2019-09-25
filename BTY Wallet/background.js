@@ -6,6 +6,7 @@ chrome.runtime.onInstalled.addListener(()=>{
     message: 'BTY钱包插件安装成功，快去使用吧！'
   });
 });
+var txType = '';
 var txObj = {};
 var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
@@ -67,6 +68,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       break;
     case 'sign-tx':
       if (isWalletUnlock()) {
+        txType = 'sign-tx'
         payload.actionID = action
         txObj = payload;
         console.log(payload)
@@ -74,6 +76,23 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       } else {
         sendMessage({
           action: 'answer-sign-tx',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
+    case 'para-coins-dice':
+      if (isWalletUnlock()) {
+        txType = 'para-coins-dice'
+        payload.actionID = action
+        txObj = payload;
+        console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+      } else {
+        sendMessage({
+          action: 'answer-para-coins-dice',
           payload: {
             error: 'walletIsLocked',
             result: null
@@ -108,6 +127,27 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       } else {
         sendMessage({
           action: 'answer-query-parallel-node',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break
+    case 'query-current-main-node':
+      if (isWalletUnlock()) {
+        window.chrome.storage.local.get('mainNode', (result) => {
+          sendMessage({
+            action: 'answer-query-current-main-node',
+            payload: {
+              error: null,
+              result:result.mainNode
+            },
+          })
+        })
+      } else {
+        sendMessage({
+          action: 'answer-query-current-main-node',
           payload: {
             error: 'walletIsLocked',
             result: null

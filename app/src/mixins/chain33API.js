@@ -135,6 +135,8 @@ export default {
         index: index,
       }, url)
         .then(function (res) {
+          // console.log('getAddrTx+++++++++++++++++++++++++++++')
+          // console.log(res)
           if (res.error) {
             return [];
           }
@@ -145,9 +147,12 @@ export default {
               return _.hash
             })
           }
+          // console.log(hashStringArr)
           return hashStringArr;
         })
         .then(function (hashes) {
+          console.log(hashes)
+          console.log(url)
           return _this.$chain33Sdk.getTxByHashes(hashes, url);
         });
     },

@@ -39,6 +39,7 @@
 // const {mapState} = createNamespacedHelpers('Records')
 import { TransactionsType } from "@/libs/bitcoinAmount";
 import records from "@/mixins/records.js";
+
 export default {
   mixins: [records],
   data() {

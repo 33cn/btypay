@@ -59,6 +59,38 @@
     }
 
     /**
+     * @description 游戏币划转
+     * @returns {Promise<any>}
+     */
+    parallelCoins2Dice(payload) {
+      return new Promise((resolve, reject) => {
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({data: {payload}}) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_PARA_COINS_DICE', signAnswerHandle, true)
+        window.postMessage({ type: 'PARA_COINS_DICE', payload }, '*')
+      })
+    }
+    parallelCoins2Dic(payload){
+      console.log('++++++'+payload)
+      return new Promise((resolve,reject)=>{
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({data: {payload}}) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_PARA_COINS_DICE', signAnswerHandle, true)
+        window.postMessage({ type: 'PARA_COINS_DICE', payload }, '*')
+      })
+    }
+
+    /**
      * @description 获取当前地址
      * @returns {Promise<any>}
      */
@@ -112,6 +144,23 @@
       })
     }
 
+    /**
+     * @description 获取当前主链节点
+     * @returns {Promise<any>}
+     */
+    queryCurrentMainNode(){
+      return new Promise((resolve,reject)=>{
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({data: {payload}}) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_QUERY_CURRENT_MAIN_NODE', signAnswerHandle, true)
+        window.postMessage({ type: 'QUERY_CURRENT_MAIN_NODE', payload: {} }, '*')
+      })
+    }
     // 测试
     createNewWindow(){
       return new Promise((resolve,reject)=>{

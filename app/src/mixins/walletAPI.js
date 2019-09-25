@@ -42,7 +42,6 @@ export default {
       "currentAccount",
       "currentMain",
       "currentParallel",
-
     ])
   },
   methods: {
@@ -282,6 +281,8 @@ export default {
           cNode.txIndex,
           cNode.url
         ).then(res => {
+          console.log('1initTxList++++++++++++++')
+          console.log(res)
           if (res.txs) {
             for (let tx of res.txs) {
               // 过滤 存储
@@ -299,13 +300,14 @@ export default {
     },
 
     filterAndSaveTx(coin, updateMethod, tx,index) {
+      console.log('filterAndSaveTx')
       let cNode = coin === "bty" ? this.currentMain : this.currentParallel
       let symbol = cNode.name
       let lastTx = null
       let createNewTx = false
       let blockHeight = tx.height;
       let txIndex = tx.index;
-      const paraName = "gbttest"
+      const paraName = this.currentParallel.name
       const execerPrefix = "user.p." + paraName + "."
 
       let amount = tx.amount;
@@ -341,13 +343,11 @@ export default {
           createNewTx = true
         }
       } else {
-        if (tx.tx.execer === execerPrefix + "coins" && tx.actionName === "transfer") {
-          createNewTx = true
-        } else if (tx.tx.execer === execerPrefix + "coins" && tx.actionName === "withdraw") {
+        if (tx.tx.execer === execerPrefix + "coins" && (tx.actionName === "transfer" || tx.actionName === "withdraw")) {
           createNewTx = true
         }
       }
-
+      console.log(createNewTx+'===')
       if (createNewTx) {
         lastTx = new TransactionsListEntry(
           paraName,
