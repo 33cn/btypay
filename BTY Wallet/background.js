@@ -8,6 +8,7 @@ chrome.runtime.onInstalled.addListener(()=>{
 });
 var txType = '';
 var txObj = {};
+var voteHash = ''
 var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
 
@@ -90,6 +91,9 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txObj = payload;
         console.log(payload)
         createNewWindow('outExtensionPage', payload)
+        setTimeout(() => {
+          isGetVoteHash()
+        }, 0);
       } else {
         sendMessage({
           action: 'answer-para-coins-dice',
@@ -205,4 +209,21 @@ function sendMessage (message, query = {}) {
 
 function isWalletUnlock() {
   return Boolean(window.myChain33WalletInstance)
+}
+
+function isGetVoteHash(){
+  console.log(voteHash)
+  if(voteHash){
+    sendMessage({
+      action: 'answer-para-coins-dice',
+      payload: {
+        error: null,
+        result: voteHash
+      },
+    })
+  }else{
+    setTimeout(() => {
+      isGetVoteHash()
+    }, 100);
+  }
 }

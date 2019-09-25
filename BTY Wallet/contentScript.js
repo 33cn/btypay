@@ -37,6 +37,8 @@ function injectScript (url) {
 function listenForProviderRequest () {
   // listen message from page-level
   window.addEventListener('message', ({ source, data }) => {
+    // console.log('content')
+    // console.log(data)
     if (source !== window || !data || !data.type) { return }
     switch (data.type) {
       case 'SEND_TO_ADDRESS':
@@ -107,3 +109,10 @@ function listenForProviderRequest () {
     }
   })
 }
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+  console.log(request)
+  if(request.message === "clicked_browser_action"){
+      popup();
+  }
+})

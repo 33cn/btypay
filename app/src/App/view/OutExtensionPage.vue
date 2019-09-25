@@ -1,18 +1,11 @@
 <template>
   <div class="out_extension_page">
-    <div v-if="successed=='waiting'">
-      <i class="el-icon-loading"></i>
-      <p>确认中...</p>
+    <div>
+      <i v-if="successed=='waiting'" class="el-icon-loading"></i>
+      <i v-if="successed=='yes'" class="el-icon-check"></i>
+      <i v-if="successed=='no'" class="el-icon-close"></i>
+      <p>{{msg}}</p>
     </div>
-    <div v-if="successed=='yes'">
-      <i class="el-icon-check"></i>
-      <p>{{successMsg}}</p>
-    </div>
-    <div v-if="successed=='no'">
-      <i class="el-icon-close"></i>
-      <p>{{errMsg}}</p>
-    </div>
-    <!-- <div>{{name}}</div> -->
   </div>
 </template>
 <script>
@@ -29,10 +22,26 @@ export default {
   data() {
     return {
       successed: "waiting",
-      errMsg:'投注失败,请稍后重试。',
-      successMsg:'投注成功。',
+      msg:'确认中...',
       name:''
     };
+  },
+  methods:{
+    getCurrentTabId(callback){
+    	chrome.tabs.query({active: true, currentWindow: true}, function(tabs)
+    	{
+    		if(callback) callback(tabs.length ? tabs[0].id: null);
+    	});
+    },
+    sendMessageToContentScript(message, callback){
+	    this.getCurrentTabId((tabId) =>
+	    {
+	    	chrome.tabs.sendMessage(tabId, message, function(response)
+	    	{
+	    		if(callback) callback(response);
+	    	});
+	    });
+    }
   },
   mounted() {
     window.chrome.runtime.getBackgroundPage(win => {
@@ -55,7 +64,7 @@ export default {
         .then(res => {
           setTimeout(() => {
             this.successed = "yes";
-            this.successMsg = '签名完成。'
+            this.msg = '签名完成。'
             setTimeout(() => {
               win.closeWindow(win.windowId);
             }, 500);
@@ -65,7 +74,7 @@ export default {
           clearTimeout(time)
           setTimeout(() => {
             this.successed = "no";
-            this.errMsg = err
+            this.msg = err
             setTimeout(() => {
               // win.closeWindow(win.windowId);
             }, 500);
@@ -89,7 +98,7 @@ export default {
               if(this.name == ''){
                 setTimeout(() => {
                   this.successed = "no";
-                  this.errMsg = '请在钱包中添加游戏节点。'
+                  this.msg = '请在钱包中添加游戏节点。'
                 }, 3000);
                 return
               }else{
@@ -116,6 +125,12 @@ export default {
                   // })
                   setTimeout(() => {
                     this.successed = "yes";
+                    this.msg = '投注成功。'
+                    win.voteHash = res
+                    window.hash = res;
+                    // this.sendMessageToContentScript('你好，我是popup！', (response) => {
+	                  // 	if(response) alert('收到来自content-script的回复：'+response);
+	                  // });
                     setTimeout(() => {
                       // win.closeWindow(win.windowId);
                     }, 500);
@@ -126,8 +141,8 @@ export default {
                   clearTimeout(time)
                   setTimeout(() => {
                     this.successed = "no";
-                    // this.errMsg = '您的燃料BTY不够，请充值。'
-                    this.errMsg = err
+                    // this.msg = '您的燃料BTY不够，请充值。'
+                    this.msg = err
                     setTimeout(() => {
                       // win.closeWindow(win.windowId);
                     }, 500);
