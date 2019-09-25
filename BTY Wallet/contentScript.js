@@ -51,6 +51,12 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
+      case 'PARA_COINS_DICE':
+        chrome.runtime.sendMessage({
+          action: 'para-coins-dice',
+          payload: data.payload,
+        })
+        break
       case 'GET_CURRENT_ACCOUNT':
         chrome.runtime.sendMessage({
           action: 'get-current-account',
@@ -66,6 +72,12 @@ function listenForProviderRequest () {
       case 'QUERY_PARALLEL_NODE':
         chrome.runtime.sendMessage({
           action: 'query-parallel-node',
+          payload: data.payload,
+        })
+        break
+      case 'QUERY_CURRENT_MAIN_NODE':
+        chrome.runtime.sendMessage({
+          action: 'query-current-main-node',
           payload: data.payload,
         })
         break
@@ -85,6 +97,12 @@ function listenForProviderRequest () {
         break
       case 'answer-query-parallel-node':
         window.postMessage({ type: 'ANSWER_QUERY_PARALLEL_NODE', payload }, '*')
+        break
+      case 'answer-query-current-main-node':
+        window.postMessage({ type: 'ANSWER_QUERY_CURRENT_MAIN_NODE', payload }, '*')
+        break
+      case 'answer-para-coins-dice':
+        window.postMessage({ type: 'ANSWER_PARA_COINS_DICE', payload }, '*')
         break
     }
   })

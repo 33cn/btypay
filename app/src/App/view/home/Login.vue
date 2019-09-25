@@ -92,9 +92,9 @@ export default {
   mounted() {
     this.$refs["pwdInput"] && this.$refs["pwdInput"].focus();
     this.getWallet().then(wallet => {
-      console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
-      console.log(wallet)
-      console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
+      // console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
+      // console.log(wallet)
+      // console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
       if (wallet) {
         // 已创建/导入钱包
         getChromeStorage("loginTime").then(res => {
