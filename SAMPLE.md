@@ -19,5 +19,5 @@
 ![avatar](/image/node_config.png)
 ###### 10. 刷新投注游戏界面，这时右上角会显示登录的用户地址。
 ![avatar](/image/buy.png)
-###### 11. 接收到测试币后，可以执行投注操作。
-
+###### 11. 接收到测试币后，可以执行投注操作,下图是一个投注成功的显示。
+![avatar](/image/succeed.png)
