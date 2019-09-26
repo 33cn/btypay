@@ -9,6 +9,7 @@ chrome.runtime.onInstalled.addListener(()=>{
 var txType = '';
 var txObj = {};
 var voteHash = ''
+var signTx = ''
 var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
 
@@ -74,6 +75,9 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txObj = payload;
         console.log(payload)
         createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isSignTx()
+        // }, 0);
       } else {
         sendMessage({
           action: 'answer-sign-tx',
@@ -91,9 +95,9 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txObj = payload;
         console.log(payload)
         createNewWindow('outExtensionPage', payload)
-        setTimeout(() => {
-          isGetVoteHash()
-        }, 0);
+        // setTimeout(() => {
+        //   isGetVoteHash()
+        // }, 0);
       } else {
         sendMessage({
           action: 'answer-para-coins-dice',
@@ -107,8 +111,25 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
     case 'reply-background-sign-tx':
       sendMessage({
         action: 'answer-sign-tx',
-        payload,
+        payload:{
+          error:null,
+          signTx
+        }
       })
+      break;
+    case 'reply-background-para-coins-dice':
+      console.log('payload++++++')
+      console.log(payload)
+      sendMessage({
+        action: 'answer-para-coins-dice',
+        payload:{
+          error:null,
+          result:voteHash
+        }
+      })
+      setTimeout(() => {
+        // closeWindow(win.windowId)
+      }, 300);
       break;
     case 'create-new-window':
       if(isWalletUnlock()){
@@ -167,6 +188,13 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
 })
 
 function createNewWindow(route, payload, width = 416, height = 636) {
+  if(window.navigator.userAgent.indexOf('Windows') > -1){
+    width = 416
+    height = 636
+  }else{
+    width = 400
+    height = 620
+  }
   let baseURL = `${window.chrome.runtime.getURL('/dist/index.html')}#/${route}`
   let url = spliceURL(baseURL, payload)
   chrome.windows.create({url, width, height, type: 'popup'},function(res){
@@ -211,19 +239,35 @@ function isWalletUnlock() {
   return Boolean(window.myChain33WalletInstance)
 }
 
-function isGetVoteHash(){
-  console.log(voteHash)
-  if(voteHash){
-    sendMessage({
-      action: 'answer-para-coins-dice',
-      payload: {
-        error: null,
-        result: voteHash
-      },
-    })
-  }else{
-    setTimeout(() => {
-      isGetVoteHash()
-    }, 100);
-  }
-}
+// function isGetVoteHash(){
+//   console.log(voteHash)
+//   if(voteHash){
+//     sendMessage({
+//       action: 'answer-para-coins-dice',
+//       payload: {
+//         error: null,
+//         result: voteHash
+//       },
+//     })
+//   }else{
+//     setTimeout(() => {
+//       isGetVoteHash()
+//     }, 100);
+//   }
+// }
+// function isSignTx(){
+//   console.log(signTx)
+//   if(voteHash){
+//     sendMessage({
+//       action: 'answer-sign-tx',
+//       payload: {
+//         error: null,
+//         result: signTx
+//       },
+//     })
+//   }else{
+//     setTimeout(() => {
+//       isSignTx()
+//     }, 100);
+//   }
+// }

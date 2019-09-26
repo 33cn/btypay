@@ -10,10 +10,10 @@
   */
   function onMessage (messageType, handler, remove) {
     window.addEventListener('message', function ({ data }) {
-      console.log('99999')
-      console.log(data)
-      console.log(!data || data.type !== messageType)
-      // if (!data || data.type !== messageType) { return }
+      // console.log('99999')
+      // console.log(data)
+      // console.log(!data || data.type !== messageType)
+      if (!data || data.type !== messageType) { return }
       handler.apply(window, arguments)
       remove && window.removeEventListener('message', handler)
     })
@@ -52,7 +52,19 @@
      * @returns {Promise<any>}
      */
     signTx(payload) {
-      interfaceDefine('ANSWER_SIGN_TX','SIGN_TX',payload)
+      // interfaceDefine('ANSWER_SIGN_TX','SIGN_TX',payload)
+      return new Promise((resolve, reject) => {
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const sendAnswerHandle = ({data: {payload}}) => {
+          // alert('完成了')
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_SIGN_TX', sendAnswerHandle, true)
+        window.postMessage({ type: 'SIGN_TX', payload }, '*')
+      })
     }
 
     /**
@@ -67,17 +79,16 @@
           reject(new Error('Request Timeout'))
         }, 1 * 60 * 1000)
         const sendAnswerHandle = ({data: {payload}}) => {
-          console.log('完成了')
+          // console.log('完成了')
           clearTimeout(timeTicket)
-          console.log('hash+'+hash)
-          console.log(hash)
+          // console.log('hash+'+hash)
+          // console.log(hash)
           resolve(hash)
         }
           window.addEventListener('message', function ({ data }) {
-            console.log('99999')
-            console.log(data)
+            // console.log('99999')
+            // console.log(data)
             hash = data
-            // console.log(!data || data.type !== 'ANSWER_PARA_COINS_DICE')
             if (!data || data.type !== 'ANSWER_PARA_COINS_DICE') { return }
             sendAnswerHandle.apply(window, arguments)
             window.removeEventListener('message', sendAnswerHandle)

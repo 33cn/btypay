@@ -111,7 +111,7 @@ function listenForProviderRequest () {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  console.log(request)
+  // console.log(request)
   if(request.message === "clicked_browser_action"){
       popup();
   }
