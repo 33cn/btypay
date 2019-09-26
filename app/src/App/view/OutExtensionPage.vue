@@ -54,14 +54,23 @@ export default {
         }
       }, 10000);
       if(win.txType == 'sign-tx'){
+        // return new Promise((resolve,reject)=>{
+        //   return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
+        // }).then(signedTx=>{
+        //   resolve(signedTx)
+        // })
         return Promise.resolve()
         .then(() => {
           return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
         })
         .then(signedTx => {
-          return this.sendTransaction(signedTx, win.txObj.url);
-        })
-        .then(res => {
+          console.log(win.txObj.tx)
+          console.log(signedTx)
+          win.signTx = signedTx
+          window.chrome.runtime.sendMessage({
+            action:'reply-background-sign-tx',
+            signedTx,
+          })
           setTimeout(() => {
             this.successed = "yes";
             this.msg = '签名完成。'
@@ -69,7 +78,19 @@ export default {
               win.closeWindow(win.windowId);
             }, 500);
           }, 100);
-        }).catch(err=>{
+          // return Promise.resolve({signedTx})
+          // return this.sendTransaction(signedTx, win.txObj.url);
+        })
+        // .then(res => {
+        //   setTimeout(() => {
+        //     this.successed = "yes";
+        //     this.msg = '签名完成。'
+        //     setTimeout(() => {
+        //       win.closeWindow(win.windowId);
+        //     }, 500);
+        //   }, 100);
+        // })
+        .catch(err=>{
           console.log(err)
           clearTimeout(time)
           setTimeout(() => {
@@ -127,12 +148,15 @@ export default {
                     this.successed = "yes";
                     this.msg = '投注成功。'
                     win.voteHash = res
-                    window.hash = res;
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-para-coins-dice',
+                      voteHash:res,
+                    })
                     // this.sendMessageToContentScript('你好，我是popup！', (response) => {
 	                  // 	if(response) alert('收到来自content-script的回复：'+response);
 	                  // });
                     setTimeout(() => {
-                      // win.closeWindow(win.windowId);
+                      win.closeWindow(win.windowId);
                     }, 500);
                   }, 300);
                 }).catch(err=>{
