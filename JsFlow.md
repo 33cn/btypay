@@ -2,13 +2,13 @@
 
 # 1.	在工程下安装并导入相关的依赖
 > 安装依赖：
-'''
+'''bash
 npm install @33cn/chain33-rpc-api –save
 npm install @33cn/wallet-base –save
 npm install bitcoinjs-lib –save
 '''
 > 导入依赖：
-'''
+'''bash
 import {seed,sign} from '@33cn/wallet-base'
 import BtyBaseSdk from '@33cn/chain33-rpc-api'
 '''
@@ -33,13 +33,14 @@ https://github.com/33cn/btypay/blob/master/app/src/mixins/walletAPI.js
 引用用bitcoinjs-lib依赖包下的address.js文件
 
 > 使用方法：
-调用fromBase58Check(),
+调用fromBase58Check()
 
 # 5.	交易构造
 交易构造一般可以通过区块链的rpc接口来实现，具体的可以参考节点接口文档
 
-## 5.1.	将合约名转化成实际地址, 调用chain33Sdk.convertExectoAddr(execName,url)方法，返回一个带有实际地址address的promise对象。
-'''
+## 5.1.	将合约名转化成实际地址
+调用chain33Sdk.convertExectoAddr(execName,url)方法，返回一个带有实际地址address的promise对象。
+'''bash
 参数：
 params = {
 to:address,
@@ -49,7 +50,7 @@ amount:amount
 '''
 
 ## 5.2.	交易构造
-'''
+'''bash
 /**
  * 交易构造
  * @param {CreateRawTransactionParams} params 构造交易参数
@@ -60,7 +61,7 @@ amount:amount
 调用chain33Sdk.createRawTransaction(params,url)方法，返回一个带有交易结果tx的promise对象。
 
 # 6.	离线签名
-'''
+'''bash
 /**
  * 签名交易
  * @param {string} [tx='']构造的交易
@@ -73,13 +74,13 @@ amount:amount
 调用chain33Sdk.decodeTransaction(signedTx)方法，返回一个解析后的promise对象
 
 # 8.	广播交易
-'''
+'''bash
 /**
  * 广播交易
  * @param {string} [tx='']签名的交易
  * @param {string} [privateKey='']接口地址
  */
- '''  
+ '''
 调用chain33Sdk.sendTransaction(signedTx, url)方法，发送广播交易，返回一个带有hash的promise对象。
 
 
