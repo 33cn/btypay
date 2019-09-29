@@ -1,5 +1,5 @@
 以下为Javascript实现的地址生成和校验流程。具体的可以参考开源代码：
-
+[TOC]
 # 1.	在工程下安装并导入相关的依赖
 > 安装依赖：
 ```bash
@@ -33,8 +33,7 @@ https://github.com/33cn/btypay/blob/master/app/src/mixins/walletAPI.js
 #  4.	地址合法性校验
 引用用bitcoinjs-lib依赖包下的address.js文件
 
-> 使用方法：  
-调用fromBase58Check()
+> 使用方法：  调用fromBase58Check()
 
 # 5.	交易构造  
 交易构造一般可以通过区块链的rpc接口来实现，具体的可以参考节点接口文档
@@ -57,9 +56,9 @@ amount:amount
  * @param {CreateRawTransactionParams} params 构造交易参数
  * @param {string} [url=''] 接口地址
  */
-```
 
 调用chain33Sdk.createRawTransaction(params,url)方法，返回一个带有交易结果tx的promise对象。
+```
 
 # 6.	离线签名
 ```bash
@@ -68,9 +67,9 @@ amount:amount
  * @param {string} [tx='']构造的交易
  * @param {string} [privateKey='']私钥
  */
-```  
-
+ 
 调用sign.signRawTransaction(tx,privateKey)方法对构造的交易进行签名，返回一个带有已签名交易signedTx的promise对象。
+``` 
 
 # 7.	解析签名后交易数据
 调用chain33Sdk.decodeTransaction(signedTx)方法，返回一个解析后的promise对象
@@ -82,8 +81,7 @@ amount:amount
  * @param {string} [tx='']签名的交易
  * @param {string} [privateKey='']接口地址
  */
-```  
 
 调用chain33Sdk.sendTransaction(signedTx, url)方法，发送广播交易，返回一个带有hash的promise对象。
-
+```  
 
