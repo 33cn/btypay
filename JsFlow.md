@@ -2,19 +2,20 @@
 
 # 1.	在工程下安装并导入相关的依赖
 > 安装依赖：
-'''bash
-npm install @33cn/chain33-rpc-api –save
-npm install @33cn/wallet-base –save
-npm install bitcoinjs-lib –save
-'''
+```bash
+npm install @33cn/chain33-rpc-api –save  
+npm install @33cn/wallet-base –save  
+npm install bitcoinjs-lib –save  
+```  
+
 > 导入依赖：
-'''bash
+```bash
 import {seed,sign} from '@33cn/wallet-base'
 import BtyBaseSdk from '@33cn/chain33-rpc-api'
-'''
+```
 
 #  2.	生成随机数（助记词：seed）
-> 具体方法的路径：
+> 具体方法的路径：  
 https://github.com/33cn/btypay/blob/master/app/src/mixins/walletAPI.js
 
 > 使用方法：
