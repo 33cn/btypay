@@ -290,6 +290,7 @@ export default {
     this.refreshParallelAsset();
     setTimeout(() => {
       this.asset = this.mainAsset;
+      console.log(this.currentAccount)
     }, 0);
     this.requestTradeOrder();
   }

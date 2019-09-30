@@ -338,7 +338,7 @@ export default {
         if (errors) {
           for (let err of errors) {
             if (err.ty === 1) {
-              strError = err.log;
+              strError = err.log;[]
               break;
             }
           }

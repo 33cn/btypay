@@ -1,3 +1,4 @@
+// const sayHello = require('./libs/demo.js')
 chrome.runtime.onInstalled.addListener(()=>{
   chrome.notifications.create(null, {
     type: 'basic',
@@ -6,16 +7,23 @@ chrome.runtime.onInstalled.addListener(()=>{
     message: 'BTY钱包插件安装成功，快去使用吧！'
   });
 });
+// console.log(printxx())
+// sayHello()
+var tabId = ''
 var txType = '';
 var txObj = {};
 var voteHash = ''
-var signTx = ''
+var signedTx = ''
 var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
-
+  tabId = sender.tab.id
+  // console.log(sender)
+  console.log('tabid+'+tabId)
   switch(action) {
     case 'get-current-account':
       if (isWalletUnlock()) {
+        // console.log('-get-current-account')
+        // console.log(window.currentAccount)
         if(window.currentAccount&&window.currentAccount.name&&window.currentAccount.address){
           sendMessage({
             action: 'answer-get-current-account',
@@ -73,7 +81,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txType = 'sign-tx'
         payload.actionID = action
         txObj = payload;
-        console.log(payload)
+        // console.log(payload)
         createNewWindow('outExtensionPage', payload)
         // setTimeout(() => {
         //   isSignTx()
@@ -93,7 +101,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txType = 'para-coins-dice'
         payload.actionID = action
         txObj = payload;
-        console.log(payload)
+        // console.log(payload)
         createNewWindow('outExtensionPage', payload)
         // setTimeout(() => {
         //   isGetVoteHash()
@@ -109,22 +117,24 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       }
       break;
     case 'reply-background-sign-tx':
+      // console.log('reply-background-sign-tx')
+      // console.log(payload)
       sendMessage({
         action: 'answer-sign-tx',
         payload:{
           error:null,
-          signTx
+          signedTx:signedTx || payload.signedTx
         }
       })
       break;
     case 'reply-background-para-coins-dice':
-      console.log('payload++++++')
-      console.log(payload)
+      // console.log('reply-background-para-coins-dice')
+      // console.log(payload)
       sendMessage({
         action: 'answer-para-coins-dice',
         payload:{
           error:null,
-          result:voteHash
+          result:voteHash || payload.voteHash
         }
       })
       setTimeout(() => {
@@ -229,6 +239,8 @@ function spliceURL(url, params) {
 
 function sendMessage (message, query = {}) {
   chrome.tabs.query(query, tabs => {
+    // console.log(tabs)
+    // chrome.tabs.sendMessage(tabId, message)
     tabs.forEach(tab => {
       chrome.tabs.sendMessage(tab.id, message)
     })

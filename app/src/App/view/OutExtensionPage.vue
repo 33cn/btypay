@@ -64,12 +64,13 @@ export default {
           return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
         })
         .then(signedTx => {
-          console.log(win.txObj.tx)
-          console.log(signedTx)
-          win.signTx = signedTx
+          // console.log(win.txObj.tx)
+          // console.log(signedTx)
+          win.signedTx = signedTx
+          let payload = {signedTx}
           window.chrome.runtime.sendMessage({
             action:'reply-background-sign-tx',
-            signedTx,
+            payload,
           })
           setTimeout(() => {
             this.successed = "yes";
@@ -148,9 +149,10 @@ export default {
                     this.successed = "yes";
                     this.msg = '投注成功。'
                     win.voteHash = res
+                    let payload = {voteHash}
                     window.chrome.runtime.sendMessage({
                       action:'reply-background-para-coins-dice',
-                      voteHash:res,
+                      payload
                     })
                     // this.sendMessageToContentScript('你好，我是popup！', (response) => {
 	                  // 	if(response) alert('收到来自content-script的回复：'+response);

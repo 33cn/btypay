@@ -60,6 +60,7 @@ function listenForProviderRequest () {
         })
         break
       case 'GET_CURRENT_ACCOUNT':
+        // console.log('-content')
         chrome.runtime.sendMessage({
           action: 'get-current-account',
           payload: data.payload,
@@ -110,9 +111,9 @@ function listenForProviderRequest () {
   })
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  // console.log(request)
-  if(request.message === "clicked_browser_action"){
-      popup();
-  }
-})
+// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+//   // console.log(request)
+//   if(request.message === "clicked_browser_action"){
+//       popup();
+//   }
+// })

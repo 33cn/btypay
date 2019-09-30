@@ -12,6 +12,7 @@
     window.addEventListener('message', function ({ data }) {
       // console.log('99999')
       // console.log(data)
+      // console.log(messageType)
       // console.log(!data || data.type !== messageType)
       if (!data || data.type !== messageType) { return }
       handler.apply(window, arguments)
@@ -24,7 +25,6 @@
         reject(new Error('Request Timeout'))
       }, 1 * 60 * 1000)
       const sendAnswerHandle = ({data: {payload}}) => {
-        alert('完成了')
         clearTimeout(timeTicket)
         resolve(payload)
       }
@@ -81,13 +81,9 @@
         const sendAnswerHandle = ({data: {payload}}) => {
           // console.log('完成了')
           clearTimeout(timeTicket)
-          // console.log('hash+'+hash)
-          // console.log(hash)
           resolve(hash)
         }
           window.addEventListener('message', function ({ data }) {
-            // console.log('99999')
-            // console.log(data)
             hash = data
             if (!data || data.type !== 'ANSWER_PARA_COINS_DICE') { return }
             sendAnswerHandle.apply(window, arguments)
