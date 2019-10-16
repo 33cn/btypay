@@ -125,11 +125,9 @@ export default {
                 return
               }else{
                 this.parallelCoins2Dice(win.txObj.amount*1e8,win.txObj.url,this.name).then(res=>{
-                  console.log('outExtension')
-                  console.log(res)
-                  console.log("xxxxxx", win.txObj.tx)
                   let txs = [res,win.txObj.tx]
-                  return this.createRawTxGroup(txs)
+                  console.log(txs)
+                  return this.createRawTxGroup(txs,win.txObj.url)
                 }).then(tx => {
                   console.log('createRawTxGroup')
                   console.log(tx)
@@ -149,7 +147,7 @@ export default {
                     this.successed = "yes";
                     this.msg = '投注成功。'
                     win.voteHash = res
-                    let payload = {voteHash}
+                    let payload = {voteHash:win.voteHash}
                     window.chrome.runtime.sendMessage({
                       action:'reply-background-para-coins-dice',
                       payload

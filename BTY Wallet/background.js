@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(()=>{
 var tabId = ''
 var txType = '';
 var txObj = {};
-var voteHash = ''
+var voteHash = 'hash'
 var signedTx = ''
 var windowId  = null;
 chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
           sendMessage({
             action: 'answer-get-current-account',
             payload: {
-              error: '发生异常',
+              error: 'wallet is not unlock',
               result: null
             },
           })
@@ -141,11 +141,11 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         // closeWindow(win.windowId)
       }, 300);
       break;
-    case 'create-new-window':
+    case 'unlock-wallet':
       if(isWalletUnlock()){
         createNewWindow('WalletIndex', payload)
       }else{
-        createNewWindow('importOrCreate', payload)
+        createNewWindow('', payload)
       }
       break;
     case 'query-parallel-node':

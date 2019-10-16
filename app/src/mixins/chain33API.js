@@ -157,8 +157,8 @@ export default {
         });
     },
     // 构造交易组
-    createRawTxGroup(txs) {
-      return this.$chain33Sdk.createRawTxGroup(txs)
+    createRawTxGroup(txs,url) {
+      return this.$chain33Sdk.createRawTxGroup(txs,url)
     },
     // 获取最新的区块头
     getLastHeader(url) {

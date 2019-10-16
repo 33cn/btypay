@@ -66,9 +66,9 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
-      case 'CREATE_NEW_WINDOW':
+      case 'UNLOCK_WALLET':
         chrome.runtime.sendMessage({
-          action: 'create-new-window',
+          action: 'unlock-wallet',
           payload: data.payload,
         })
         break

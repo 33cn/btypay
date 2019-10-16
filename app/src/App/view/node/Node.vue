@@ -141,6 +141,8 @@ export default {
       paraDialog: false,
       mainData: "",
       mainIsInput: false,
+      paraAdding:false,
+      mainAdding:false,
       mainNodeList: [],
       paraNodeList: [],
       currentMainNode: "",
@@ -176,12 +178,16 @@ export default {
       this.getAndSet('mainDialog',true)
     },
     paraSubmit(formName) {
+      if(this.paraAdding){
+        return
+      }
       for (let i = 0; i < this.paraNodeList.length; i++) {
         if (this.paraNodeList[i].url == this.form.url) {
           this.$message.error("该节点地址已存在");
           return;
         }
       }
+      this.paraAdding = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log("submit!");
@@ -223,22 +229,30 @@ export default {
                     this.$message.success("平行链节点添加成功");
                     this.getParaNode(); //更新视图
                   }
+                  this.paraAdding = false;
                 })
                 .catch(err => {
                   console.log(err);
+                  this.paraAdding = false;
                 });
               this.paraDialog = false;
+              this.paraAdding = false;
             })
             .catch(err => {
+              this.paraAdding = false;
               this.$message.error("添加失败");
             });
         } else {
+          this.paraAdding = false;
           console.log("error submit!!");
           return false;
         }
       });
     },
     mainSubmit() {
+      if(this.mainAdding){
+        return
+      }
       if (this.mainData == "" && this.mainDialog) {
         this.mainIsInput = true;
         return;
@@ -249,6 +263,7 @@ export default {
           return;
         }
       }
+      this.mainAdding = true
       let length = this.mainNodeList.length
       let index = this.mainNodeList[length-1].index+1;
       let obj = {
@@ -271,8 +286,10 @@ export default {
             this.$message.success("主链节点添加成功");
             this.getMainNode(); //更新视图
           }
+          this.mainAdding = false
         })
         .catch(err => {
+          this.mainAdding = false
           console.log(err);
         });
       this.mainDialog = false;

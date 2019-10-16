@@ -167,17 +167,17 @@
       })
     }
     // 测试
-    createNewWindow(){
+    unlockWallet(){
       return new Promise((resolve,reject)=>{
-        const timeTicket = setTimeout(() => {
-          reject(new Error('Request Timeout'))
-        }, 1 * 60 * 1000)
-        const signAnswerHandle = ({data: {payload}}) => {
-          clearTimeout(timeTicket)
-          resolve(payload)
-        }
-        onMessage('ANSWER_CREATE_NEW_WINDOW', signAnswerHandle, true)
-        window.postMessage({ type: 'CREATE_NEW_WINDOW', payload: {} }, '*')
+        // const timeTicket = setTimeout(() => {
+        //   reject(new Error('Request Timeout'))
+        // }, 1 * 60 * 1000)
+        // const signAnswerHandle = ({data: {payload}}) => {
+        //   clearTimeout(timeTicket)
+        //   resolve(payload)
+        // }
+        // onMessage('ANSWER_CREATE_NEW_WINDOW', signAnswerHandle, true)
+        window.postMessage({ type: 'UNLOCK_WALLET', payload: {} }, '*')
       })
     }
   }
