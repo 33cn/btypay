@@ -97,6 +97,7 @@ export default {
       // console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
       if (wallet) {
         // 已创建/导入钱包
+        console.log('have wallet')
         getChromeStorage("loginTime").then(res => {
           if (res.loginTime) {
             let time = 1 * 24 * 60 * 60 * 1000;
@@ -142,6 +143,7 @@ export default {
           }
         });
       } else {
+        console.log('no wallet')
         getChromeStorage("ciphertext").then(result => {
           console.log("result");
           console.log(result);

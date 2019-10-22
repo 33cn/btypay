@@ -128,7 +128,7 @@ export default {
               this.setCurrentAccount(currentAccount)
             })
           } else {
-            this.newAccount('Account 1')
+            // this.newAccount('Account 1')
           }
         })
       })
@@ -186,7 +186,8 @@ export default {
 
     /* 资产相关 -- start */
     refreshMainAsset() {
-      // console.log(this.currentAccount)
+      console.log('refreshMainAsset')
+      console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.currentMain.url
       return new Promise((resolve, reject) => {

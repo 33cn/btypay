@@ -1,11 +1,12 @@
 <template>
   <div class="convert_container" v-loading="tradeBuyLoading || tradeSellLoading">
     <asset-back title="兑换" backPath="/coin?coin=game"></asset-back>
+    <!-- <p @click="showBalance">查余额</p> -->
     <section class="ope">
       <div class="left">
         <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt />
         <img v-else src="../../../assets/images/gameLogo.png" alt />
-        <p class="coin">{{convert=='B2G'?'BTY':'GAME'}}</p>
+        <p class="coin">{{convert=='B2G'?'BTY':currentParallel.coin}}</p>
         <input
           :class="isInput?'error':''"
           v-model="exportVal"
@@ -13,13 +14,13 @@
           type="number"
           placeholder="转出数量"
         />
-        <p class="balance">余额{{asset.amt| numFilter(2)}}{{convert=='B2G'?'BTY':'GAME'}}</p>
+        <p class="balance">余额{{asset.amt| numFilter(2)}}{{convert=='B2G'?'BTY':currentParallel.coin}}</p>
       </div>
       <img @click="exchangeHandle" src="../../../assets/images/exchange.png" alt />
       <div class="right">
         <img v-if="convert=='B2G'" src="../../../assets/images/gameLogo.png" alt />
         <img v-else src="../../../assets/images/btyLogo.png" alt />
-        <p class="coin">{{convert=='G2B'?'BTY':'GAME'}}</p>
+        <p class="coin">{{convert=='G2B'?'BTY':currentParallel.coin}}</p>
         <input
           :class="isInput?'error':''"
           v-model="receiptVal"
@@ -32,7 +33,7 @@
     <section class="desc">
       <div>
         <p>汇率</p>
-        <p>1{{convert=='B2G'?'BTY':'GAME'}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':'GAME'}}</p>
+        <p>1{{convert=='B2G'?'BTY':currentParallel.coin}}={{convert=='B2G'?rate:1/rate}}{{convert=='G2B'?'BTY':currentParallel.coin}}</p>
       </div>
       <div>
         <p>手续费</p>
@@ -50,9 +51,9 @@
         <p>每手数量</p>
         <p>{{BUY_LIMIT.amtPerBoardlot | longFilter(2)}}</p>
       </div>
-      <p>温馨提示：跨链兑换支持使用BTY兑换GAME，也可将GAME兑换成BTY。</p>
+      <p>温馨提示：跨链兑换支持使用BTY兑换{{currentParallel.coin}}，也可将{{currentParallel.coin}}兑换成BTY。</p>
     </section>
-    <p @click="convertHandle">{{isOperatoring?'兑换中，请稍后...':'跨链兑换'}}</p>
+    <p @click="convertHandle">{{isOperatoring?'兑换中，请稍候...':'跨链兑换'}}</p>
   </div>
 </template>
 
@@ -114,7 +115,7 @@ export default {
       });
       this.$chain33Sdk.getTokenBalance;
 
-      let paraName = "game";
+      let paraName = "gameTest";
       this.getAddrBalance(
         addr,
         "user.p." + paraName + ".paracross",

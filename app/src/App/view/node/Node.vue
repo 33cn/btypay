@@ -91,7 +91,7 @@
       class="paraNode"
     >
       <el-form :model="form" :rules="rules" ref="ruleForm">
-        <el-form-item label="平行链名称" prop="name">
+        <el-form-item label="平行链名称(无需输入user.p.前缀)" prop="name">
           <el-input v-model="form.name" ref="paraName" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
         </el-form-item>
         <el-form-item label="代币名称" prop="coin">
@@ -558,6 +558,17 @@ export default {
           margin-top: 4px;
           color: #f56c6c;
           position: absolute;
+        }
+      }
+    }
+    &.paraNode{
+      .el-dialog{
+        padding: 35px 40px 32px 40px!important;
+        div.el-dialog__body{
+          label{
+            text-align: left;
+            padding: 0px!important;
+          }
         }
       }
     }
