@@ -92,7 +92,9 @@ export default {
         // console.log('newAccount')
         // console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
-        this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+        if(wallet&&wallet.accountMap){
+          this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+        }
         // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
         setChromeStorage('accountIndexList', wallet.accountIndexList)
@@ -112,16 +114,21 @@ export default {
             }
             // console.log('wallet.accountMap')
             // console.log(wallet.accountMap)
-            this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+            if(wallet&&wallet.accountMap){
+              this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+            }
             getChromeStorage(['currentAccountIndex']).then(result => {
-              let currentAccount = wallet.accountMap[result['currentAccountIndex']]
-              if (!currentAccount) {
+              let currentAccount = null;
+              if(wallet&&wallet.accountMap){
+                currentAccount = wallet.accountMap[result['currentAccountIndex']]
+              }
+              if (!currentAccount&&wallet&&wallet.firstAccount) {
                 currentAccount = wallet.firstAccount
               }
               this.setCurrentAccount(currentAccount)
             })
           } else {
-            this.newAccount('Account 1')
+            // this.newAccount('Account 1')
           }
         })
       })
@@ -179,7 +186,8 @@ export default {
 
     /* 资产相关 -- start */
     refreshMainAsset() {
-      // console.log(this.currentAccount)
+      console.log('refreshMainAsset')
+      console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.currentMain.url
       return new Promise((resolve, reject) => {
@@ -331,7 +339,7 @@ export default {
         if (errors) {
           for (let err of errors) {
             if (err.ty === 1) {
-              strError = err.log;
+              strError = err.log;[]
               break;
             }
           }

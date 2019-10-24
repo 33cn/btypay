@@ -91,7 +91,7 @@
       class="paraNode"
     >
       <el-form :model="form" :rules="rules" ref="ruleForm">
-        <el-form-item label="平行链名称" prop="name">
+        <el-form-item label="平行链名称(无需输入user.p.前缀)" prop="name">
           <el-input v-model="form.name" ref="paraName" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
         </el-form-item>
         <el-form-item label="代币名称" prop="coin">
@@ -141,6 +141,8 @@ export default {
       paraDialog: false,
       mainData: "",
       mainIsInput: false,
+      paraAdding:false,
+      mainAdding:false,
       mainNodeList: [],
       paraNodeList: [],
       currentMainNode: "",
@@ -176,12 +178,16 @@ export default {
       this.getAndSet('mainDialog',true)
     },
     paraSubmit(formName) {
+      if(this.paraAdding){
+        return
+      }
       for (let i = 0; i < this.paraNodeList.length; i++) {
         if (this.paraNodeList[i].url == this.form.url) {
           this.$message.error("该节点地址已存在");
           return;
         }
       }
+      this.paraAdding = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log("submit!");
@@ -223,22 +229,30 @@ export default {
                     this.$message.success("平行链节点添加成功");
                     this.getParaNode(); //更新视图
                   }
+                  this.paraAdding = false;
                 })
                 .catch(err => {
                   console.log(err);
+                  this.paraAdding = false;
                 });
               this.paraDialog = false;
+              this.paraAdding = false;
             })
             .catch(err => {
+              this.paraAdding = false;
               this.$message.error("添加失败");
             });
         } else {
+          this.paraAdding = false;
           console.log("error submit!!");
           return false;
         }
       });
     },
     mainSubmit() {
+      if(this.mainAdding){
+        return
+      }
       if (this.mainData == "" && this.mainDialog) {
         this.mainIsInput = true;
         return;
@@ -249,6 +263,7 @@ export default {
           return;
         }
       }
+      this.mainAdding = true
       let length = this.mainNodeList.length
       let index = this.mainNodeList[length-1].index+1;
       let obj = {
@@ -271,8 +286,10 @@ export default {
             this.$message.success("主链节点添加成功");
             this.getMainNode(); //更新视图
           }
+          this.mainAdding = false
         })
         .catch(err => {
+          this.mainAdding = false
           console.log(err);
         });
       this.mainDialog = false;
@@ -541,6 +558,17 @@ export default {
           margin-top: 4px;
           color: #f56c6c;
           position: absolute;
+        }
+      }
+    }
+    &.paraNode{
+      .el-dialog{
+        padding: 35px 40px 32px 40px!important;
+        div.el-dialog__body{
+          label{
+            text-align: left;
+            padding: 0px!important;
+          }
         }
       }
     }

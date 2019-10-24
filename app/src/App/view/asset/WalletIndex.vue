@@ -107,7 +107,7 @@ export default {
     },
     init() {
       this.getWallet().then(wallet => {
-        if (wallet) {
+        if (wallet&&wallet.accountMap) {
           // console.log("walletInd////
           this.$store.commit("Account/UPDATE_ACCOUNTS", wallet.accountMap);
         }

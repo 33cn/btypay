@@ -31,10 +31,6 @@ export default{
     },
     beforeRouteEnter(to, from, next){
         next(vm=>{
-            console.log(from)
-            console.log(to)
-            // console.log({...to})
-            // console.log(to.path)
             vm.fromPath = from.path
             if(to.path=='/WordsShow' || to.path=='/WordsConfirm'){
                 vm.beforePath.path = '/CreateWallet'

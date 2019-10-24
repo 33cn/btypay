@@ -10,33 +10,40 @@
   */
   function onMessage (messageType, handler, remove) {
     window.addEventListener('message', function ({ data }) {
+      // console.log('99999')
+      // console.log(data)
+      // console.log(messageType)
+      // console.log(!data || data.type !== messageType)
       if (!data || data.type !== messageType) { return }
-      remove && window.removeEventListener('message', handler)
       handler.apply(window, arguments)
+      remove && window.removeEventListener('message', handler)
+    })
+  }
+  function interfaceDefine(onMsg,postMessage,payload={}){
+    return new Promise((resolve, reject) => {
+      const timeTicket = setTimeout(() => {
+        reject(new Error('Request Timeout'))
+      }, 1 * 60 * 1000)
+      const sendAnswerHandle = ({data: {payload}}) => {
+        clearTimeout(timeTicket)
+        resolve(payload)
+      }
+      onMessage(onMsg, sendAnswerHandle, true)
+      window.postMessage({ type: postMessage, payload }, '*')
     })
   }
 
   class Provider {
 
     constructor() {}
-
+    
     /**
      * @description 比特元转账
      * @param {*} payload {to: 接收地址, amount: 金额, note: 备注}
      * @returns {Promise<any>}
      */
     sendToAddr(payload) {
-      return new Promise((resolve, reject) => {
-        const timeTicket = setTimeout(() => {
-          reject(new Error('Request Timeout'))
-        }, 1 * 60 * 1000)
-        const sendAnswerHandle = ({data: {payload}}) => {
-          clearTimeout(timeTicket)
-          resolve(payload)
-        }
-        onMessage('ANSWER_SEND_TO_ADDRESS', sendAnswerHandle, true)
-        window.postMessage({ type: 'SEND_TO_ADDRESS', payload }, '*')
-      })
+      interfaceDefine('ANSWER_SEND_TO_ADDRESS','SEND_TO_ADDRESS',payload)
     }
     
     /**
@@ -45,15 +52,17 @@
      * @returns {Promise<any>}
      */
     signTx(payload) {
+      // interfaceDefine('ANSWER_SIGN_TX','SIGN_TX',payload)
       return new Promise((resolve, reject) => {
         const timeTicket = setTimeout(() => {
           reject(new Error('Request Timeout'))
         }, 1 * 60 * 1000)
-        const signAnswerHandle = ({data: {payload}}) => {
+        const sendAnswerHandle = ({data: {payload}}) => {
+          // alert('完成了')
           clearTimeout(timeTicket)
           resolve(payload)
         }
-        onMessage('ANSWER_SIGN_TX', signAnswerHandle, true)
+        onMessage('ANSWER_SIGN_TX', sendAnswerHandle, true)
         window.postMessage({ type: 'SIGN_TX', payload }, '*')
       })
     }
@@ -63,29 +72,24 @@
      * @returns {Promise<any>}
      */
     parallelCoins2Dice(payload) {
+      // interfaceDefine('ANSWER_PARA_COINS_DICE','PARA_COINS_DICE',payload)
       return new Promise((resolve, reject) => {
+        let hash = {}
         const timeTicket = setTimeout(() => {
           reject(new Error('Request Timeout'))
         }, 1 * 60 * 1000)
-        const signAnswerHandle = ({data: {payload}}) => {
+        const sendAnswerHandle = ({data: {payload}}) => {
+          // console.log('完成了')
           clearTimeout(timeTicket)
-          resolve(payload)
+          resolve(hash)
         }
-        onMessage('ANSWER_PARA_COINS_DICE', signAnswerHandle, true)
-        window.postMessage({ type: 'PARA_COINS_DICE', payload }, '*')
-      })
-    }
-    parallelCoins2Dic(payload){
-      console.log('++++++'+payload)
-      return new Promise((resolve,reject)=>{
-        const timeTicket = setTimeout(() => {
-          reject(new Error('Request Timeout'))
-        }, 1 * 60 * 1000)
-        const signAnswerHandle = ({data: {payload}}) => {
-          clearTimeout(timeTicket)
-          resolve(payload)
-        }
-        onMessage('ANSWER_PARA_COINS_DICE', signAnswerHandle, true)
+          window.addEventListener('message', function ({ data }) {
+            hash = data
+            if (!data || data.type !== 'ANSWER_PARA_COINS_DICE') { return }
+            sendAnswerHandle.apply(window, arguments)
+            window.removeEventListener('message', sendAnswerHandle)
+          })
+        // onMessage('ANSWER_PARA_COINS_DICE', sendAnswerHandle, true)
         window.postMessage({ type: 'PARA_COINS_DICE', payload }, '*')
       })
     }
@@ -95,6 +99,7 @@
      * @returns {Promise<any>}
      */
     getCurrentAccount() {
+      // interfaceDefine('ANSWER_GET_CURRENT_ACCOUNT','GET_CURRENT_ACCOUNT',payload)
       return new Promise((resolve, reject) => {
         const timeTicket = setTimeout(() => {
           reject(new Error('Request Timeout'))
@@ -162,17 +167,17 @@
       })
     }
     // 测试
-    createNewWindow(){
+    unlockWallet(){
       return new Promise((resolve,reject)=>{
-        const timeTicket = setTimeout(() => {
-          reject(new Error('Request Timeout'))
-        }, 1 * 60 * 1000)
-        const signAnswerHandle = ({data: {payload}}) => {
-          clearTimeout(timeTicket)
-          resolve(payload)
-        }
-        onMessage('ANSWER_CREATE_NEW_WINDOW', signAnswerHandle, true)
-        window.postMessage({ type: 'CREATE_NEW_WINDOW', payload: {} }, '*')
+        // const timeTicket = setTimeout(() => {
+        //   reject(new Error('Request Timeout'))
+        // }, 1 * 60 * 1000)
+        // const signAnswerHandle = ({data: {payload}}) => {
+        //   clearTimeout(timeTicket)
+        //   resolve(payload)
+        // }
+        // onMessage('ANSWER_CREATE_NEW_WINDOW', signAnswerHandle, true)
+        window.postMessage({ type: 'UNLOCK_WALLET', payload: {} }, '*')
       })
     }
   }

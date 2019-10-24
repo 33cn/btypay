@@ -228,6 +228,7 @@ export default {
             }
             // 跨链兑换
             this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
+                // console.log(hash1)
                 this.txStateCheckTask(hash1, mainUrl, err1 => {
 
                     if (err1) {
