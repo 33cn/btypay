@@ -116,6 +116,7 @@ export default {
             // console.log(wallet.accountMap)
             if(wallet&&wallet.accountMap){
               this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+              // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', wallet.accountMap['0'])//待删
             }
             getChromeStorage(['currentAccountIndex']).then(result => {
               let currentAccount = null;

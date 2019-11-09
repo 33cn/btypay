@@ -54,6 +54,12 @@
       <p>温馨提示：跨链兑换支持使用BTY兑换{{currentParallel.coin}}，也可将{{currentParallel.coin}}兑换成BTY。</p>
     </section>
     <p @click="convertHandle">{{isOperatoring?'兑换中，请稍候...':'跨链兑换'}}</p>
+    <p @click="test('btymain')">bty正向跨链</p>
+    <p @click="test('btypara')">bty反向跨链</p>
+    <p @click="test('ccnymain')">ccny正向跨链</p>
+    <p @click="test('ccnypara')">ccny反向跨链</p>
+    <p @click="showBalance">查余额</p>
+    <p @click="testt">测试</p>
   </div>
 </template>
 
@@ -103,6 +109,26 @@ export default {
     };
   },
   methods: {
+    test(val){
+      console.log('===============')
+      console.log(this.currentMain.url)
+      console.log(val)
+      if(val == 'btymain'){
+        this.btyMain2parallel(this.currentAccount.hexPrivateKey,this.exportVal*1e8,this.tipHandle)
+      }else if(val == 'btypara'){
+        this.btyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+      }else if(val == 'ccnymain'){
+        this.ccnyMain2parallel(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+      }else if(val == 'ccnypara'){
+        this.ccnyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+      }
+    },
+    testt(){
+      this.testCurrentMain()
+    },
+    tipHandle(res){
+      console.log('res='+res)
+    },
     showBalance() {
       let addr = this.currentAccount.address;
       let mainUrl = this.currentMain.url;
@@ -115,7 +141,7 @@ export default {
       });
       this.$chain33Sdk.getTokenBalance;
 
-      let paraName = "gameTest";
+      let paraName = "issuance";
       this.getAddrBalance(
         addr,
         "user.p." + paraName + ".paracross",
@@ -141,6 +167,18 @@ export default {
       );
       this.getAddrBalance(addr, "coins", paraUrl).then(res => {
         console.log("5.gbt", res[0].balance);
+      });
+      this.getAddrBalance(addr, "token", mainUrl).then(res => {
+        console.log("6.token", res[0].balance);
+      });
+      this.getAddrBalance(addr, "token", mainUrl).then(res => {
+        console.log("7.token", res[0].balance);
+      });
+      this.getAllExecBalance(addr,  mainUrl).then(res => {
+        console.log("all", res);
+      });
+      this.getAddrBalance(addr, "coins", paraUrl).then(res => {
+        console.log("8.gbt", res[0].balance);
       });
     },
     inputHandle(e, v) {
@@ -220,6 +258,7 @@ export default {
       this.exportVal = "";
       this.receiptVal = "";
     },
+
     convertHandle() {
       if (this.isOperatoring) {
         return;

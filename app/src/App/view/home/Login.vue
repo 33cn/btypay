@@ -20,6 +20,7 @@
       <p>
         <router-link :to="{ name: 'ImportWallet'}">导入</router-link>
       </p>
+      <!-- <p @click="test" style="margin-left:50px">测试</p> -->
     </footer>
   </div>
 </template>
@@ -28,6 +29,10 @@
 import walletAPI from "@/mixins/walletAPI.js";
 import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
 import { decrypt } from "@/libs/crypto.js";
+// import {createNoneTx} from '@/libs/sign.js'
+// import parallelAPI from "@/mixins/parallelAPI.js";
+// import { createNamespacedHelpers } from "vuex";
+// const { mapState } = createNamespacedHelpers("Account");
 export default {
   //   components: { HomeHeader },
   mixins: [walletAPI],
@@ -49,7 +54,17 @@ export default {
   computed:{
     pageIsClose(){
       return this.$store.state.Records.pageIsClose
-    }
+    },
+    // ...mapState([
+    //   //   "accountMap",
+    //   "currentAccount",
+    //   "currentMain",
+    //   "currentParallel",
+    //   "mainAsset",
+    //   "parallelAsset"
+    //   //   "mainNode",
+    //   //   "parallelNode"
+    // ]),
   },
   methods: {
     loginHandle() {

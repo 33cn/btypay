@@ -15,15 +15,6 @@ export default {
         tradeAddr() {
             return this.currentParallel.tradeAddr
         },
-        // paraExecer() {
-        //     return "user.p." + "issuance" + ".paracross"
-        // },
-        // tradeExecer() {
-        //     return "user.p." + "issuance" + ".trade"
-        // },
-        // diceExecer() {
-        //     return "user.p." + "issuance" + ".wasm.dice"
-        // },
         paraExecer() {
             return "user.p." + this.currentParallel.name + ".paracross"
         },
@@ -62,25 +53,17 @@ export default {
                 minAmt: 0,
                 maxAmt: 0,
                 pricePerBoardlot: 1
-            },
-            tokenSymbol:'coins.bty'
+            }
         }
     },
     methods: {
         // 主链bty从coins执行器转移到paracross执行器
-        mainCoins2Paracross(privateKey, amount, url,type='') {
+        mainCoins2Paracross(privateKey, amount, url) {
             let params = {
                 to: this.paraAddr,
                 execName: "paracross",
                 amount: amount
             }
-            if(type == 'token'){
-                params.isToken = true
-                params.isWithdraw = false
-                params.tokenSymbol = 'CCNY'
-                params.fee = 1*1e5
-            }
-            console.log(params)
             return this.createRawTransaction(params, url)
                 .then(tx => {
                     return signRawTx(tx, privateKey)
@@ -90,21 +73,15 @@ export default {
                 })
         },
         // 资产从主链转移到平行链（默认位于平行链的paracross执行器下）
-        main2Parallel(privateKey, to, amount, url,type='') {
+        main2Parallel(privateKey, to, amount, url) {
             let params = {
-                execer: this.paraExecer,//'user.p.issuance.paracross',//this.paraExecer,
+                execer: this.paraExecer,
                 actionName: "ParacrossAssetTransfer",
                 payload: {
-                    execName: this.paraExecer,//'user.p.issuance.paracross',//this.paraExecer,
+                    execName: this.paraExecer,
                     to: to,
                     amount: amount
                 }
-            }
-            console.log('=========================')
-            console.log(params)
-            if(type == 'token'){
-                // params.payload.cointoken = 'token.ccny'
-                params.payload.tokenSymbol = 'CCNY'
             }
             return this.createTransaction(params, url)
                 .then(tx => {
@@ -115,7 +92,7 @@ export default {
                 })
         },
         // 平行链资产从paracross执行器转移到trade执行器
-        parallelParacross2Trade(amount, url,type='') {
+        parallelParacross2Trade(amount, url) {
             let params = {
                 execer: this.paraExecer,
                 actionName: "TransferToExec",
@@ -123,39 +100,25 @@ export default {
                     execName: this.tradeExecer,
                     to: this.tradeAddr,
                     amount: amount,
-                    cointoken: "coins.bty",
-                    note:''
+                    cointoken: "coins.bty"
                 }
-            }
-            if(type == 'token'){
-                params.payload.cointoken = 'token.CCNY'
             }
             return this.createTransaction(params, url)
         },
         // 生成卖出指定买单的token的交易（未签名）
-        parallelMarketSell(amt, url,type='') {
-            // let boardlotCnt = Long.fromValue(amt).divide(this.BUY_LIMIT.amtPerBoardlot).toInt()
-            let boardlotCnt= amt
+        parallelMarketSell(amt, url) {
+            let boardlotCnt = Long.fromValue(amt).divide(this.BUY_LIMIT.amtPerBoardlot).toInt()
             let buyID = this.BUY_ID
-            if(type == 'token'){
-                buyID = 'f814a361bd80d16e809e6c56a87d3e3b567f492f2f2e92482e3a6ec892455f44'
-            }else{
-                buyID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
-            }
-            // let buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
             return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url)
         },
         getTradeBuyOrder(url) {
             let params = {
-                tokenSymbol: this.tokenSymbol,//"coins.bty",//'token.CCNY'
-                status: 5,//this.TRADE_ORDER_STATUS.ON_BUY,
-                count: 10
+                tokenSymbol: "coins.bty",
+                status: this.TRADE_ORDER_STATUS.ON_BUY,
+                count: "10000000"
             }
             return this.getTokenBuyOrderByStatus(params, url).then(res => {
-                // console.log('=================================')
-                // console.log(res)
                 let maxAmt = Long.ZERO
-                // console.log(maxAmt)
                 if (res && res.orders.length !== 0) {
                     for (let order of res.orders) {
                         let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
@@ -170,12 +133,12 @@ export default {
                         if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
                             continue
                         }
-                        // if (minAmt.greaterThan("300000000")) {
-                        //     continue
-                        // }
-                        // if (amountPerBoardlot.lessThan("100000") || amountPerBoardlot.greaterThan("300000000")) {
-                        //     continue
-                        // }
+                        if (minAmt.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (amountPerBoardlot.lessThan("100000") || amountPerBoardlot.greaterThan("300000000")) {
+                            continue
+                        }
                         if (leftAmt.greaterThan(maxAmt)) {
                             maxAmt = leftAmt
                             this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
@@ -200,7 +163,7 @@ export default {
         },
 
         // 玩家获得的平行链主代币位于trade合约下，提币到coins合约
-        parallelTrade2Coins(amount, url,type='') {
+        parallelTrade2Coins(amount, url) {
             const execName = this.tradeExecer
             const isWithdraw = true
             let params = {
@@ -209,39 +172,23 @@ export default {
                 execName: execName,
                 isWithdraw: isWithdraw
             }
-            if(type == 'token'){
-                params.tokenSymbol = 'CCNY'
-                params.isToken = true
-            }
             return this.createRawTransaction(params, url)
         },
         // 打包三笔交易
-        parallelPara2Coins(privateKey, amount, url,type='') {
+        parallelPara2Coins(privateKey, amount, url) {
             let txs = []
-            return this.parallelParacross2Trade(amount, url,type).then(tx => {
-                console.log('tx0')
-                console.log(tx)
+            return this.parallelParacross2Trade(amount, url).then(tx => {
                 txs.push(tx)
-                console.log(url)
-                return this.parallelMarketSell(amount, url,type)
+                return this.parallelMarketSell(amount, url)
             }).then(tx => {
-                console.log('tx1')
-                console.log(tx)
                 txs.push(tx)
-                return this.parallelTrade2Coins(amount, url,type)
+                return this.parallelTrade2Coins(amount, url)
             }).then(tx => {
-                console.log('tx2')
-                console.log(tx)
-                console.log(txs)
                 txs.push(tx)
-                return this.createRawTxGroup(txs,url)
+                return this.createRawTxGroup(txs)
             }).then(tx => {
-                console.log('createRawTxGroup')
-                console.log(tx)
                 return signGroupTx(tx, privateKey)
             }).then(signedTx => {
-                console.log('signGroupTx')
-                console.log(signedTx)
                 return this.sendTransaction(signedTx, url)
             })
         },
@@ -268,9 +215,7 @@ export default {
 
         transferBTY2GameCoin(privateKey, amt, callback) {
             let to = this.currentAccount.address
-            console.log('to=='+to)
             let mainUrl = this.currentMain.url
-            // let paraUrl = 'http://114.55.11.139:1217'
             let paraUrl = this.currentParallel.url
 
             if (privateKey === void 0) {
@@ -283,8 +228,7 @@ export default {
             }
             // 跨链兑换
             this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
+                // console.log(hash1)
                 this.txStateCheckTask(hash1, mainUrl, err1 => {
 
                     if (err1) {
@@ -294,8 +238,6 @@ export default {
                     }
 
                     this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
                         this.txStateCheckTask(hash2, mainUrl, err2 => {
 
                             if (err2) {
@@ -305,8 +247,6 @@ export default {
                             }
 
                             this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
                                 this.txStateCheckTask(hash3, paraUrl, err3 => {
 
                                     if (err3) {
@@ -315,7 +255,7 @@ export default {
                                         return
                                     }
 
-                                    callback(hash3)
+                                    callback("success")
                                 })
 
                             })
@@ -332,17 +272,13 @@ export default {
             // })
         },
 
-        mainParacross2Coins(privateKey, amount, url,type='') {
+
+        mainParacross2Coins(privateKey, amount, url) {
             let params = {
                 to: this.paraAddr,
                 amount: amount,
                 execName: "paracross",
                 isWithdraw: true
-            }
-            if(type == 'token'){
-                params.isToken = true
-                params.tokenSymbol = 'CCNY'
-                params.fee = 1*1e5
             }
             return this.createRawTransaction(params, url).then(tx => {
                 return signRawTx(tx, privateKey)
@@ -350,7 +286,7 @@ export default {
                 return this.sendTransaction(signedTx, url)
             })
         },
-        parallel2Main(privateKey, to, amount, url,type='') {
+        parallel2Main(privateKey, to, amount, url) {
             let params = {
                 execer: this.paraExecer,
                 actionName: "ParacrossAssetTransfer",
@@ -361,18 +297,13 @@ export default {
                     isWithdraw: true
                 }
             }
-            if(type == 'token'){
-                params.payload.tokenSymbol = 'CCNY'
-            }
-            console.log(params)
             return this.createTransaction(params, url).then(tx => {
-                console.log(tx)
                 return signRawTx(tx, privateKey)
             }).then(signedTx => {
                 return this.sendTransaction(signedTx, url)
             })
         },
-        parallelTrade2Paracross(amount, url,type) {
+        parallelTrade2Paracross(amount, url) {
             let params = {
                 execer: this.paraExecer,
                 actionName: "Withdraw",
@@ -380,82 +311,23 @@ export default {
                     to: this.tradeAddr,
                     execName: this.tradeExecer,
                     amount: amount,
-                    cointoken: "coins.bty",
-                    note:''
+                    cointoken: "coins.bty"
                 }
-            }
-            if(type == 'token'){
-                params.payload.cointoken = 'token.CCNY'
             }
             return this.createTransaction(params, url)
         },
-        parallelMarketBuy(amt, url,type='') {
+        parallelMarketBuy(amt, url) {
             let boardlotCnt = Long.fromValue(amt).divide(this.SELL_LIMIT.pricePerBoardlot).toInt()
-            // let buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'//this.BUY_ID;//ccny反向
-            let buyID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'//bty反向
-            if(type == 'token'){
-                buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'//this.BUY_ID;//ccny反向
-            }else{
-                buyID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'//bty反向
-            }
-            // return this.createRawTradeBuyMarketTx([{ sellID, boardlotCnt }], url);
-            return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url) 
+            let sellID = this.SELL_ID;
+            return this.createRawTradeBuyMarketTx([{ sellID, boardlotCnt }], url);
         },
         getTradeSellOrder(url) {
             let params = {
-                tokenSymbol: this.tokenSymbol,//"coins.bty",//'token.CCNY'
-                status: 5,//this.TRADE_ORDER_STATUS.ON_SALE,
-                count: 10,//"10000000"
+                tokenSymbol: "coins.bty",
+                status: this.TRADE_ORDER_STATUS.ON_SALE,
+                count: "10000000"
             }
-            // return this.getTokenBuyOrderByStatus(params, url).then(res => {
-            //     // console.log('=================================')
-            //     // console.log(res)
-            //     let maxAmt = Long.ZERO
-            //     // console.log(maxAmt)
-            //     if (res && res.orders.length !== 0) {
-            //         for (let order of res.orders) {
-            //             let amountPerBoardlot = Long.fromString(order.amountPerBoardlot)
-            //             let pricePerBoardlot = Long.fromString(order.pricePerBoardlot)
-            //             let minBoardlot = Long.fromString(order.minBoardlot)
-            //             let totalBoardlot = Long.fromString(order.totalBoardlot)
-            //             let tradedBoardlot = Long.fromString(order.tradedBoardlot)
-
-            //             let minAmt = minBoardlot.multiply(amountPerBoardlot)
-            //             let leftAmt = totalBoardlot.subtract(tradedBoardlot).multiply(amountPerBoardlot)
-
-            //             if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
-            //                 continue
-            //             }
-            //             // if (minAmt.greaterThan("300000000")) {
-            //             //     continue
-            //             // }
-            //             // if (amountPerBoardlot.lessThan("100000") || amountPerBoardlot.greaterThan("300000000")) {
-            //             //     continue
-            //             // }
-            //             if (leftAmt.greaterThan(maxAmt)) {
-            //                 maxAmt = leftAmt
-            //                 this.BUY_ID = order.txHash.replace(/^(0x|0X)/, '')
-            //                 this.BUY_LIMIT.minAmt = minAmt.toString()
-            //                 this.BUY_LIMIT.maxAmt = leftAmt.toString()
-            //                 this.BUY_LIMIT.amtPerBoardlot = amountPerBoardlot.toString()
-            //             }
-            //         }
-            //     }
-            //     if (maxAmt.notEquals(Long.ZERO)) {
-            //         return "success"
-            //     } else {
-            //         return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
-            //     }
-            // }).catch(err => {
-            //     if (err.message == "ErrNotFound") {
-            //         return JSON.stringify(this.PARA_ERROR.TRADE_BUY_NO_ORDER)
-            //     } else if (err.message === "ErrNotSupport") {
-            //         return JSON.stringify(this.PARA_ERROR.TRADE_CONTRACT_NOT_SUPPORT)
-            //     }
-            // })
             return this.getTokenSellOrderByStatus(params, url).then(res => {
-                console.log("======================")
-                console.log(res)
                 let maxAmt = Long.ZERO
                 if (res && res.orders.length !== 0) {
                     for (let order of res.orders) {
@@ -471,12 +343,12 @@ export default {
                         if (pricePerBoardlot.notEquals(amountPerBoardlot)) {
                             continue
                         }
-                        // if (minAmt.greaterThan("300000000")) {
-                        //     continue
-                        // }
-                        // if (pricePerBoardlot.lessThan("100000") || pricePerBoardlot.greaterThan("300000000")) {
-                        //     continue
-                        // }
+                        if (minAmt.greaterThan("300000000")) {
+                            continue
+                        }
+                        if (pricePerBoardlot.lessThan("100000") || pricePerBoardlot.greaterThan("300000000")) {
+                            continue
+                        }
                         if (leftAmt.greaterThan(maxAmt)) {
                             maxAmt = leftAmt
                             this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')
@@ -492,8 +364,6 @@ export default {
                     return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
                 }
             }).catch(err => {
-                console.log('=====')
-                console.log(err)
                 if (err.message === "ErrNotFound") {
                     return JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER)
                 } else if (err.message === "ErrNotSupport") {
@@ -502,46 +372,29 @@ export default {
             })
 
         },
-        parallelCoins2Trade(amount, url,type) {
+        parallelCoins2Trade(amount, url) {
             let params = {
                 execName: this.tradeExecer,
                 to: this.tradeAddr,
                 amount: amount
             }
-            if(type == 'token'){
-                params.isToken = true
-                params.isWithdraw = false
-                params.tokenSymbol = 'CCNY'
-                params.fee = 1*1e5
-            }
             return this.createRawTransaction(params, url)
         },
         // 打包交易组
-        parallelCoins2Para(privateKey, amount, url,type='') {
+        parallelCoins2Para(privateKey, amount, url) {
             let txs = []
-            return this.parallelCoins2Trade(amount, url,type).then(tx => {
-                console.log('parallelCoins2Trade')
-                console.log(tx)
+            return this.parallelCoins2Trade(amount, url).then(tx => {
                 txs.push(tx)
-                return this.parallelMarketBuy(amount, url,type)
+                return this.parallelMarketBuy(amount, url)
             }).then(tx => {
-                console.log('parallelMarketBuy')
-                console.log(tx)
                 txs.push(tx)
-                return this.parallelTrade2Paracross(amount, url,type)
+                return this.parallelTrade2Paracross(amount, url)
             }).then(tx => {
-                console.log('parallelTrade2Paracross')
-                console.log(tx)
                 txs.push(tx)
-                console.log(txs)
-                return this.createRawTxGroup(txs,url)
+                return this.createRawTxGroup(txs)
             }).then(tx => {
-                console.log('createRawTxGroup')
-                console.log(tx)
                 return signGroupTx(tx, privateKey)
             }).then(signedTx => {
-                console.log('signGroupTx')
-                console.log(signedTx)
                 return this.sendTransaction(signedTx, url)
             })
         },
@@ -569,19 +422,15 @@ export default {
             }
             // 跨链兑换
             this.parallelCoins2Para(privateKey, amt, paraUrl).then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                // this.txStateCheckTask(hash1, paraUrl, err1 => {
+                this.txStateCheckTask(hash1, paraUrl, err1 => {
 
-                //     if (err1) {
-                //         this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                //         callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                //         return
-                //     }
+                    if (err1) {
+                        this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
+                        callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
+                        return
+                    }
 
                     this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
                         this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
 
                             if (err2) {
@@ -591,8 +440,6 @@ export default {
                             }
 
                             this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
                                 this.txStateCheckTask(hash3, mainUrl, err3 => {
 
                                     if (err3) {
@@ -600,16 +447,17 @@ export default {
                                         callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
                                         return
                                     }
-                                    callback(hash3)
+                                    callback("success")
 
                                 })
 
                             })
                         })
                     })
-                // })
+                })
             })
         },
+
 
 
         txStateCheckTask(hash, url, callback, times) {
@@ -637,20 +485,12 @@ export default {
         },
 
         mainParaBalanceCheckTask(addr, callback, times) {
-            console.log('进来了')
             if (times === void 0) times = 0
-            let inter = setTimeout(() => {
-                this.getAddrBalance(addr, "paracross", this.currentParallel.url,'token','CCNY').then(res => {
-                    console.log('getAddrBalance')
-                    console.log(res)
+            setTimeout(() => {
+                this.getAddrBalance(addr, "paracross", this.currentMain.url).then(res => {
                     if (res[0].balance) {
-                        clearTimeout(inter)
                         callback(res[0].balance)
-                    }
-                    // else if(res[0].balance == 0){
-                    //     callback(res[0].balance)
-                    // } 
-                    else if (times < 12) {
+                    } else if (times < 12) {
                         this.mainParaBalanceCheckTask(addr, callback, ++times)
                     }
                 }).catch(err => {
@@ -658,133 +498,7 @@ export default {
                 })
             }, 5000);
         },
-        // BTY主链向平行链
-        btyMain2parallel(privateKey, amt, callback){
-            this.BUY_ID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
-            this.transferBTY2GameCoin(privateKey, amt, callback)
-        },
-        // BTY平行链向主链
-        btyParallel2Main(privateKey, amt, callback){
-            this.BUY_ID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'
-            this.transferGameCoin2BTY(privateKey, amt, callback)
-        },
-        // CCNY主链向平行链
-        ccnyMain2parallel(privateKey, amt, callback){
-            this.BUY_ID = 'f814a361bd80d16e809e6c56a87d3e3b567f492f2f2e92482e3a6ec892455f44'
-            let to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
 
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            this.mainCoins2Paracross(privateKey, amt, mainUrl,'token').then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                this.txStateCheckTask(hash1, mainUrl, err1 => {
-
-                    if (err1) {
-                        this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
-                        callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
-                        return
-                    }
-
-                    this.main2Parallel(privateKey, to, amt, mainUrl,'token').then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
-                        this.txStateCheckTask(hash2, mainUrl, err2 => {
-
-                            if (err2) {
-                                this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
-                                return
-                            }
-
-                            this.parallelPara2Coins(privateKey, amt, paraUrl,'token').then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
-                                this.txStateCheckTask(hash3, paraUrl, err3 => {
-
-                                    if (err3) {
-                                        this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
-                                        return
-                                    }
-
-                                    callback(hash3)
-                                })
-
-                            })
-                        })
-                    })
-                })
-            })
-        },
-        // CCNY平行链向主链
-        ccnyParallel2Main(privateKey, amt, callback){
-            this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
-            let to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
-
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            // 跨链兑换
-            this.parallelCoins2Para(privateKey, amt, paraUrl,'token').then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                // this.txStateCheckTask(hash1, paraUrl, err1 => {
-                //     console.log(err1)
-                //     if (err1) {
-                //         this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                //         callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                //         return
-                //     }
-                    this.parallel2Main(privateKey, to, amt, paraUrl,'token').then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
-                        this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
-                            console.log(err2)
-                            if (err2) {
-                                this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
-                                return
-                            }
-
-                            this.mainParacross2Coins(privateKey, paraAmt, mainUrl,'token').then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
-                                this.txStateCheckTask(hash3, mainUrl, err3 => {
-                                    if (err3) {
-                                        this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
-                                        return
-                                    }
-                                    callback(hash3)
-
-                                })
-
-                            })
-                        })
-                    })
-                // })
-            })
-        },
-        testCurrentMain(){
-            console.log('---------this.currentAccount-----------')
-            console.log(this.currentAccount)
-        }
     },
     mounted() {
 

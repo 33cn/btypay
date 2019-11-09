@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function()
     installNode.id = 'bty-chrome-extension-installed';
     installNode.style.display = 'none';
     // installNode.setAttribute('version', chrome.extension.getManifest().version); // 把版本号放到属性里
-    installNode.innerText=JSON.stringify({'isINstalled': true}); // 把通信的data放到标签的html text里面
+    // installNode.innerText=JSON.stringify({'isINstalled': true}); // 把通信的data放到标签的html text里面
     // 创建一个事件，表示从Chrome发送消息给网页
     // var eventFromChrome = document.createEvent('Event');
     // eventFromChrome.initEvent('EventFromChrome', true, true);
@@ -53,9 +53,45 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
+      case 'SEND_TX':
+        chrome.runtime.sendMessage({
+          action: 'send-tx',
+          payload: data.payload,
+        })
+        break
+      case 'CREATE_TX':
+        chrome.runtime.sendMessage({
+          action: 'create-tx',
+          payload: data.payload,
+        })
+        break
       case 'PARA_COINS_DICE':
         chrome.runtime.sendMessage({
           action: 'para-coins-dice',
+          payload: data.payload,
+        })
+        break
+      case 'BTY_MAIN_PARALLEL':
+        chrome.runtime.sendMessage({
+          action: 'bty-main-parallel',
+          payload: data.payload,
+        })
+        break
+      case 'BTY_PARALLEL_MAIN':
+        chrome.runtime.sendMessage({
+          action: 'bty-parallel-main',
+          payload: data.payload,
+        })
+        break
+      case 'CCNY_MAIN_PARALLEL':
+        chrome.runtime.sendMessage({
+          action: 'ccny-main-parallel',
+          payload: data.payload,
+        })
+        break
+      case 'CCNY_PARALLEL_MAIN':
+        chrome.runtime.sendMessage({
+          action: 'ccny-parallel-main',
           payload: data.payload,
         })
         break
@@ -95,6 +131,12 @@ function listenForProviderRequest () {
       case 'answer-sign-tx':
         window.postMessage({ type: 'ANSWER_SIGN_TX', payload }, '*')
         break
+      case 'answer-send-tx':
+          window.postMessage({ type: 'ANSWER_SEND_TX', payload }, '*')
+          break
+      case 'answer-create-tx':
+        window.postMessage({ type: 'ANSWER_CREATE_TX', payload }, '*')
+        break
       case 'answer-get-current-account':
         window.postMessage({ type: 'ANSWER_GET_CURRENT_ACCOUNT', payload }, '*')
         break
@@ -106,6 +148,18 @@ function listenForProviderRequest () {
         break
       case 'answer-para-coins-dice':
         window.postMessage({ type: 'ANSWER_PARA_COINS_DICE', payload }, '*')
+        break
+      case 'answer-bty-main-parallel':
+        window.postMessage({ type: 'ANSWER_BTY_MAIN_PARALLEL', payload }, '*')
+        break
+      case 'answer-bty-parallel-main':
+        window.postMessage({ type: 'ANSWER_BTY_PARALLEL_MAIN', payload }, '*')
+        break
+      case 'answer-ccny-main-parallel':
+        window.postMessage({ type: 'ANSWER_CCNY_MAIN_PARALLEL', payload }, '*')
+        break
+      case 'answer-ccny-parallel-main':
+        window.postMessage({ type: 'ANSWER_CCNY_PARALLEL_MAIN', payload }, '*')
         break
     }
   })

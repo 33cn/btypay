@@ -61,6 +61,8 @@ export default {
     },
     // params: [ { buyID: string, boardlogCnt: int64, fee: int64 } ]
     createRawTradeSellMarketTx(params, url) {
+      console.log('++++++++++++')
+      console.log(params)
       let _this = this
       return this.$chain33Sdk.httpProvider.doFetch({
         url: url,
@@ -93,6 +95,21 @@ export default {
     // 发送交易
     sendTransaction(signedTx, url) {
       return this.$chain33Sdk.sendTransaction(signedTx, url)
+    },
+    // token转账
+    sendToAddress(params, url){
+      return this.$chain33Sdk.sendToAddress(params, url)
+    },
+    // 查询地址下的token/trace合约下的token资产
+    getAddrTokenAssets(address, execer, url){
+      return this.$chain33Sdk.getAddrTokenAssets(address, execer, url)
+    },
+    // 查询地址所有合约地址余额
+    getAllExecBalance(address, url){
+      return this.$chain33Sdk.getAllExecBalance(address, url)
+    },
+    getTokenBalance(address, url){
+      return this.$chain33Sdk.getTokenBalance(address, url)
     },
 
 

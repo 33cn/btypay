@@ -96,6 +96,46 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         })
       }
       break;
+    case 'send-tx':
+      if (isWalletUnlock()) {
+        txType = 'send-tx'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isSignTx()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-send-tx',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
+    case 'create-tx':
+      if (isWalletUnlock()) {
+        txType = 'create-tx'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isSignTx()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-create-tx',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
     case 'para-coins-dice':
       if (isWalletUnlock()) {
         txType = 'para-coins-dice'
@@ -116,6 +156,86 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         })
       }
       break;
+    case 'bty-main-parallel':
+      if (isWalletUnlock()) {
+        txType = 'bty-main-parallel'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isGetVoteHash()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-bty-main-parallel',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
+    case 'bty-parallel-main':
+      if (isWalletUnlock()) {
+        txType = 'bty-parallel-main'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isGetVoteHash()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-bty-parallel-main',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
+    case 'ccny-main-parallel':
+      if (isWalletUnlock()) {
+        txType = 'ccny-main-parallel'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isGetVoteHash()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-ccny-main-parallel',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
+    case 'ccny-parallel-main':
+      if (isWalletUnlock()) {
+        txType = 'ccny-parallel-main'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isGetVoteHash()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-ccny-parallel-main',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
     case 'reply-background-sign-tx':
       // console.log('reply-background-sign-tx')
       // console.log(payload)
@@ -124,6 +244,26 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         payload:{
           error:null,
           signedTx:signedTx || payload.signedTx
+        }
+      })
+      break;
+    case 'reply-background-send-tx':
+      sendMessage({
+        action: 'answer-send-tx',
+        payload:{
+          error:null,
+          result:payload.hash
+        }
+      })
+      break;
+    case 'reply-background-create-tx':
+      // console.log('reply-background-sign-tx')
+      // console.log(payload)
+      sendMessage({
+        action: 'answer-create-tx',
+        payload:{
+          error:null,
+          result:payload.hash
         }
       })
       break;
@@ -141,6 +281,44 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         // closeWindow(win.windowId)
       }, 300);
       break;
+    case 'reply-background-bty-main-parallel':
+      console.log('reply-background-bty-main-parallel')
+      console.log(payload)
+      sendMessage({
+        action: 'answer-bty-main-parallel',
+        payload:{
+          error:null,
+          result:payload.hash
+        }
+      })
+      break
+    case 'reply-background-bty-parallel-main':
+      sendMessage({
+        action: 'answer-bty-parallel-main',
+        payload:{
+          error:null,
+          result:payload.hash
+        }
+      })
+      break
+    case 'reply-background-ccny-main-parallel':
+      sendMessage({
+        action: 'answer-ccny-main-parallel',
+        payload:{
+          error:null,
+          result:payload.hash
+        }
+      })
+      break
+    case 'reply-background-ccny-parallel-main':
+      sendMessage({
+        action: 'answer-ccny-parallel-main',
+        payload:{
+          error:null,
+          result:payload.hash
+        }
+      })
+      break
     case 'unlock-wallet':
       if(isWalletUnlock()){
         createNewWindow('WalletIndex', payload)
