@@ -114,7 +114,7 @@ export default {
       console.log(this.currentMain.url)
       console.log(val)
       if(val == 'btymain'){
-        this.btyMain2parallel(this.currentAccount.hexPrivateKey,this.exportVal*1e8,this.tipHandle)
+        this.btyMain2parallel(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
       }else if(val == 'btypara'){
         this.btyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
       }else if(val == 'ccnymain'){

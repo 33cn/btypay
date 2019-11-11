@@ -118,7 +118,7 @@ export default {
             this.successed = "yes";
             this.msg = '签名完成。'
             setTimeout(() => {
-              win.closeWindow(win.windowId);
+              // win.closeWindow(win.windowId);
             }, 500);
           }, 100);
           // return Promise.resolve({signedTx})
@@ -175,7 +175,7 @@ export default {
             this.successed = "yes";
             this.msg = '签名完成。'
             setTimeout(() => {
-              win.closeWindow(win.windowId);
+              // win.closeWindow(win.windowId);
             }, 500);
           }, 100);
         })
@@ -215,7 +215,7 @@ export default {
             setTimeout(() => {
               // win.closeWindow(win.windowId);
             }, 500);
-          }, 100);
+          }, 0);
         }).catch(err=>{
           console.log(err)
           this.successed = "no";
@@ -275,7 +275,7 @@ export default {
 	                  // 	if(response) alert('收到来自content-script的回复：'+response);
 	                  // });
                     setTimeout(() => {
-                      win.closeWindow(win.windowId);
+                      // win.closeWindow(win.windowId);
                     }, 500);
                   }, 300);
                 }).catch(err=>{

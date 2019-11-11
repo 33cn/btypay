@@ -268,7 +268,14 @@ export default {
 
         transferBTY2GameCoin(privateKey, amt, callback) {
             let to = this.currentAccount.address
-            console.log('to=='+to)
+            // let to = '18gKTV6Gx2BCrq9GNXEt6Mqau2L5jvB3Tt'
+            console.log('地址to=='+to)
+            console.log(to)
+            if(to){
+            }else{
+                alert('钱包地址为空')
+                return
+            }
             let mainUrl = this.currentMain.url
             // let paraUrl = 'http://114.55.11.139:1217'
             let paraUrl = this.currentParallel.url
@@ -571,13 +578,13 @@ export default {
             this.parallelCoins2Para(privateKey, amt, paraUrl).then(hash1 => {
                 console.log('hash1')
                 console.log(hash1)
-                // this.txStateCheckTask(hash1, paraUrl, err1 => {
+                this.txStateCheckTask(hash1, paraUrl, err1 => {
 
-                //     if (err1) {
-                //         this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                //         callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                //         return
-                //     }
+                    if (err1) {
+                        this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
+                        callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
+                        return
+                    }
 
                     this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
                         console.log('hash2')
@@ -607,7 +614,7 @@ export default {
                             })
                         })
                     })
-                // })
+                })
             })
         },
 
@@ -616,19 +623,27 @@ export default {
             if (times === void 0) times = 0
             setTimeout(() => {
                 this.queryTx(hash, url).then(res => {
+                    console.log('===res===')
+                    console.log(res)
                     if (res && res.receipt.ty === 2) {
                         callback()
                     } else {
                         let errMsg = ""
                         let errs = res.receipt.logs
-                        for (let err of errs) {
-                            if (err.ty === 1) {
-                                errMsg = err.log
+                        if(errs){
+                            for (let err of errs) {
+                                if (err.ty === 1) {
+                                    errMsg = err.log
+                                }
                             }
+                        }else{
+                            errMsg='发生错误'
                         }
                         callback(errMsg)
                     }
                 }).catch(err => {
+                    console.log('===hash检测===')
+                    console.log(err)
                     if (err.message == "tx not exist" && times < 12) {
                         this.txStateCheckTask(hash, url, callback, ++times)
                     }
@@ -640,7 +655,7 @@ export default {
             console.log('进来了')
             if (times === void 0) times = 0
             let inter = setTimeout(() => {
-                this.getAddrBalance(addr, "paracross", this.currentParallel.url,'token','CCNY').then(res => {
+                this.getAddrBalance(addr, "paracross", this.currentMain.url,'token','CCNY').then(res => {
                     console.log('getAddrBalance')
                     console.log(res)
                     if (res[0].balance) {
@@ -744,13 +759,13 @@ export default {
             this.parallelCoins2Para(privateKey, amt, paraUrl,'token').then(hash1 => {
                 console.log('hash1')
                 console.log(hash1)
-                // this.txStateCheckTask(hash1, paraUrl, err1 => {
-                //     console.log(err1)
-                //     if (err1) {
-                //         this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                //         callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                //         return
-                //     }
+                this.txStateCheckTask(hash1, paraUrl, err1 => {
+                    console.log(err1)
+                    if (err1) {
+                        this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
+                        callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
+                        return
+                    }
                     this.parallel2Main(privateKey, to, amt, paraUrl,'token').then(hash2 => {
                         console.log('hash2')
                         console.log(hash2)
@@ -778,7 +793,7 @@ export default {
                             })
                         })
                     })
-                // })
+                })
             })
         },
         testCurrentMain(){
