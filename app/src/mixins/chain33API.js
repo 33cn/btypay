@@ -203,6 +203,15 @@ export default {
     },
     getOnesBuyOrder(addr, url) {
       return this.$chain33Sdk.getOnesBuyOrder(addr, ["coins.bty"], url)
-    }
+    },
+    /**
+     * @description 根据状态分页列出某地址的订单（包括买单卖单）
+     * @param {*} params 查询参数
+     * @param {string} [url=''] 接口地址
+     * @returns {Promise<any>}
+     */
+    GetOnesOrderWithStatus(params, url) {
+      return this.$chain33Sdk.GetOnesOrderWithStatus(params, url)
+    },
   }
 }

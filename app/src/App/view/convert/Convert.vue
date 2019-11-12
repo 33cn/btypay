@@ -326,6 +326,10 @@ export default {
     }
   },
   mounted() {
+    this.getOrder('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1').then(res=>{
+      console.log('==============order==================')
+      console.log(res)
+    })
     this.refreshMainAsset();
     this.refreshParallelAsset();
     setTimeout(() => {

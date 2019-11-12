@@ -137,13 +137,37 @@ export default {
             // let boardlotCnt = Long.fromValue(amt).divide(this.BUY_LIMIT.amtPerBoardlot).toInt()
             let boardlotCnt= amt
             let buyID = this.BUY_ID
-            if(type == 'token'){
-                buyID = 'f814a361bd80d16e809e6c56a87d3e3b567f492f2f2e92482e3a6ec892455f44'
-            }else{
-                buyID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
-            }
-            // let buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
+            // if(type == 'token'){
+            //     // buyID = 'f814a361bd80d16e809e6c56a87d3e3b567f492f2f2e92482e3a6ec892455f44'
+            //     this.getOrder('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv').then(res=>{
+            //         let order = res.orders
+            //         for(let i = 0;i < order.length;i++){
+            //             if(order[i].tokenSymbol=='token.CCNY'&&order[i].buyID&&parseInt(order[i].totalBoardlot)>1e8){
+            //                 buyID = order[i].buyID.split('mavl-trade-buy-')[1]
+            //                 break
+            //             }
+            //         }
+            //         return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url)
+            //     })
+            // }else{
+            //     console.log('hhhhhhhhhhhhh')
+            //     buyID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
+            //     this.getOrder('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1').then(res=>{
+            //         let order = res.orders
+            //         for(let i = 0;i < order.length;i++){
+            //             if(order[i].tokenSymbol=='coins.bty'&&order[i].buyID&&parseInt(order[i].totalBoardlot)>1e8){
+            //                 buyID = order[i].buyID.split('mavl-trade-buy-')[1]
+            //                 break
+            //             }
+            //         }
+            //         console.log('============')
+            //         console.log({ boardlotCnt, buyID })
+            //         console.log('===============')
+            //         return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url)
+            //     })
+            // }
             return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url)
+            // let buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
         },
         getTradeBuyOrder(url) {
             let params = {
@@ -398,13 +422,34 @@ export default {
         },
         parallelMarketBuy(amt, url,type='') {
             let boardlotCnt = Long.fromValue(amt).divide(this.SELL_LIMIT.pricePerBoardlot).toInt()
+            let buyID = this.BUY_ID
             // let buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'//this.BUY_ID;//ccny反向
-            let buyID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'//bty反向
-            if(type == 'token'){
-                buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'//this.BUY_ID;//ccny反向
-            }else{
-                buyID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'//bty反向
-            }
+            // let buyID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'//bty反向
+            // if(type == 'token'){
+            //     // buyID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'//this.BUY_ID;//ccny反向
+            //     this.getOrder('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv').then(res=>{
+            //         let order = res.orders
+            //         for(let i = 0;i < order.length;i++){
+            //             if(order[i].tokenSymbol=='CCNY'&&order[i].buyID&&parseInt(order[i].totalBoardlot)>1e8){
+            //                 buyID = order[i].buyID.split('mavl-trade-buy-')[1]
+            //                 break
+            //             }
+            //         }
+            //         return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url)
+            //     })
+            // }else{
+            //     // buyID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'//bty反向
+            //     this.getOrder('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1').then(res=>{
+            //         let order = res.orders
+            //         for(let i = 0;i < order.length;i++){
+            //             if(order[i].tokenSymbol=='para'&&order[i].buyID&&parseInt(order[i].totalBoardlot)>1e8){
+            //                 buyID = order[i].buyID.split('mavl-trade-buy-')[1]
+            //                 break
+            //             }
+            //         }
+            //         return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url)
+            //     })
+            // }
             // return this.createRawTradeBuyMarketTx([{ sellID, boardlotCnt }], url);
             return this.createRawTradeSellMarketTx([{ boardlotCnt, buyID }], url) 
         },
@@ -589,7 +634,7 @@ export default {
                     this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
                         console.log('hash2')
                         console.log(hash2)
-                        this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
+                        this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
 
                             if (err2) {
                                 this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
@@ -651,11 +696,18 @@ export default {
             }, 5000);
         },
 
-        mainParaBalanceCheckTask(addr, callback, times) {
+        mainParaBalanceCheckTask(type='',addr, callback, times) {
             console.log('进来了')
+            let execer = 'paracross'
+            let asset_exec = 'coins'
+            let asset_symbol = 'bty'
             if (times === void 0) times = 0
             let inter = setTimeout(() => {
-                this.getAddrBalance(addr, "paracross", this.currentMain.url,'token','CCNY').then(res => {
+                if(type == 'token'){
+                    asset_exec = 'token'
+                    asset_symbol = 'CCNY'
+                }
+                this.getAddrBalance(addr, execer, this.currentMain.url,asset_exec,asset_symbol).then(res => {
                     console.log('getAddrBalance')
                     console.log(res)
                     if (res[0].balance) {
@@ -666,26 +718,64 @@ export default {
                     //     callback(res[0].balance)
                     // } 
                     else if (times < 12) {
-                        this.mainParaBalanceCheckTask(addr, callback, ++times)
+                        if(times>8){
+                            callback(1*1e8)
+                            return
+                        }
+                        this.mainParaBalanceCheckTask(type,addr, callback, ++times)
                     }
                 }).catch(err => {
                     callback(0, err)
                 })
             }, 5000);
         },
+        // 获取买卖单
+        getOrder(to){
+            let url = this.currentParallel.url
+            let params = {
+                "status" : 1,
+                "addr" : to,
+                "direction": 1,
+                "count" : 10,
+                "fromKey" : ""
+            }
+            return this.GetOnesOrderWithStatus(params,url)
+        },
+        getOrders(to,tokenSymbol){
+            let url = this.currentParallel.url
+            let params = {
+                "status" : 1,
+                "addr" : to,
+                "direction": 1,
+                "count" : 10,
+                "fromKey" : ""
+            }
+            this.GetOnesOrderWithStatus(params,url).then(res=>{
+                let order = res.orders
+                for(let i = 0;i < order.length;i++){
+                    if(order[i].tokenSymbol==tokenSymbol&&order[i].buyID&&parseInt(order[i].totalBoardlot)>1e8){
+                        this.BUY_ID = order[i].buyID.split('mavl-trade-buy-')[1]
+                        break
+                    }
+                }
+            })
+        },
         // BTY主链向平行链
         btyMain2parallel(privateKey, amt, callback){
             this.BUY_ID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
+            this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','coins.bty')
             this.transferBTY2GameCoin(privateKey, amt, callback)
         },
         // BTY平行链向主链
         btyParallel2Main(privateKey, amt, callback){
-            this.BUY_ID = 'bd996e1ac00ea4ca341b591e1c0a74206c2e061528015ff1364bfd6ea81f921c'
+            this.BUY_ID = '1a8b6f5cfab8ebe4208a58be4a33768d20122ac750715fb4229951c624a8819e'
+            this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','para')
             this.transferGameCoin2BTY(privateKey, amt, callback)
         },
         // CCNY主链向平行链
         ccnyMain2parallel(privateKey, amt, callback){
-            this.BUY_ID = 'f814a361bd80d16e809e6c56a87d3e3b567f492f2f2e92482e3a6ec892455f44'
+            this.BUY_ID = '39a7d4d7f171c2be87985e7689d5778f9a675a0c61d02ae003824ea4b19b753c'
+            this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','token.CCNY')
             let to = this.currentAccount.address
             let mainUrl = this.currentMain.url
             let paraUrl = this.currentParallel.url
@@ -743,6 +833,7 @@ export default {
         // CCNY平行链向主链
         ccnyParallel2Main(privateKey, amt, callback){
             this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
+            this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY')
             let to = this.currentAccount.address
             let mainUrl = this.currentMain.url
             let paraUrl = this.currentParallel.url
@@ -769,7 +860,7 @@ export default {
                     this.parallel2Main(privateKey, to, amt, paraUrl,'token').then(hash2 => {
                         console.log('hash2')
                         console.log(hash2)
-                        this.mainParaBalanceCheckTask(to, (paraAmt, err2) => {
+                        this.mainParaBalanceCheckTask('token',to, (paraAmt, err2) => {
                             console.log(err2)
                             if (err2) {
                                 this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
