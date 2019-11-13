@@ -89,6 +89,27 @@
     }
 
     /**
+     * @description 交易组签名并发送
+     * @param {*} payload {tx: 未签名的交易字符串}
+     * @returns {Promise<any>}
+     */
+    signGroupTx(payload) {
+      // interfaceDefine('ANSWER_SIGN_TX','SIGN_TX',payload)
+      return new Promise((resolve, reject) => {
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 600 * 1000)
+        const sendAnswerHandle = ({ data: { payload } }) => {
+          // alert('完成了')
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_SIGN_GROUP_TX', sendAnswerHandle, true)
+        window.postMessage({ type: 'SIGN_GROUP_TX', payload }, '*')
+      })
+    }
+
+    /**
      * @description 构建交易
      * @param {*} payload {tx: 未签名的交易字符串}
      * @returns {Promise<any>}

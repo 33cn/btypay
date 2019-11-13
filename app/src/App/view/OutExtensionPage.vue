@@ -144,6 +144,54 @@ export default {
             }, 500);
           }, 300);
         });
+      }else if(win.txType == 'sign-group-tx'){
+        getChromeStorage("parallelNodeList").then(res=>{
+          console.log(res)
+          if (res.parallelNodeList) {
+            for(let i = 0; i < res.parallelNodeList.length; i++){
+              if(res.parallelNodeList[i].url == win.txObj.url){
+                this.name = res.parallelNodeList[i].name;
+                break
+              }
+            }
+            setTimeout(() => {
+              if(this.name == ''){
+                setTimeout(() => {
+                  this.successed = "no";
+                  this.msg = '请在钱包中添加节点。'
+                }, 3000);
+                return
+              }else{
+                return Promise.resolve().then(()=>{
+                  return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
+                }).then(signedTx=>{
+                  console.log('signGroupTx')
+                  console.log(signedTx)
+                  return this.sendTransaction(signedTx, win.txObj.url);
+                }).then(res=>{
+                  console.log('交易组签名完成。')
+                  console.log(res)
+                  setTimeout(() => {
+                    this.successed = "yes";
+                    this.msg = '交易组签名完成。'
+                    let payload = {hash:res}
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-sign-group-tx',
+                      payload,
+                    })
+                    setTimeout(() => {
+                      // win.closeWindow(win.windowId);
+                    }, 500);
+                  }, 0);
+                }).catch(err=>{
+                  console.log(err)
+                  this.successed = "no";
+                    this.msg = err
+                })
+              }
+            })
+          }
+        })
       }else if(win.txType == 'send-tx'){
         console.log('win.txObj.tx')
         console.log(win.txObj.tx)

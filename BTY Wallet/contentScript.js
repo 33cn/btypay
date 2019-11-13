@@ -59,6 +59,12 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
+      case 'SIGN_GROUP_TX':
+        chrome.runtime.sendMessage({
+          action: 'sign-group-tx',
+          payload: data.payload,
+        })
+        break
       case 'CREATE_TX':
         chrome.runtime.sendMessage({
           action: 'create-tx',
@@ -130,6 +136,9 @@ function listenForProviderRequest () {
         break
       case 'answer-sign-tx':
         window.postMessage({ type: 'ANSWER_SIGN_TX', payload }, '*')
+        break
+      case 'answer-sign-group-tx':
+        window.postMessage({ type: 'ANSWER_SIGN_GROUP_TX', payload }, '*')
         break
       case 'answer-send-tx':
           window.postMessage({ type: 'ANSWER_SEND_TX', payload }, '*')

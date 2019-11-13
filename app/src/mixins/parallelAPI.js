@@ -291,64 +291,74 @@ export default {
         },
 
         transferBTY2GameCoin(privateKey, amt, callback) {
-            let to = this.currentAccount.address
-            // let to = '18gKTV6Gx2BCrq9GNXEt6Mqau2L5jvB3Tt'
-            console.log('地址to=='+to)
-            console.log(to)
-            if(to){
-            }else{
-                alert('钱包地址为空')
-                return
-            }
-            let mainUrl = this.currentMain.url
-            // let paraUrl = 'http://114.55.11.139:1217'
-            let paraUrl = this.currentParallel.url
-
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            // 跨链兑换
-            this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                this.txStateCheckTask(hash1, mainUrl, err1 => {
-
-                    if (err1) {
-                        this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
-                        callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
-                        return
-                    }
-
-                    this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
-                        this.txStateCheckTask(hash2, mainUrl, err2 => {
-
-                            if (err2) {
-                                this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
-                                return
-                            }
-
-                            this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
-                                this.txStateCheckTask(hash3, paraUrl, err3 => {
-
-                                    if (err3) {
-                                        this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
-                                        return
-                                    }
-
-                                    callback(hash3)
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+                // let to = '18gKTV6Gx2BCrq9GNXEt6Mqau2L5jvB3Tt'
+                console.log('地址to=='+to)
+                console.log(to)
+                if(to){
+                }else{
+                    alert('钱包地址为空')
+                    return
+                }
+                let mainUrl = this.currentMain.url
+                // let paraUrl = 'http://114.55.11.139:1217'
+                let paraUrl = this.currentParallel.url
+    
+                if (privateKey === void 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                if (amt <= 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                // 跨链兑换
+                this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
+                    console.log('hash1')
+                    console.log(hash1)
+                    this.txStateCheckTask(hash1, mainUrl, err1 => {
+    
+                        if (err1) {
+                            this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
+                            callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
+                            return
+                        }
+    
+                        this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
+                            console.log('hash2')
+                            console.log(hash2)
+                            this.txStateCheckTask(hash2, mainUrl, err2 => {
+    
+                                if (err2) {
+                                    this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
+                                    callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
+                                    return
+                                }
+    
+                                this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
+                                    console.log('hash3')
+                                    console.log(hash3)
+                                    this.txStateCheckTask(hash3, paraUrl, err3 => {
+    
+                                        if (err3) {
+                                            this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
+                                            callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
+                                            return
+                                        }
+    
+                                        callback(hash3)
+                                    })
+    
                                 })
-
                             })
                         })
                     })
@@ -607,55 +617,66 @@ export default {
             })
         },
         transferGameCoin2BTY(privateKey, amt, callback) {
-            let to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
-
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            // 跨链兑换
-            this.parallelCoins2Para(privateKey, amt, paraUrl).then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                this.txStateCheckTask(hash1, paraUrl, err1 => {
-
-                    if (err1) {
-                        this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                        callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                        return
-                    }
-
-                    this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
-                        this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
-
-                            if (err2) {
-                                this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
-                                return
-                            }
-
-                            this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
-                                this.txStateCheckTask(hash3, mainUrl, err3 => {
-
-                                    if (err3) {
-                                        this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
-                                        return
-                                    }
-                                    callback(hash3)
-
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+                // let to = this.currentAccount.address
+                let mainUrl = this.currentMain.url
+                let paraUrl = this.currentParallel.url
+    
+                if (privateKey === void 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                if (amt <= 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                // 跨链兑换
+                this.parallelCoins2Para(privateKey, amt, paraUrl).then(hash1 => {
+                    console.log('hash1')
+                    console.log(hash1)
+                    this.txStateCheckTask(hash1, paraUrl, err1 => {
+    
+                        if (err1) {
+                            this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
+                            callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
+                            return
+                        }
+    
+                        this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
+                            console.log('hash2')
+                            console.log(hash2)
+                            this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
+    
+                                if (err2) {
+                                    this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
+                                    callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
+                                    return
+                                }
+    
+                                this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
+                                    console.log('hash3')
+                                    console.log(hash3)
+                                    this.txStateCheckTask(hash3, mainUrl, err3 => {
+    
+                                        if (err3) {
+                                            this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
+                                            callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
+                                            return
+                                        }
+                                        callback(hash3)
+    
+                                    })
+    
                                 })
-
                             })
                         })
                     })
@@ -718,10 +739,10 @@ export default {
                     //     callback(res[0].balance)
                     // } 
                     else if (times < 12) {
-                        if(times>8){
-                            callback(1*1e8)
-                            return
-                        }
+                        // if(times>8){
+                        //     callback(1*1e8)
+                        //     return
+                        // }
                         this.mainParaBalanceCheckTask(type,addr, callback, ++times)
                     }
                 }).catch(err => {
@@ -774,56 +795,67 @@ export default {
         },
         // CCNY主链向平行链
         ccnyMain2parallel(privateKey, amt, callback){
-            this.BUY_ID = '39a7d4d7f171c2be87985e7689d5778f9a675a0c61d02ae003824ea4b19b753c'
-            this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','token.CCNY')
-            let to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
-
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            this.mainCoins2Paracross(privateKey, amt, mainUrl,'token').then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                this.txStateCheckTask(hash1, mainUrl, err1 => {
-
-                    if (err1) {
-                        this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
-                        callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
-                        return
-                    }
-
-                    this.main2Parallel(privateKey, to, amt, mainUrl,'token').then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
-                        this.txStateCheckTask(hash2, mainUrl, err2 => {
-
-                            if (err2) {
-                                this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
-                                return
-                            }
-
-                            this.parallelPara2Coins(privateKey, amt, paraUrl,'token').then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
-                                this.txStateCheckTask(hash3, paraUrl, err3 => {
-
-                                    if (err3) {
-                                        this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
-                                        return
-                                    }
-
-                                    callback(hash3)
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+                this.BUY_ID = '39a7d4d7f171c2be87985e7689d5778f9a675a0c61d02ae003824ea4b19b753c'
+                this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','token.CCNY')
+                // let to = this.currentAccount.address
+                let mainUrl = this.currentMain.url
+                let paraUrl = this.currentParallel.url
+    
+                if (privateKey === void 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                if (amt <= 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                this.mainCoins2Paracross(privateKey, amt, mainUrl,'token').then(hash1 => {
+                    console.log('hash1')
+                    console.log(hash1)
+                    this.txStateCheckTask(hash1, mainUrl, err1 => {
+    
+                        if (err1) {
+                            this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
+                            callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
+                            return
+                        }
+    
+                        this.main2Parallel(privateKey, to, amt, mainUrl,'token').then(hash2 => {
+                            console.log('hash2')
+                            console.log(hash2)
+                            this.txStateCheckTask(hash2, mainUrl, err2 => {
+    
+                                if (err2) {
+                                    this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
+                                    callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
+                                    return
+                                }
+    
+                                this.parallelPara2Coins(privateKey, amt, paraUrl,'token').then(hash3 => {
+                                    console.log('hash3')
+                                    console.log(hash3)
+                                    this.txStateCheckTask(hash3, paraUrl, err3 => {
+    
+                                        if (err3) {
+                                            this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
+                                            callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
+                                            return
+                                        }
+    
+                                        callback(hash3)
+                                    })
+    
                                 })
-
                             })
                         })
                     })
@@ -832,55 +864,66 @@ export default {
         },
         // CCNY平行链向主链
         ccnyParallel2Main(privateKey, amt, callback){
-            this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
-            this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY')
-            let to = this.currentAccount.address
-            let mainUrl = this.currentMain.url
-            let paraUrl = this.currentParallel.url
-
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            // 跨链兑换
-            this.parallelCoins2Para(privateKey, amt, paraUrl,'token').then(hash1 => {
-                console.log('hash1')
-                console.log(hash1)
-                this.txStateCheckTask(hash1, paraUrl, err1 => {
-                    console.log(err1)
-                    if (err1) {
-                        this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
-                        callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
-                        return
-                    }
-                    this.parallel2Main(privateKey, to, amt, paraUrl,'token').then(hash2 => {
-                        console.log('hash2')
-                        console.log(hash2)
-                        this.mainParaBalanceCheckTask('token',to, (paraAmt, err2) => {
-                            console.log(err2)
-                            if (err2) {
-                                this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
-                                return
-                            }
-
-                            this.mainParacross2Coins(privateKey, paraAmt, mainUrl,'token').then(hash3 => {
-                                console.log('hash3')
-                                console.log(hash3)
-                                this.txStateCheckTask(hash3, mainUrl, err3 => {
-                                    if (err3) {
-                                        this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
-                                        return
-                                    }
-                                    callback(hash3)
-
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+                this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
+                this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY')
+                // let to = this.currentAccount.address
+                let mainUrl = this.currentMain.url
+                let paraUrl = this.currentParallel.url
+    
+                if (privateKey === void 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                if (amt <= 0) {
+                    callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                    return
+                }
+                // 跨链兑换
+                this.parallelCoins2Para(privateKey, amt, paraUrl,'token').then(hash1 => {
+                    console.log('hash1')
+                    console.log(hash1)
+                    this.txStateCheckTask(hash1, paraUrl, err1 => {
+                        console.log(err1)
+                        if (err1) {
+                            this.PARA_ERROR.G2B_TRADE_ERROR.msg = err1
+                            callback(JSON.stringify(this.PARA_ERROR.G2B_TRADE_ERROR))
+                            return
+                        }
+                        this.parallel2Main(privateKey, to, amt, paraUrl,'token').then(hash2 => {
+                            console.log('hash2')
+                            console.log(hash2)
+                            this.mainParaBalanceCheckTask('token',to, (paraAmt, err2) => {
+                                console.log(err2)
+                                if (err2) {
+                                    this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
+                                    callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
+                                    return
+                                }
+    
+                                this.mainParacross2Coins(privateKey, paraAmt, mainUrl,'token').then(hash3 => {
+                                    console.log('hash3')
+                                    console.log(hash3)
+                                    this.txStateCheckTask(hash3, mainUrl, err3 => {
+                                        if (err3) {
+                                            this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
+                                            callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
+                                            return
+                                        }
+                                        callback(hash3)
+    
+                                    })
+    
                                 })
-
                             })
                         })
                     })

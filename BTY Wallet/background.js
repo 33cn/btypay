@@ -116,6 +116,26 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         })
       }
       break;
+    case 'sign-group-tx':
+      if (isWalletUnlock()) {
+        txType = 'sign-group-tx'
+        payload.actionID = action
+        txObj = payload;
+        // console.log(payload)
+        createNewWindow('outExtensionPage', payload)
+        // setTimeout(() => {
+        //   isSignTx()
+        // }, 0);
+      } else {
+        sendMessage({
+          action: 'answer-sign-group-tx',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
+      break;
     case 'create-tx':
       if (isWalletUnlock()) {
         txType = 'create-tx'
@@ -244,6 +264,17 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         payload:{
           error:null,
           signedTx:signedTx || payload.signedTx
+        }
+      })
+      break;
+    case 'reply-background-sign-group-tx':
+      // console.log('reply-background-sign-tx')
+      // console.log(payload)
+      sendMessage({
+        action: 'answer-sign-group-tx',
+        payload:{
+          error:null,
+          result:payload.hash
         }
       })
       break;
