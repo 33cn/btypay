@@ -44,7 +44,7 @@ export default {
     },
     btyMainCallback(res){
       console.log(res)
-      alert(res)
+      // alert(res)
       let payload = {hash:res}
       this.msg = res
       window.chrome.runtime.sendMessage({
@@ -54,7 +54,7 @@ export default {
     },
     btyParallelCallback(res){
       console.log(res)
-      alert(res)
+      // alert(res)
       let payload = {hash:res}
       this.msg = res
       window.chrome.runtime.sendMessage({
@@ -64,7 +64,7 @@ export default {
     },
     ccnyMainCallback(res){
       console.log(res)
-      alert(res)
+      // alert(res)
       let payload = {hash:res}
       this.msg = res
       window.chrome.runtime.sendMessage({
@@ -74,7 +74,7 @@ export default {
     },
     ccnyParallelCallback(res){
       console.log(res)
-      alert(res)
+      // alert(res)
       let payload = {hash:res}
       this.msg = res
       window.chrome.runtime.sendMessage({
@@ -163,7 +163,13 @@ export default {
                 return
               }else{
                 return Promise.resolve().then(()=>{
-                  return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
+                  console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
+                  if(win.currentAccount.hexPrivateKey){
+                    return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
+                  }else{
+                    alert('钱包私钥找不到')
+                    return
+                  }
                 }).then(signedTx=>{
                   console.log('signGroupTx')
                   console.log(signedTx)
