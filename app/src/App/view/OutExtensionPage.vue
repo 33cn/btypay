@@ -41,6 +41,46 @@ export default {
 	    		if(callback) callback(response);
 	    	});
 	    });
+    },
+    btyMainCallback(res){
+      console.log(res)
+      // alert(res)
+      let payload = {hash:res}
+      this.msg = res
+      window.chrome.runtime.sendMessage({
+        action:'reply-background-bty-main-parallel',
+        payload
+      })
+    },
+    btyParallelCallback(res){
+      console.log(res)
+      // alert(res)
+      let payload = {hash:res}
+      this.msg = res
+      window.chrome.runtime.sendMessage({
+        action:'reply-background-bty-parallel-main',
+        payload
+      })
+    },
+    ccnyMainCallback(res){
+      console.log(res)
+      // alert(res)
+      let payload = {hash:res}
+      this.msg = res
+      window.chrome.runtime.sendMessage({
+        action:'reply-background-ccny-main-parallel',
+        payload
+      })
+    },
+    ccnyParallelCallback(res){
+      console.log(res)
+      // alert(res)
+      let payload = {hash:res}
+      this.msg = res
+      window.chrome.runtime.sendMessage({
+        action:'reply-background-ccny-parallel-main',
+        payload
+      })
     }
   },
   mounted() {
@@ -52,20 +92,22 @@ export default {
             win.closeWindow(win.windowId);
           }, 800);
         }
-      }, 10000);
+      }, 100000);
       if(win.txType == 'sign-tx'){
         // return new Promise((resolve,reject)=>{
         //   return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
         // }).then(signedTx=>{
         //   resolve(signedTx)
         // })
+        console.log('signRawTx')
+        console.log(win.txObj.tx)
         return Promise.resolve()
         .then(() => {
           return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
         })
         .then(signedTx => {
-          // console.log(win.txObj.tx)
-          // console.log(signedTx)
+          console.log(win.txObj.tx)
+          console.log(signedTx)
           win.signedTx = signedTx
           let payload = {signedTx}
           window.chrome.runtime.sendMessage({
@@ -76,7 +118,7 @@ export default {
             this.successed = "yes";
             this.msg = '签名完成。'
             setTimeout(() => {
-              win.closeWindow(win.windowId);
+              // win.closeWindow(win.windowId);
             }, 500);
           }, 100);
           // return Promise.resolve({signedTx})
@@ -102,6 +144,137 @@ export default {
             }, 500);
           }, 300);
         });
+      }else if(win.txType == 'sign-group-tx'){
+        getChromeStorage("parallelNodeList").then(res=>{
+          console.log(res)
+          if (res.parallelNodeList) {
+            for(let i = 0; i < res.parallelNodeList.length; i++){
+              if(res.parallelNodeList[i].url == win.txObj.url){
+                this.name = res.parallelNodeList[i].name;
+                break
+              }
+            }
+            setTimeout(() => {
+              if(this.name == ''){
+                setTimeout(() => {
+                  this.successed = "no";
+                  this.msg = '请在钱包中添加节点。'
+                }, 3000);
+                return
+              }else{
+                return Promise.resolve().then(()=>{
+                  console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
+                  if(win.currentAccount.hexPrivateKey){
+                    return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
+                  }else{
+                    alert('钱包私钥找不到')
+                    return
+                  }
+                }).then(signedTx=>{
+                  console.log('signGroupTx')
+                  console.log(signedTx)
+                  return this.sendTransaction(signedTx, win.txObj.url);
+                }).then(res=>{
+                  console.log('交易组签名完成。')
+                  console.log(res)
+                  setTimeout(() => {
+                    this.successed = "yes";
+                    this.msg = '交易组签名完成。'
+                    let payload = {hash:res}
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-sign-group-tx',
+                      payload,
+                    })
+                    setTimeout(() => {
+                      // win.closeWindow(win.windowId);
+                    }, 500);
+                  }, 0);
+                }).catch(err=>{
+                  console.log(err)
+                  this.successed = "no";
+                    this.msg = err
+                })
+              }
+            })
+          }
+        })
+      }else if(win.txType == 'send-tx'){
+        console.log('win.txObj.tx')
+        console.log(win.txObj.tx)
+        console.log(win.currentAccount.hexPrivateKey)
+        console.log(win.txObj.url)
+        return Promise.resolve()
+        .then(() => {
+          return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
+        })
+        .then(signedTx => {
+          console.log('signRawTx')
+          console.log(signedTx)
+          return this.sendTransaction(signedTx, win.txObj.url);
+          // win.signedTx = signedTx
+          // let payload = {signedTx}
+          // window.chrome.runtime.sendMessage({
+          //   action:'reply-background-sign-tx',
+          //   payload,
+          // })
+        }).then(res=>{
+          console.log('sendTransaction')
+          console.log(res)
+          let payload = {hash:res}
+          window.chrome.runtime.sendMessage({
+            action:'reply-background-send-tx',
+            payload,
+          })
+          setTimeout(() => {
+            this.successed = "yes";
+            this.msg = '签名完成。'
+            setTimeout(() => {
+              // win.closeWindow(win.windowId);
+            }, 500);
+          }, 100);
+        })
+        .catch(err=>{
+          console.log(err)
+          clearTimeout(time)
+          setTimeout(() => {
+            this.successed = "no";
+            this.msg = err
+            setTimeout(() => {
+              // win.closeWindow(win.windowId);
+            }, 500);
+          }, 300);
+        });
+      }else if(win.txType == 'create-tx'){
+        return Promise.resolve().then(()=>{
+          return this.createRawTransaction(win.txObj.params, win.txObj.url)
+        }).then(tx=>{
+          console.log('createRawTransaction')
+          console.log(tx)
+          return signRawTx(tx, win.currentAccount.hexPrivateKey);
+        }).then(signedTx=>{
+          console.log('signRawTx')
+          console.log(signedTx)
+          return this.sendTransaction(signedTx, win.txObj.url);
+        }).then(res=>{
+          console.log('构造完成')
+          console.log(res)
+          setTimeout(() => {
+            this.successed = "yes";
+            this.msg = '构造完成。'
+            let payload = {hash:res}
+            window.chrome.runtime.sendMessage({
+              action:'reply-background-create-tx',
+              payload,
+            })
+            setTimeout(() => {
+              // win.closeWindow(win.windowId);
+            }, 500);
+          }, 0);
+        }).catch(err=>{
+          console.log(err)
+          this.successed = "no";
+            this.msg = err
+        })
       }else if(win.txType == 'para-coins-dice'){
         getChromeStorage("parallelNodeList").then(res => {
           console.log(res)
@@ -156,7 +329,7 @@ export default {
 	                  // 	if(response) alert('收到来自content-script的回复：'+response);
 	                  // });
                     setTimeout(() => {
-                      win.closeWindow(win.windowId);
+                      // win.closeWindow(win.windowId);
                     }, 500);
                   }, 300);
                 }).catch(err=>{
@@ -176,11 +349,39 @@ export default {
             }, 300);
           }
         });
+        // 借贷跨链
+      }else if(win.txType == 'bty-main-parallel' || win.txType == 'bty-parallel-main'||win.txType == 'ccny-main-parallel' || win.txType == 'ccny-parallel-main'){
+        getChromeStorage("parallelNodeList").then(res=>{
+          console.log(res)
+          if (res.parallelNodeList) {
+            for(let i = 0; i < res.parallelNodeList.length; i++){
+              if(res.parallelNodeList[i].url == win.txObj.url){
+                this.name = res.parallelNodeList[i].name;
+                break
+              }
+            }
+            setTimeout(() => {
+              if(this.name == ''){
+                setTimeout(() => {
+                  this.successed = "no";
+                  this.msg = '请在钱包中添加游戏节点。'
+                }, 3000);
+                return
+              }else{
+                if(win.txType == 'bty-main-parallel'){
+                  this.btyMain2parallel(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.btyMainCallback)
+                }else if(win.txType == 'bty-parallel-main'){
+                  this.btyParallel2Main(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.btyParallelCallback)
+                }else if(win.txType == 'ccny-main-parallel'){
+                  this.ccnyMain2parallel(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.ccnyMainCallback)
+                }else if(win.txType == 'ccny-parallel-main'){
+                  this.ccnyParallel2Main(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.ccnyParallelCallback)
+                }
+              }
+            })
+          }
+        })
       }
-      
-      
-      
-      
     });
   }
 };

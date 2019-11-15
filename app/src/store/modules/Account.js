@@ -6,14 +6,14 @@ const state = {
   seed: '',//助记词
   accountMap: {},
   currentAccount: {
-    // address: "1EscufYUAkgCTTAFVqXmHMvRZMucTepvUM",   //1
-    // address: "15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J",   //2
-    address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",   //3
+    // address: "18gKTV6Gx2BCrq9GNXEt6Mqau2L5jvB3Tt",   //1
+    address: "1N2dRnD8dvBjDpT8vKUnyrY2zdivtK2PTm",   //2
+    // address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",   //3
     // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",   //4
     base58PrivateKey: "",
-    // hexPrivateKey: "",   //1
-    // hexPrivateKey: "",   //2
-    hexPrivateKey: '', //3
+    hexPrivateKey: "37fdb1ee53b13bb6091145eacfa5353991b0d81bf38cf6a9537637709ec017cd",   //1
+    // hexPrivateKey: "c8d3065b50038faef1e73740e1d0295f2be66e18dbee1311a0c90dc0c200db40",   //2
+    // hexPrivateKey: '0554e6348328a6c2a38859dc00ebadcefe3863d8086f5c2988d19779cfb50ec3', //3
     index: 0,
     name: "创世地址"
   },
@@ -36,11 +36,11 @@ const state = {
   currentMain: { index: 0, url: 'http://114.55.11.139:1193', txHeight: -1, txIndex: 0, name: "BTY" },
 
   parallelNode: [
-    { index: 0, name: 'gameTest', coin: "GBTY", url: "http://114.55.11.139:1200", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
+    { index: 0, name: '+', coin: "GBTY", url: "http://114.55.11.139:1200", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
     { index: 1, name: 'game', coin: "GBT", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''},
   ],
-  currentParallel: { index: 0, name: 'gameTest', coin: "GBTY", url: "http://114.55.11.139:1200", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
-  // currentParallel: { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 },
+  // currentParallel: { index: 0, name: 'gameTest', coin: "GBTY", url: "http://114.55.11.139:1200", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
+  currentParallel: { index: 0, name: 'issuance', coin: "ccny", url: "http://114.55.11.139:1217", txHeight: -1, txIndex: 0 ,paraAddr:'1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe',tradeAddr:'1AP4Y1UgC6dxnY8xHKr5NkP5t5Zt9K6FTq'},
 
 }
 

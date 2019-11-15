@@ -187,6 +187,7 @@ export default {
           return;
         }
       }
+      
       this.paraAdding = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -206,8 +207,6 @@ export default {
           );
           Promise.all([p1, p2])
             .then(([paraAddr, tradeAddr]) => {
-              // console.log(paraAddr)
-              // console.log(tradeAddr)
               paraAddr = paraAddr;
               tradeAddr = tradeAddr;
               let obj = {
