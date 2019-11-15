@@ -114,13 +114,13 @@ export default {
             action:'reply-background-sign-tx',
             payload,
           })
-          setTimeout(() => {
+          // setTimeout(() => {
             this.successed = "yes";
             this.msg = '签名完成。'
-            setTimeout(() => {
-              // win.closeWindow(win.windowId);
-            }, 500);
-          }, 100);
+            // setTimeout(() => {
+              win.closeWindow(win.windowId);
+          //   }, 500);
+          // }, 100);
           // return Promise.resolve({signedTx})
           // return this.sendTransaction(signedTx, win.txObj.url);
         })
