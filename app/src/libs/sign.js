@@ -7,6 +7,11 @@ import transaction_json from './transaction.json'
 const root = protobufjs.Root.fromJSON(transaction_json);
 const Transaction = root.lookupType('Transaction');
 const Transactions = root.lookupType('Transactions');
+const CoinsAction = root.lookupType('CoinsAction');
+const CoinsActions = root.lookupType('CoinsActions');
+// const AssetsTransfer = root.lookupType('AssetsTransfer');
+// const AssetsWithdraw = root.lookupType('AssetsWithdraw');
+// const AssetsTransferToExec = root.lookupType('AssetsTransferToExec');
 
 export function signRawTx(tx, privateKey){
     console.log(privateKey)
@@ -21,8 +26,19 @@ export function signRawTx(tx, privateKey){
     return Buffer.from(protobufEncode(Transaction, signedTxData)).toString('hex')
 }
 
+
+export function test(tx, privateKey){
+    console.log('hhhhhhhhhhhhhhhhhhhhh')
+    console.log(CoinsAction)
+    let txBuffer = fromHexString(tx)
+    let txData = protobufDecode(CoinsAction, txBuffer)
+    // let txsData = protobufDecode(CoinsActions, txData.header)
+    // console.log(txsData)
+}
+
 export function signGroupTx(tx, privateKey) {
     let txBuffer = fromHexString(tx)
+    console.log(txBuffer)
     let txData = protobufDecode(Transaction, txBuffer)
     let txsData = protobufDecode(Transactions, txData.header)
 

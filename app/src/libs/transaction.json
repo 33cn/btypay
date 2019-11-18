@@ -68,6 +68,99 @@
                     "id": 1
                 }
             }
+        },
+        "CoinsActions": {
+            "fields": {
+                "txs": {
+                    "rule": "repeated",
+                    "type": "CoinsAction",
+                    "id": 1
+                }
+            }
+        },
+        "CoinsAction": {
+            "fields": {
+                "transfer": {
+                    "type": "AssetsTransfer",
+                    "id": 1
+                },
+                "withdraw": {
+                    "type": "AssetsWithdraw",
+                    "id": 4
+                },
+                "transferToExec": {
+                    "type": "AssetsTransferToExec",
+                    "id": 5
+                }
+            }
+        },
+        "AssetsTransfer":{
+            "fields":{
+                "cointoken":{
+                    "type":"string",
+                    "id":1
+                },
+                "amount":{
+                    "type":"int64",
+                    "id":2
+                },
+                "note":{
+                    "type":"bytes",
+                    "id":3
+                },
+                "to":{
+                    "type":"string",
+                    "id":4
+                }
+            }
+        },
+        "AssetsWithdraw":{
+            "fields":{
+                "cointoken":{
+                    "type":"string",
+                    "id":1
+                },
+                "amount":{
+                    "type":"int64",
+                    "id":2
+                },
+                "note":{
+                    "type":"bytes",
+                    "id":3
+                },
+                "execName":{
+                    "type":"string",
+                    "id":4
+                },
+                "to":{
+                    "type":"string",
+                    "id":5
+                }
+            }
+        },
+        "AssetsTransferToExec":{
+            "fields":{
+                "cointoken":{
+                    "type":"string",
+                    "id":1
+                },
+                "amount":{
+                    "type":"int64",
+                    "id":2
+                },
+                "note":{
+                    "type":"bytes",
+                    "id":3
+                },
+                "execName":{
+                    "type":"string",
+                    "id":4
+                },
+                "to":{
+                    "type":"string",
+                    "id":5
+                }
+            }
         }
     }
 }

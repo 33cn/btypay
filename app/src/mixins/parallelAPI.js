@@ -703,7 +703,11 @@ export default {
                                 }
                             }
                         }else{
-                            errMsg='发生错误'
+                            if(res.tx.next){
+                                this.txStateCheckTask(res.tx.next, url, callback, ++times)
+                            }else{
+                                errMsg='发生错误'
+                            }
                         }
                         callback(errMsg)
                     }
