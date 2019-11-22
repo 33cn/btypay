@@ -46,116 +46,117 @@ export default {
 	    });
     },
     btyMainCallback(res){
-      console.log(res)
-      // alert(res)
+      let resObj = JSON.parse(res)
+      console.log('callback= ')
+      console.log(resObj)
       let payload = {}
+      this.checking = ''
       // let payload = {hash:res}
-      this.msg = res
-      // if(res.substr(0,2) == '0x'){
-        //   this.win.closeWindow(this.win.windowId);
-      // }
-      // this.successed = "yes";
-      this.checking = '交易检测中...'
-      this.txStateCheckTask(res,this.win.txObj.url,error=>{
-        if (error) {
-          console.log('===error===')
-          console.log(error)
-          this.checking = error
-          payload = {error,result:res}
-          // return
-        }else{
-          if(res.substr(0,2) == '0x'){
-            payload = {result:res,error:null}
-            this.win.closeWindow(this.win.windowId);
-          }
-        }
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
         window.chrome.runtime.sendMessage({
           action:'reply-background-bty-main-parallel',
           payload
         })
-      })
+        this.win.closeWindow(this.win.windowId);
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-bty-main-parallel',
+          payload
+        })
+        console.log('this.win.windowId='+this.win.windowId)
+        this.win.closeWindow(this.win.windowId);
+      }
     },
     btyParallelCallback(res){
+      let resObj = JSON.parse(res)
       console.log(res)
       // alert(res)
       // let payload = {hash:res}
       let payload = {}
-      this.msg = res
-      this.checking = '交易检测中...'
-      this.txStateCheckTask(res,this.win.txObj.url,error=>{
-        if (error) {
-          console.log('===error===')
-          console.log(error)
-          this.checking = error
-          payload = {error,result:res}
-          // return
-        }else{
-          if(res.substr(0,2) == '0x'){
-            payload = {result:res,error:null}
-            this.win.closeWindow(this.win.windowId);
-          }
-        }
+      this.checking = ''
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
         window.chrome.runtime.sendMessage({
           action:'reply-background-bty-parallel-main',
           payload
         })
-      })
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-bty-parallel-main',
+          payload
+        })
+      }
+      this.win.closeWindow(this.win.windowId);
     },
     ccnyMainCallback(res){
+      let resObj = JSON.parse(res)
       console.log(res)
-      // alert(res)
       // let payload = {hash:res}
       let payload = {}
-      this.msg = res
-      this.checking = '交易检测中...'
-      this.txStateCheckTask(res,this.win.txObj.url,error=>{
-        if (error) {
-          console.log('===error===')
-          console.log(error)
-          this.checking = error
-          payload = {error,result:res}
-          // return
-        }else{
-          if(res.substr(0,2) == '0x'){
-            payload = {result:res,error:null}
-            this.win.closeWindow(this.win.windowId);
-          }
-        }
+      this.checking = ''
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
         window.chrome.runtime.sendMessage({
           action:'reply-background-ccny-main-parallel',
           payload
         })
-      })
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-ccny-main-parallel',
+          payload
+        })
+      }
+      this.win.closeWindow(this.win.windowId);
     },
     ccnyParallelCallback(res){
+      let resObj = JSON.parse(res)
       console.log(res)
-      // alert(res)
       let payload = {}
       // let payload = {hash:res}
-      this.msg = res
-      this.checking = '交易检测中...'
-      this.txStateCheckTask(res,this.win.txObj.url,error=>{
-        if (error) {
-          console.log('===error===')
-          console.log(error)
-          this.checking = error
-          payload = {error,result:res}
-          return
-        }else{
-          if(res.substr(0,2) == '0x'){
-            payload = {result:res,error:null}
-            this.win.closeWindow(this.win.windowId);
-          }
-        }
+      this.checking = ''
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
         window.chrome.runtime.sendMessage({
           action:'reply-background-ccny-parallel-main',
           payload
         })
-      })
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-ccny-parallel-main',
+          payload
+        })
+      }
+      this.win.closeWindow(this.win.windowId);
     }
   },
   mounted() {
     window.chrome.runtime.getBackgroundPage(win => {
+    console.log('-=-=-=-=-=-=-=-=-=-=-='+win.txType+'=-=-=-=-=-=')
       this.win = win
       let time = setTimeout(() => {
         if (this.successed != "yes") {
@@ -217,6 +218,7 @@ export default {
           }, 300);
         });
       }else if(win.txType == 'sign-group-tx'){
+        console.log('==================sign-group-tx')
         getChromeStorage("parallelNodeList").then(res=>{
           console.log(res)
           if (res.parallelNodeList) {
@@ -234,7 +236,7 @@ export default {
                 }, 3000);
                 return
               }else{
-                this.msg = '交易组签名签名中...'
+                this.msg = '交易组签名中...'
                 return Promise.resolve().then(()=>{
                   console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
                   if(win.currentAccount.hexPrivateKey){
@@ -244,8 +246,9 @@ export default {
                     return
                   }
                 }).then(signedTx=>{
-                  console.log('signGroupTx')
+                  console.log('signGroupTx==')
                   console.log(signedTx)
+                  console.log(win.txObj.url)
                   return this.sendTransaction(signedTx, win.txObj.url);
                 }).then(res=>{
                   console.log('交易组签名完成。')
@@ -257,28 +260,38 @@ export default {
                     // let payload = {hash:res}
                     let payload = {}
                     this.txStateCheckTask(res,win.txObj.url,error=>{
+                      console.log('===error===')
+                      console.log(error)
+                      this.checking = ''
                       if (error) {
-                        console.log('===error===')
-                        console.log(error)
                         this.checking = error
                         payload = {error,result:res}
+                        window.chrome.runtime.sendMessage({
+                          action:'reply-background-sign-group-tx',
+                          payload,
+                        })
                         // return
                       }else{
                         if(res.substr(0,2) == '0x'){
                           payload = {result:res,error:null}
+                          window.chrome.runtime.sendMessage({
+                            action:'reply-background-sign-group-tx',
+                            payload,
+                          })
                           win.closeWindow(win.windowId);
                         }
                       }
-                      window.chrome.runtime.sendMessage({
-                        action:'reply-background-sign-group-tx',
-                        payload,
-                      })
+                      // window.chrome.runtime.sendMessage({
+                      //   action:'reply-background-sign-group-tx',
+                      //   payload,
+                      // })
                     })
                   }, 0);
                 }).catch(err=>{
+                  console.log('捕获异常')
                   console.log(err)
                   this.successed = "no";
-                    this.msg = err
+                  this.msg = err
                 })
               }
             })

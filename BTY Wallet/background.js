@@ -118,6 +118,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       break;
     case 'sign-group-tx':
       if (isWalletUnlock()) {
+        console.log('==交易组签名了==')
         txType = 'sign-group-tx'
         payload.actionID = action
         txObj = payload;
@@ -252,8 +253,8 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       })
       break;
     case 'reply-background-sign-group-tx':
-      // console.log('reply-background-sign-tx')
-      // console.log(payload)
+      console.log('reply-background-sign-tx')
+      console.log(payload)
       sendMessage({
         action: 'answer-sign-group-tx',
         payload
