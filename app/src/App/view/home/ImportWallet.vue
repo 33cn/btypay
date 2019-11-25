@@ -36,12 +36,17 @@
 import AssetBack from "@/components/AssetBack.vue";
 import OneBoxOneWord from "@/components/OneBoxOneWord.vue";
 import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
+import { createNamespacedHelpers } from 'vuex'
 import { encrypt } from "@/libs/crypto.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import recover from "@/mixins/recover.js";
+const { mapState } = createNamespacedHelpers('Account')
 export default {
   components: { AssetBack, OneBoxOneWord },
   mixins:[walletAPI,recover],
+  computed:{
+    ...mapState(['currentMain']),
+  },
   data() {
     let confirmPwdValidate = (rule, value, callback) => {
       if (value !== this.createForm.pwd) {
@@ -92,6 +97,7 @@ export default {
           //   }
           // })
           setTimeout(() => {
+            this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
             this.$router.push({ name: 'WalletIndex' })
           }, 500)
 
@@ -102,6 +108,13 @@ export default {
       const walletObj = this.createHDWallet(seedString)
       // 加密助记词 
       let ciphertext = encrypt(seedString, password)
+      // this.setPasswd(password,password,this.currentMain.url).then(res=>{
+      //   console.log('111111111111111111111')
+      //   console.log(res)
+      // }).catch(err=>{
+      //   console.log('22222222222222222222222')
+      //   console.log(err)
+      // })
       window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
         // console.log('ciphertext is set to ' + ciphertext);
       })

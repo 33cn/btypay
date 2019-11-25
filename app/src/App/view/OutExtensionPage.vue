@@ -151,7 +151,7 @@ export default {
           payload
         })
       }
-      this.win.closeWindow(this.win.windowId);
+      // this.win.closeWindow(this.win.windowId);
     }
   },
   mounted() {

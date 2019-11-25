@@ -2,7 +2,7 @@
   <div class="walletIndex_container">
     <home-header></home-header>
     <p>
-      <router-link :to="{ name: 'node'}">节点设置</router-link>
+      <router-link :to="{ name: 'node'}">刷新</router-link>
     </p>
     <section class="content">
       <p>我的资产</p>
@@ -16,7 +16,7 @@
             <p v-if="numIsAnimation" id="bty">0.0000</p>
             <p v-if="numIsAnimation" id="btyPrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ mainAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ mainAsset.amt * mainAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈{{ mainAsset.amt * mainAsset.price | numFilter(4)}}{{currency}}</p>
           </div>
         </li>
         <li @click="toGame" ref="game">
@@ -28,7 +28,7 @@
             <p v-if="numIsAnimation" id="game">0.0000</p>
             <p v-if="numIsAnimation" id="gamePrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ parallelAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}{{currency}}</p>
           </div>
         </li>
       </ul>
@@ -69,7 +69,8 @@ export default {
       "currentMain",
       "currentParallel",
       "mainAsset",
-      "parallelAsset"
+      "parallelAsset",
+      "currency"
     ])
   },
   methods: {
@@ -224,14 +225,14 @@ export default {
     font-family: MicrosoftYaHei-Bold;
     font-weight: bold;
     position: absolute;
-    right: 27px;
+    right: 45px;
     top: 138px;
     a {
       color: rgba(245, 185, 71, 1);
     }
   }
   > section.content {
-    margin: 60px 26px 0px 31px;
+    margin: 41px 26px 0px 31px;
     > p {
       font-size: 16px;
       font-family: MicrosoftYaHei;

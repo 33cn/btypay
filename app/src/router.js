@@ -47,6 +47,10 @@ export default new Router({
       name:'WalletIndex',
       component:() => import('./App/view/asset/WalletIndex')
     },{
+      path:'/dapps',
+      name:'dapps',
+      component:() => import('./App/view/dapp/Dapps')
+    },{
       path:'/node',
       name:'node',
       component:() => import('./App/view/node/Node')
@@ -86,6 +90,18 @@ export default new Router({
       path:'/outExtensionPage',
       name:'outExtensionPage',
       component:() => import('./App/view/OutExtensionPage')
+    },{
+      path:'/exportAccount',
+      name:'exportAccount',
+      component:() => import('./App/view/menu/ExportAccount')
+    },{
+      path:'/currencySet',
+      name:'currencySet',
+      component:() => import('./App/view/menu/CurrencySetting')
+    },{
+      path:'/about',
+      name:'about',
+      component:() => import('./App/view/menu/About')
     },
     // {
     //   path:'/login',

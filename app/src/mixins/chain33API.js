@@ -111,6 +111,18 @@ export default {
     getTokenBalance(address, url){
       return this.$chain33Sdk.getTokenBalance(address, url)
     },
+    // 设置、修改密码
+    setPasswd(oldPass,newPass, url){
+      return this.$chain33Sdk.setPasswd(oldPass,newPass, url)
+    },
+    // 获取助记词
+    getSeed(password, url){
+      return this.$chain33Sdk.getSeed(password, url)
+    },
+    // 导出私钥
+    dumpPrivkey(addr,url){
+      return this.$chain33Sdk.dumpPrivkey(addr, url)
+    },
 
 
     getAddrBalance(addr, execer, url, asset_exec, asset_symbol) {

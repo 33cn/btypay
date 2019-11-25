@@ -899,7 +899,7 @@ export default {
                 }
                 // 跨链兑换
                 this.parallelCoins2Para(privateKey, amt, paraUrl,'token').then(hash1 => {
-                    console.log('hash1')
+                    console.log('hash11')
                     console.log(hash1)
                     this.txStateCheckTask(hash1, paraUrl, err1 => {
                         console.log(err1)

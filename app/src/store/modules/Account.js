@@ -6,20 +6,20 @@ const state = {
   seed: '',//助记词
   accountMap: {},
   currentAccount: {
-    address: "18gKTV6Gx2BCrq9GNXEt6Mqau2L5jvB3Tt",   //1
+    address: "12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg",   //1
     // address: "1N2dRnD8dvBjDpT8vKUnyrY2zdivtK2PTm",   //2
     // address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",   //3
     // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",   //4
     base58PrivateKey: "",
     // hexPrivateKey: "37fdb1ee53b13bb6091145eacfa5353991b0d81bf38cf6a9537637709ec017cd",   //1
-    hexPrivateKey: "c8d3065b50038faef1e73740e1d0295f2be66e18dbee1311a0c90dc0c200db40",   //2
+    hexPrivateKey: "c2b31057b8692a56c7dd18199df71c1d21b781c0b6858c52997c9dbf778e8550",   //2
     // hexPrivateKey: '0554e6348328a6c2a38859dc00ebadcefe3863d8086f5c2988d19779cfb50ec3', //3
     index: 0,
     name: "创世地址"
   },
   mainIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
   parallelIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
-
+  currency:'CNY',//货币单位
 
   mainAsset: {
     amt: 0.0000,
@@ -170,6 +170,9 @@ const mutations = {
       state.parallelAsset.price = price
     }
   },
+  UPDATE_CURRENCY(state,payload){
+    state.currency = payload
+  }
 
 
 }
