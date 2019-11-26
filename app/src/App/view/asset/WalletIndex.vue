@@ -1,8 +1,9 @@
 <template>
   <div class="walletIndex_container">
     <home-header></home-header>
-    <p>
-      <router-link :to="{ name: 'node'}">刷新</router-link>
+    <p @click="getBalance">
+      <!-- <router-link :to="{ name: 'login'}">刷新</router-link> -->
+      刷新
     </p>
     <section class="content">
       <p>我的资产</p>
@@ -147,12 +148,9 @@ export default {
           document.querySelector('#'+ele).innerHTML = initial;
         }
       }, 30);
-    }
-  },
-  mounted() {
-    this.init();
-    // this.recoverAccount();
-    setTimeout(() => {
+    },
+    getBalance(){
+      setTimeout(() => {
       this.refreshMainAsset().then(res=>{
         if(res == 'success'){
           if(this.numIsAnimation){
@@ -186,6 +184,12 @@ export default {
         }
       });
     }, 10);
+    }
+  },
+  mounted() {
+    this.init();
+    // this.recoverAccount();
+    this.getBalance()
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
     setChromeStorage('element',{}).then(res=>{
         // console.log(res)
@@ -220,6 +224,10 @@ export default {
 
 <style lang='scss'>
 .walletIndex_container {
+  width: 100%;
+  height: 100vh;
+  background-image: url("../../../assets/images/lightIndexBg.png");
+  background-size: 100% 100%;
   > p {
     font-size: 16px;
     font-family: MicrosoftYaHei-Bold;
@@ -227,6 +235,8 @@ export default {
     position: absolute;
     right: 45px;
     top: 138px;
+    color: rgba(245, 185, 71, 1);
+    cursor: pointer;
     a {
       color: rgba(245, 185, 71, 1);
     }

@@ -5,9 +5,11 @@
         <ul>
             <li v-for="(item,i) in dapps" :key="i">
                 <p>{{item.name}}</p>
-                <a :href="item.target"><img :src='"../../../assets/images/"+item.img+".png"' alt=""></a>
+                <img :src='"../../../assets/images/"+item.img+".png"' @click="openDapps(item.target)" alt="">
+                <!-- <a :href="item.target"><img :src='"../../../assets/images/"+item.img+".png"' alt=""></a> -->
             </li>
         </ul>
+        <!-- <span @click="test">ssssss</span> -->
     </div>
 </template>
 <script>
@@ -17,10 +19,24 @@ export default {
     data(){
         return{
             dapps:[
-                {name:'时时彩',img:'shishicai',traget:''},
-                {name:'BTY抵押借贷',img:'jiedai',traget:''},
+                {name:'时时彩',img:'shishicai',target:'http://114.55.11.139:1199/#/'},
+                {name:'BTY抵押借贷',img:'jiedai',target:'http://114.55.11.139:1219/#/'},
             ]
         }
+    },
+    methods:{
+        openDapps(url){
+            console.log('dianjil')
+            chrome.tabs.create({url});
+            // chrome.windows.create({state: 'maximized'});
+            // window.location.href = 'https://www.baidu.com'
+            // chrome.browserAction.setPopup({
+            //     popup:'https://www.baidu.com'
+            // })
+        }
+    },
+    mounted(){
+        console.log(window.location.href)//chrome-extension://geanmggnnmmcgfgpdbibmkbjnphcblld/dist/index.html#/dapps
     }
 }
 </script>
@@ -28,7 +44,7 @@ export default {
 div.dapps_container{
     width: 100%;
     height: 100vh;
-    background-image: url("../../../assets/images/lightColorBg.png");
+    background-image: url("../../../assets/images/lighterColorBg.png");
     background-size: 100% 100%;
     >p{
         width: 100%;

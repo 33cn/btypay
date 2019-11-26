@@ -3,7 +3,7 @@
     <home-header></home-header>
     <section class="header">
       <router-link :to="{ name: 'WalletIndex'}">
-        <img src="../../../assets/images/close.png" alt />
+        <img src="../../../assets/images/back.png" alt />
       </router-link>
       <p>节点设置</p>
       <p></p>
@@ -42,7 +42,7 @@
         <p>平行链节点设置</p>
         <div class="parallel">
           <section class="up">
-            <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')">
+            <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')" @mouseenter="moveHandle(i)" @mouseleave="mouseEnterIndex=null">
               <p class="name">{{item.name}}（{{item.coin}}）</p>
               <p class="address">{{item.url}}</p>
               <img
@@ -61,10 +61,11 @@
                 :style="parallelIsConnected==3?'color:#EF394A':parallelIsConnected==1?'color:#f4c36a':''"
                 v-if="item.url==currentParaNode.url"
               >{{parallelIsConnected==1?'连接中':parallelIsConnected==2?'连接成功':parallelIsConnected==3?'连接失败':''}}</span>
+              <span v-if="mouseEnterIndex==i" style="color:#60cf5b" @click="editHandle(item)">编辑</span>
               <p class="line"></p>
             </div>
           </section>
-          <p class="add" @click="paraDialog=true">添加自定义节点</p>
+          <p class="add" @click="paraDialog=true;form={name:'',coin:'',url:''}">添加自定义节点</p>
         </div>
       </li>
     </ul>
@@ -73,8 +74,7 @@
       :visible.sync="mainDialog"
       width="324px"
       :show-close="false"
-      class="mainNode"
-    >
+      class="mainNode">
       <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
       <input type="text" class="mainAddress" ref="mainName" v-model="mainData" @input.prevent="inputHandle($event,'main')"/>
       <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
@@ -88,8 +88,7 @@
       :visible.sync="paraDialog"
       width="324px"
       :show-close="false"
-      class="paraNode"
-    >
+      class="paraNode">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-form-item label="平行链名称(无需输入user.p.前缀)" prop="name">
           <el-input v-model="form.name" ref="paraName" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
@@ -111,6 +110,7 @@
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
+import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import recover from "@/mixins/recover.js";
 import { createNamespacedHelpers } from "vuex";
@@ -120,7 +120,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   mixins: [walletAPI,recover],
-  components: { HomeHeader },
+  components: { HomeHeader,AssetBack },
   computed: {
     ...mapState([
       "accountMap",
@@ -147,6 +147,8 @@ export default {
       paraNodeList: [],
       currentMainNode: "",
       currentParaNode: "",
+      mouseIsEnter:false,
+      mouseEnterIndex:null,
       form: {
         name: "",
         coin: "",
@@ -158,10 +160,21 @@ export default {
         ],
         coin: [{ required: true, message: "请输入代币名称", trigger: "blur" }],
         url: [{ required: true, message: "请输入节点地址", trigger: "blur" }]
-      }
+      },
+      ipv4:/^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
+      ipv6:/^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/
     };
   },
   methods: {
+    editHandle(val){
+      this.form = val
+      this.paraDialog = true
+    },
+    moveHandle(i){
+      console.log('222222')
+      this.mouseEnterIndex = i
+      this.mouseIsEnter = true
+    },
     inputHandle(e,node){
       // console.log(e)
       // console.log(node)
@@ -226,6 +239,7 @@ export default {
                   if (res == "success") {
                     // this.paraNodeList = this.mainNode;
                     this.$message.success("平行链节点添加成功");
+                    this.getAndSet('form',{name:'',coin:'',url:''})
                     this.getParaNode(); //更新视图
                   }
                   this.paraAdding = false;
@@ -393,6 +407,9 @@ export default {
     }
   },
   mounted() {
+    // console.log(this.ipv4.test('114.44.11.44.22'))
+    // console.log(navigator.userAgent)
+    // console.log(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent))
     this.mainNodeList = this.mainNode;
     this.paraNodeList = this.parallelNode;
     this.getMainNode();

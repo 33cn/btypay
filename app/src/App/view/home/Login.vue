@@ -82,6 +82,7 @@ export default {
           this.createHDWallet(mnemonic);
           this.recoverAccount();
           this.$message.success("登录成功");
+          this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
           setTimeout(() => {
             this.$router.push("/WalletIndex");
           }, 500);
@@ -162,7 +163,7 @@ export default {
         getChromeStorage("ciphertext").then(result => {
           console.log("result");
           console.log(result);
-          if (result.ciphertext) {
+          if (result&&result.ciphertext) {
             this.cipherMnemonic = result.ciphertext;
             getChromeStorage('beforePath').then(res=>{
               console.log('--beforePath---')
