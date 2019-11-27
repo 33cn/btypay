@@ -51,21 +51,24 @@ export default {
             getChromeStorage("ciphertext").then(result => {
                 console.log("result");
                 console.log(result);
-                console.log(this.password)
-                this.mnemonic = decrypt(result.ciphertext, this.password);
-                console.log(decrypt(result.ciphertext, 'fanrui12'))
-                console.log(this.mnemonic)
-                let arr = []
-                for(let i = 0;i<15;i++){
-                    arr[i] = this.mnemonic.split(' ')[i]
-                }
-                for(let i = 0;i<4;i++){
-                    if(!arr[i*4+3]){
-                        arr[i*4+3] = ''
+                // console.log(this.password)
+                getChromeStorage('password').then(res=>{
+                    console.log(res)
+                    console.log('密码='+res.password)
+                    this.mnemonic = decrypt(result.ciphertext, res.password);
+                    console.log(this.mnemonic)
+                    let arr = []
+                    for(let i = 0;i<15;i++){
+                        arr[i] = this.mnemonic.split(' ')[i]
                     }
-                    this.mnemonicArr.push([arr[i*4],arr[i*4+1],arr[i*4+2],arr[i*4+3]])
-                }
-                console.log(this.mnemonicArr)
+                    for(let i = 0;i<4;i++){
+                        if(!arr[i*4+3]){
+                            arr[i*4+3] = ''
+                        }
+                        this.mnemonicArr.push([arr[i*4],arr[i*4+1],arr[i*4+2],arr[i*4+3]])
+                    }
+                    console.log(this.mnemonicArr)
+                })
             })
         },
         copyHandle(event,text){
@@ -106,6 +109,7 @@ div.exportAccount_container{
         p{
             &:nth-of-type(2){
                 top: 0px;
+                color: #F5B947;
             }
         }
     }

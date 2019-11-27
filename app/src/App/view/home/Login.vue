@@ -83,8 +83,10 @@ export default {
           this.recoverAccount();
           this.$message.success("登录成功");
           this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
-          setTimeout(() => {
+          setChromeStorage("password", this.form.pwd).then(res=>{
             this.$router.push("/WalletIndex");
+          })
+          setTimeout(() => {
           }, 500);
         }
       })

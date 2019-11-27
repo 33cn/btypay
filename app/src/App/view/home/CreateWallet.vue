@@ -24,7 +24,7 @@
 <script>
 import AssetBack from "@/components/AssetBack.vue";
 import recover from "@/mixins/recover.js";
-import {getChromeStorage} from '@/libs/chromeUtil.js'
+import {getChromeStorage,setChromeStorage} from '@/libs/chromeUtil.js'
 export default {
   mixins:[recover],
   components: { AssetBack },
@@ -62,7 +62,9 @@ export default {
       this.$refs.createForm.validate(valid => {
         if (valid) {
           this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
-          this.$router.push({ name: "WordsShow" });
+          setChromeStorage("password", this.createForm.pwd).then(res=>{
+            this.$router.push({ name: "WordsShow" });
+          })
         }
       });
     }

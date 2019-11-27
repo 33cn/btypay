@@ -98,7 +98,9 @@ export default {
           // })
           setTimeout(() => {
             this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
-            this.$router.push({ name: 'WalletIndex' })
+            setChromeStorage("password", this.createForm.pwd).then(res=>{
+              this.$router.push({ name: 'WalletIndex' })
+            })
           }, 500)
 
         }
