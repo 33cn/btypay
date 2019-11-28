@@ -6,7 +6,7 @@ BTYPay是BTY主链和平行链的浏览器插件钱包，它能让你收发主�
 
 # 下载安装
 ## 方式一： 开发者模式
-[钱包插件下载地址](https://github.com/33cn/btypay/releases/download/0.1/BTY_Wallet.zip)
+[钱包插件下载地址](https://github.com/33cn/btypay/releases/download/V1.0/BTY_Wallet.zip)
 
 1. 解压压缩包，得到BTY Wallet文件夹
 2. 打开chrome在地址栏输入 chrome://extensions 来到拓展程序管理页
