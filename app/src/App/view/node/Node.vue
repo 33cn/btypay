@@ -3,7 +3,7 @@
     <home-header></home-header>
     <section class="header">
       <router-link :to="{ name: 'WalletIndex'}">
-        <img src="../../../assets/images/close.png" alt />
+        <img src="../../../assets/images/back.png" alt />
       </router-link>
       <p>节点设置</p>
       <p></p>
@@ -14,7 +14,8 @@
         <div class="main">
           <section class="up">
             <!-- <p class="name">敢么（GMT）</p> -->
-            <div v-for="(item,i) in mainNodeList" :key="i" @click="setNode(item,'main')">
+            <div v-for="(item,i) in mainNodeList" :key="i" @click="setNode(item,'main')" 
+              @mouseenter="moveHandle(i,'main',item)" @mouseleave="mainMouseEnterIndex=null;isEnterCurrent=false">
               <p class="address">{{item.url}}</p>
               <img
                 v-if="item.url==currentMainNode.url"
@@ -30,8 +31,10 @@
               />
               <span
                 :style="mainIsConnected==3?'color:#EF394A':mainIsConnected==1?'color:#f4c36a':''"
-                v-if="item.url==currentMainNode.url"
+                v-if="item.url==currentMainNode.url" :class="isEnterCurrent&&i>0&&mainMouseEnterIndex==i?'status':''"
               >{{mainIsConnected==1?'连接中':mainIsConnected==2?'连接成功':mainIsConnected==3?'连接失败':''}}</span>
+              <span v-if="mainMouseEnterIndex==i&&i>0" :class="isEnterCurrent&&i>0?'edit':''"
+                style="color:#60cf5b" @click.stop="editHandle(item,'main')">编辑</span>
               <p class="line"></p>
             </div>
           </section>
@@ -42,7 +45,8 @@
         <p>平行链节点设置</p>
         <div class="parallel">
           <section class="up">
-            <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')">
+            <div v-for="(item,i) in paraNodeList" :key="i" @click="setNode(item,'para')" 
+              @mouseenter="moveHandle(i,'para',item)" @mouseleave="paraMouseEnterIndex=null;isEnterCurrent=false">
               <p class="name">{{item.name}}（{{item.coin}}）</p>
               <p class="address">{{item.url}}</p>
               <img
@@ -59,12 +63,14 @@
               />
               <span
                 :style="parallelIsConnected==3?'color:#EF394A':parallelIsConnected==1?'color:#f4c36a':''"
-                v-if="item.url==currentParaNode.url"
+                v-if="item.url==currentParaNode.url" :class="isEnterCurrent&&i>0&&paraMouseEnterIndex==i?'status':''"
               >{{parallelIsConnected==1?'连接中':parallelIsConnected==2?'连接成功':parallelIsConnected==3?'连接失败':''}}</span>
+              <span v-if="paraMouseEnterIndex==i&&i>0" :class="isEnterCurrent&&i>0?'edit':''"
+                style="color:#60cf5b" @click.stop="editHandle(item,'para')">编辑</span>
               <p class="line"></p>
             </div>
           </section>
-          <p class="add" @click="paraDialog=true">添加自定义节点</p>
+          <p class="add" @click="paraDialog=true;form={name:'',coin:'',url:''}">添加自定义节点</p>
         </div>
       </li>
     </ul>
@@ -73,8 +79,7 @@
       :visible.sync="mainDialog"
       width="324px"
       :show-close="false"
-      class="mainNode"
-    >
+      class="mainNode">
       <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
       <input type="text" class="mainAddress" ref="mainName" v-model="mainData" @input.prevent="inputHandle($event,'main')"/>
       <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
@@ -88,8 +93,7 @@
       :visible.sync="paraDialog"
       width="324px"
       :show-close="false"
-      class="paraNode"
-    >
+      class="paraNode">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-form-item label="平行链名称(无需输入user.p.前缀)" prop="name">
           <el-input v-model="form.name" ref="paraName" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
@@ -111,6 +115,7 @@
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
+import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import recover from "@/mixins/recover.js";
 import { createNamespacedHelpers } from "vuex";
@@ -120,7 +125,7 @@ const { mapState } = createNamespacedHelpers("Account");
 
 export default {
   mixins: [walletAPI,recover],
-  components: { HomeHeader },
+  components: { HomeHeader,AssetBack },
   computed: {
     ...mapState([
       "accountMap",
@@ -140,6 +145,7 @@ export default {
       mainDialog: false,
       paraDialog: false,
       mainData: "",
+      maindatas:{},
       mainIsInput: false,
       paraAdding:false,
       mainAdding:false,
@@ -147,6 +153,11 @@ export default {
       paraNodeList: [],
       currentMainNode: "",
       currentParaNode: "",
+      mouseIsEnter:false,
+      mainMouseEnterIndex:null,
+      paraMouseEnterIndex:null,
+      isEditing:false,
+      isEnterCurrent:false,
       form: {
         name: "",
         coin: "",
@@ -158,10 +169,40 @@ export default {
         ],
         coin: [{ required: true, message: "请输入代币名称", trigger: "blur" }],
         url: [{ required: true, message: "请输入节点地址", trigger: "blur" }]
-      }
+      },
+      ipv4:/^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
+      ipv6:/^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/
     };
   },
   methods: {
+    editHandle(val,type){
+      console.log('编辑')
+      this.isEditing = true
+      if(type == 'main'){
+        console.log(val)
+        this.mainData = val.url
+        this.maindatas = val
+        this.mainDialog = true
+      }else if(type == 'para'){
+        this.form = val
+        this.paraDialog = true
+      }
+    },
+    moveHandle(i,type,val){
+      if(type == 'main'){
+        this.mainMouseEnterIndex = i
+        if(this.currentMainNode.url == val.url ){
+          this.isEnterCurrent = true
+        }
+      }else if(type == 'para'){
+        this.paraMouseEnterIndex = i
+        if(this.currentParaNode.url == val.url ){
+          this.isEnterCurrent = true
+        }
+      }
+      // this.mouseEnterIndex = i
+      this.mouseIsEnter = true
+    },
     inputHandle(e,node){
       // console.log(e)
       // console.log(node)
@@ -181,14 +222,82 @@ export default {
       if(this.paraAdding){
         return
       }
-      for (let i = 0; i < this.paraNodeList.length; i++) {
-        if (this.paraNodeList[i].url == this.form.url) {
-          this.$message.error("该节点地址已存在");
-          return;
+      if(!this.isEditing){
+        for (let i = 0; i < this.paraNodeList.length; i++) {
+          if (this.paraNodeList[i].url == this.form.url) {
+            this.$message.error("该节点地址已存在");
+            return;
+          }
         }
       }
-      
       this.paraAdding = true;
+      // 节点编辑
+      if(this.isEditing){
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            // console.log("submit!");
+            let length = this.paraNodeList.length
+            let paraAddr = "";
+            let tradeAddr = "";
+            const p1 = this.convertExecToAddr(
+              "paracross",
+              this.form.url
+            );
+            const p2 = this.convertExecToAddr(
+              "user.p." + this.form.name + ".trade",
+              this.form.url
+            );
+            Promise.all([p1, p2])
+              .then(([paraAddr, tradeAddr]) => {
+                paraAddr = paraAddr;
+                tradeAddr = tradeAddr;
+                let obj = {
+                  ...this.form,
+                  // txHeight: -1,
+                  // txIndex: 0,
+                  // index,
+                  paraAddr,
+                  tradeAddr
+                };
+                for(let i=0;i<length;i++){
+                  if(this.paraNodeList[i].index == obj.index){
+                    this.paraNodeList[i] = obj
+                    break
+                  }
+                }
+                // let arr = this.paraNodeList.concat([obj]);
+                this.$store.commit("Account/UPDATE_PARALLEL_NODE", this.paraNodeList);
+                setChromeStorage("parallelNodeList", this.paraNodeList)
+                  .then(res => {
+                    if (res == "success") {
+                      // this.paraNodeList = this.mainNode;
+                      this.$message.success("平行链节点编辑成功");
+                      this.getAndSet('form',{name:'',coin:'',url:''})
+                      this.getParaNode(); //更新视图
+                      this.setNode(obj,'para')
+                    }
+                    this.paraAdding = false;
+                  })
+                  .catch(err => {
+                    console.log(err);
+                    this.paraAdding = false;
+                  });
+                this.paraDialog = false;
+                this.paraAdding = false;
+              })
+              .catch(err => {
+                this.paraAdding = false;
+                this.$message.error("您输入的节点地址有误。");
+              });
+          } else {
+            this.paraAdding = false;
+            console.log("error submit!!");
+            return false;
+          }
+        });
+        return
+      }
+      // 添加新节点
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log("submit!");
@@ -199,11 +308,11 @@ export default {
           let tradeAddr = "";
           const p1 = this.convertExecToAddr(
             "paracross",
-            this.currentParallel.url
+            this.form.url
           );
           const p2 = this.convertExecToAddr(
             "user.p." + this.form.name + ".trade",
-            this.currentParallel.url
+            this.form.url
           );
           Promise.all([p1, p2])
             .then(([paraAddr, tradeAddr]) => {
@@ -226,6 +335,7 @@ export default {
                   if (res == "success") {
                     // this.paraNodeList = this.mainNode;
                     this.$message.success("平行链节点添加成功");
+                    this.getAndSet('form',{name:'',coin:'',url:''})
                     this.getParaNode(); //更新视图
                   }
                   this.paraAdding = false;
@@ -239,7 +349,7 @@ export default {
             })
             .catch(err => {
               this.paraAdding = false;
-              this.$message.error("添加失败");
+              this.$message.error("您输入的节点地址有误。");
             });
         } else {
           this.paraAdding = false;
@@ -256,13 +366,54 @@ export default {
         this.mainIsInput = true;
         return;
       }
-      for (let i = 0; i < this.mainNodeList.length; i++) {
-        if (this.mainNodeList[i].url == this.mainData) {
-          this.$message.error("该节点地址已存在");
-          return;
+      if(!this.isEditing){
+        for (let i = 0; i < this.mainNodeList.length; i++) {
+          if (this.mainNodeList[i].url == this.mainData) {
+            this.$message.error("该节点地址已存在");
+            return;
+          }
         }
       }
       this.mainAdding = true
+      // 节点编辑
+      if(this.isEditing){
+        let length = this.mainNodeList.length
+        let obj = {
+          ...this.maindatas,
+          url: this.mainData,
+          // txHeight: -1,
+          // txIndex: 0,
+          // name: "BTY",
+          // index
+        };
+        // let arr = this.mainNodeList.concat([obj]);
+        for(let i=0;i<length;i++){
+          if(this.mainNodeList[i].index == obj.index){
+            this.mainNodeList[i] = obj
+            break
+          }
+        }
+        this.$store.commit("Account/UPDATE_MAIN_NODE", this.mainNodeList);
+        setChromeStorage("mainNodeList", this.mainNodeList)
+          .then(res => {
+            if (res == "success") {
+              // this.mainNodeList = this.mainNode;
+              this.$message.success("主链节点编辑成功");
+              this.getAndSet('mainData','')
+              this.getMainNode(); //更新视图
+              this.setNode(obj,'main')
+            }
+            this.mainAdding = false
+          })
+          .catch(err => {
+            this.mainAdding = false
+            console.log(err);
+          });
+        this.mainDialog = false;
+        this.mainData = "";
+        return
+      }
+      // 添加节点
       let length = this.mainNodeList.length
       let index = this.mainNodeList[length-1].index+1;
       let obj = {
@@ -283,6 +434,7 @@ export default {
           if (res == "success") {
             // this.mainNodeList = this.mainNode;
             this.$message.success("主链节点添加成功");
+            this.getAndSet('mainData','')
             this.getMainNode(); //更新视图
           }
           this.mainAdding = false
@@ -295,7 +447,8 @@ export default {
       this.mainData = "";
     },
     setNode(val, target) {
-      // console.log('setNode')
+      console.log('设置节点')
+      this.isEnterCurrent = true
       if (target == "main") {
         this.$store.commit("Account/UPDATE_CURRENT_MAIN", val);
         this.$store.commit("Account/UPDATE_MAIN_CONNECT", 1);
@@ -393,6 +546,9 @@ export default {
     }
   },
   mounted() {
+    // console.log(this.ipv4.test('114.44.11.44.22'))
+    // console.log(navigator.userAgent)
+    // console.log(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent))
     this.mainNodeList = this.mainNode;
     this.paraNodeList = this.parallelNode;
     this.getMainNode();
@@ -410,7 +566,9 @@ export default {
     paraDialog(val) {
       this.getAndSet('paraDialog',val)
       if (!val) {
+        this.isEditing = false
         this.$refs["ruleForm"].resetFields();
+        this.getParaNode();
       } else {
         setTimeout(() => {
           this.$refs["paraName"] && this.$refs["paraName"].focus();
@@ -423,6 +581,8 @@ export default {
         setTimeout(() => {
           this.$refs["mainName"] && this.$refs["mainName"].focus();
         }, 50);
+      }else{
+        this.isEditing = false
       }
     }
   },
@@ -502,6 +662,13 @@ export default {
               bottom: 12px;
               color: #1cc0db;
               // color: #EF394A;
+              transition: all 0.2s linear;
+            }
+            span.edit{
+              left: 180px;
+            }
+            span.status{
+              left: 220px;
             }
             p.name {
               font-size: 12px;

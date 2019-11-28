@@ -67,11 +67,14 @@
 import AssetBack from "@/components/AssetBack.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import parallelAPI from "@/mixins/parallelAPI.js";
+import test from "@/mixins/test.js";
+import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
+import { decrypt } from "@/libs/crypto.js";
 import { createNamespacedHelpers } from "vuex";
 import Long from "long";
 const { mapState } = createNamespacedHelpers("Account");
 export default {
-  mixins: [walletAPI, parallelAPI],
+  mixins: [walletAPI, parallelAPI,test],
   components: { AssetBack },
   computed: {
     ...mapState([
@@ -109,6 +112,7 @@ export default {
     };
   },
   methods: {
+
     test(val){
       console.log('===============')
       console.log(this.currentMain.url)
@@ -326,10 +330,11 @@ export default {
     }
   },
   mounted() {
-    this.getOrder('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1').then(res=>{
-      console.log('==============order==================')
-      console.log(res)
-    })
+    // this.actionTest(this.currentAccount.hexPrivateKey)
+    // this.getOrder('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1').then(res=>{
+    //   console.log('==============order==================')
+    //   console.log(res)
+    // })
     this.refreshMainAsset();
     this.refreshParallelAsset();
     setTimeout(() => {

@@ -3,6 +3,7 @@ import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil";
 export default{
     mixins: [parallelAPI],
     methods: {
+        // 跨链失败后手续费的问题
         // 跨链失败=>回滚
         chainRollBackHandle(){
             getChromeStorage("roolBack").then(res=>{

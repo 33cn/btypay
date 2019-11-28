@@ -1,6 +1,6 @@
 import chain33API from '@/mixins/chain33API'
 import { createNamespacedHelpers } from 'vuex'
-import { signRawTx, signGroupTx } from '@/libs/sign.js'
+import { signRawTx, signGroupTx,test } from '@/libs/sign.js'
 import Long from 'long'
 
 const { mapState } = createNamespacedHelpers('Account')
@@ -57,6 +57,17 @@ export default {
         }
     },
     methods: {
+        actionTest(privateKey){
+            let params = {
+                to: '1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe',
+                execName: "paracross",
+                amount: 1*1e8
+            }
+            this.createRawTransaction(params, 'http://114.55.11.139:1193').then(res=>{
+                console.log(res)
+                test(res, privateKey)
+            })
+        },
         // 主链bty从coins执行器转移到paracross执行器
         mainCoins2Paracross(privateKey, amount, url) {
             let params = {

@@ -355,9 +355,9 @@ export default {
                                             return
                                         }
     
-                                        callback(hash3)
+                                        callback(JSON.stringify({hash:hash3}))
                                     })
-    
+                                    // callback(hash3)
                                 })
                             })
                         })
@@ -655,7 +655,10 @@ export default {
                             console.log('hash2')
                             console.log(hash2)
                             this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
-    
+                                if(err2 && err2 == 'no times'){
+                                    callback(JSON.stringify({desc:'主链paracross余额为'+paraAmt,msg:'paraAmt'}))
+                                    return
+                                }
                                 if (err2) {
                                     this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
                                     callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
@@ -672,7 +675,7 @@ export default {
                                             callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
                                             return
                                         }
-                                        callback(hash3)
+                                        callback(JSON.stringify({hash:hash3}))
     
                                     })
     
@@ -703,7 +706,11 @@ export default {
                                 }
                             }
                         }else{
-                            errMsg='发生错误'
+                            if(res.tx.next){
+                                this.txStateCheckTask(res.tx.next, url, callback, ++times)
+                            }else{
+                                errMsg='发生错误'
+                            }
                         }
                         callback(errMsg)
                     }
@@ -744,6 +751,8 @@ export default {
                         //     return
                         // }
                         this.mainParaBalanceCheckTask(type,addr, callback, ++times)
+                    }else{
+                        callback(0, 'no times')
                     }
                 }).catch(err => {
                     callback(0, err)
@@ -852,7 +861,7 @@ export default {
                                             return
                                         }
     
-                                        callback(hash3)
+                                        callback(JSON.stringify({hash:hash3}))
                                     })
     
                                 })
@@ -890,7 +899,7 @@ export default {
                 }
                 // 跨链兑换
                 this.parallelCoins2Para(privateKey, amt, paraUrl,'token').then(hash1 => {
-                    console.log('hash1')
+                    console.log('hash11')
                     console.log(hash1)
                     this.txStateCheckTask(hash1, paraUrl, err1 => {
                         console.log(err1)
@@ -904,6 +913,10 @@ export default {
                             console.log(hash2)
                             this.mainParaBalanceCheckTask('token',to, (paraAmt, err2) => {
                                 console.log(err2)
+                                if(err2 && err2 == 'no times'){
+                                    callback(JSON.stringify({desc:'errBlance',msg:'主链paracross余额不对。'}))
+                                    return
+                                }
                                 if (err2) {
                                     this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
                                     callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
@@ -919,7 +932,7 @@ export default {
                                             callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
                                             return
                                         }
-                                        callback(hash3)
+                                        callback(JSON.stringify({hash:hash3}))
     
                                     })
     

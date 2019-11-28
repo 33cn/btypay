@@ -118,6 +118,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       break;
     case 'sign-group-tx':
       if (isWalletUnlock()) {
+        console.log('==交易组签名了==')
         txType = 'sign-group-tx'
         payload.actionID = action
         txObj = payload;
@@ -181,11 +182,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txType = 'bty-main-parallel'
         payload.actionID = action
         txObj = payload;
-        // console.log(payload)
         createNewWindow('outExtensionPage', payload)
-        // setTimeout(() => {
-        //   isGetVoteHash()
-        // }, 0);
       } else {
         sendMessage({
           action: 'answer-bty-main-parallel',
@@ -201,11 +198,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txType = 'bty-parallel-main'
         payload.actionID = action
         txObj = payload;
-        // console.log(payload)
         createNewWindow('outExtensionPage', payload)
-        // setTimeout(() => {
-        //   isGetVoteHash()
-        // }, 0);
       } else {
         sendMessage({
           action: 'answer-bty-parallel-main',
@@ -221,11 +214,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txType = 'ccny-main-parallel'
         payload.actionID = action
         txObj = payload;
-        // console.log(payload)
         createNewWindow('outExtensionPage', payload)
-        // setTimeout(() => {
-        //   isGetVoteHash()
-        // }, 0);
       } else {
         sendMessage({
           action: 'answer-ccny-main-parallel',
@@ -241,11 +230,7 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
         txType = 'ccny-parallel-main'
         payload.actionID = action
         txObj = payload;
-        // console.log(payload)
         createNewWindow('outExtensionPage', payload)
-        // setTimeout(() => {
-        //   isGetVoteHash()
-        // }, 0);
       } else {
         sendMessage({
           action: 'answer-ccny-parallel-main',
@@ -268,14 +253,11 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       })
       break;
     case 'reply-background-sign-group-tx':
-      // console.log('reply-background-sign-tx')
-      // console.log(payload)
+      console.log('reply-background-sign-tx')
+      console.log(payload)
       sendMessage({
         action: 'answer-sign-group-tx',
-        payload:{
-          error:null,
-          result:payload.hash
-        }
+        payload
       })
       break;
     case 'reply-background-send-tx':
@@ -317,37 +299,25 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       console.log(payload)
       sendMessage({
         action: 'answer-bty-main-parallel',
-        payload:{
-          error:null,
-          result:payload.hash
-        }
+        payload
       })
       break
     case 'reply-background-bty-parallel-main':
       sendMessage({
         action: 'answer-bty-parallel-main',
-        payload:{
-          error:null,
-          result:payload.hash
-        }
+        payload
       })
       break
     case 'reply-background-ccny-main-parallel':
       sendMessage({
         action: 'answer-ccny-main-parallel',
-        payload:{
-          error:null,
-          result:payload.hash
-        }
+        payload
       })
       break
     case 'reply-background-ccny-parallel-main':
       sendMessage({
         action: 'answer-ccny-parallel-main',
-        payload:{
-          error:null,
-          result:payload.hash
-        }
+        payload
       })
       break
     case 'unlock-wallet':

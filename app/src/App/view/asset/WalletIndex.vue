@@ -1,8 +1,9 @@
 <template>
   <div class="walletIndex_container">
     <home-header></home-header>
-    <p>
-      <router-link :to="{ name: 'node'}">节点设置</router-link>
+    <p @click="getBalance">
+      <!-- <router-link :to="{ name: 'login'}">刷新</router-link> -->
+      刷新
     </p>
     <section class="content">
       <p>我的资产</p>
@@ -16,7 +17,7 @@
             <p v-if="numIsAnimation" id="bty">0.0000</p>
             <p v-if="numIsAnimation" id="btyPrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ mainAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ mainAsset.amt * mainAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈{{ mainAsset.amt * mainAsset.price | numFilter(4)}}{{currency}}</p>
           </div>
         </li>
         <li @click="toGame" ref="game">
@@ -28,7 +29,7 @@
             <p v-if="numIsAnimation" id="game">0.0000</p>
             <p v-if="numIsAnimation" id="gamePrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ parallelAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}{{currency}}</p>
           </div>
         </li>
       </ul>
@@ -69,7 +70,8 @@ export default {
       "currentMain",
       "currentParallel",
       "mainAsset",
-      "parallelAsset"
+      "parallelAsset",
+      "currency"
     ])
   },
   methods: {
@@ -146,12 +148,9 @@ export default {
           document.querySelector('#'+ele).innerHTML = initial;
         }
       }, 30);
-    }
-  },
-  mounted() {
-    this.init();
-    // this.recoverAccount();
-    setTimeout(() => {
+    },
+    getBalance(){
+      setTimeout(() => {
       this.refreshMainAsset().then(res=>{
         if(res == 'success'){
           if(this.numIsAnimation){
@@ -185,6 +184,12 @@ export default {
         }
       });
     }, 10);
+    }
+  },
+  mounted() {
+    this.init();
+    // this.recoverAccount();
+    this.getBalance()
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
     setChromeStorage('element',{}).then(res=>{
         // console.log(res)
@@ -219,19 +224,25 @@ export default {
 
 <style lang='scss'>
 .walletIndex_container {
+  width: 100%;
+  height: 100vh;
+  background-image: url("../../../assets/images/lightIndexBg.png");
+  background-size: 100% 100%;
   > p {
     font-size: 16px;
     font-family: MicrosoftYaHei-Bold;
     font-weight: bold;
     position: absolute;
-    right: 27px;
+    right: 45px;
     top: 138px;
+    color: rgba(245, 185, 71, 1);
+    cursor: pointer;
     a {
       color: rgba(245, 185, 71, 1);
     }
   }
   > section.content {
-    margin: 60px 26px 0px 31px;
+    margin: 41px 26px 0px 31px;
     > p {
       font-size: 16px;
       font-family: MicrosoftYaHei;

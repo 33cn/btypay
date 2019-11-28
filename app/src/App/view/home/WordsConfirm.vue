@@ -47,6 +47,9 @@ export default {
     seedString() {
       return this.$store.state.Account.seed;
     },
+    mainUrl(){
+      return this.$store.state.Account.currentMain;
+    },
     seedStringSelected: function() {
       let s = "";
       for (let i = 0; i < this.seedChartsSelected.length; i++) {
@@ -79,6 +82,13 @@ export default {
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
       const walletObj = this.createHDWallet(seedString);
+      // this.setPasswd('',password,this.mainUrl.url).then(res=>{
+      //   console.log('111111111111111111111')
+      //   console.log(res)
+      // }).catch(err=>{
+      //   console.log('22222222222222222222222')
+      //   console.log(err)
+      // })
       // console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);

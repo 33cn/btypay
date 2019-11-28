@@ -22,13 +22,25 @@ export default {
     watch: {
         $route(to,from){
             // console.log(from.path)
-            // console.log(to.path);
+            console.log('to.path==')
+            console.log(to.path);
             if(to.path != '/'){
                 this.isHidden = false;
             }else{
                 this.isHidden = true;
             }
         }
+    },
+    beforeRouteEnter(to, from, next){
+        next(vm=>{
+            console.log('beforeRouteEnter')
+            console.log(to)
+            if(to.path != '/'){
+                vm.isHidden = false;
+            }else{
+                vm.isHidden = true;
+            }
+        })
     }
 }
 </script>

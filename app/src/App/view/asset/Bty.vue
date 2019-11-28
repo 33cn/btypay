@@ -15,7 +15,10 @@
         <p>≈￥{{mainAsset.amt * mainAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
-        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
+        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">
+          <span v-if="addrIsShowAll">{{currentAccount.address}}</span>
+          <span v-else>{{shortAddress}}</span>
+        </p>
         <img
           @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
@@ -31,7 +34,10 @@
         <p>≈￥{{parallelAsset.amt * parallelAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
-        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
+        <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">
+          <span v-if="addrIsShowAll">{{currentAccount.address}}</span>
+          <span v-else>{{shortAddress}}</span>
+        </p>
         <img
           @click="copyHandle($event, currentAccount.address)"
           src="../../../assets/images/copy.png"
@@ -101,7 +107,7 @@ export default {
       loadingData: [],
       coin: "",
       toLeft: null,
-
+      shortAddress:'',
       noMoreTx: false,
       lastTx: {},
       currentTab: { label: "全部", val: 0 },
@@ -201,6 +207,7 @@ export default {
       });
     },
     addressScroll(e){
+      console.log('滑动了')
       // console.log(this.$refs["address"].scrollLeft )
       if(this.$refs["address"].scrollLeft - this.perAddrScrollTop >= 0){
         this.addrIsShowAll = true;
@@ -211,6 +218,11 @@ export default {
     }
   },
   mounted() {
+    this.shortAddress = this.currentAccount.address.substr(0,15)+'…'+this.currentAccount.address.substr(-4,4)
+    // let addr = '12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg'
+    // console.log('HHHHHHHHHHHHHHHHHHHHHHH')
+    // // console.log(addr.substr(0,14))
+    // console.log(addr.substr(0,14)+'……'+addr.substr(-4,4))
     this.$nextTick(()=>{
       setTimeout(() => {
         this.$refs["address"].addEventListener("scroll", this.addressScroll,false);

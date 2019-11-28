@@ -5,6 +5,7 @@
       <i v-if="successed=='yes'" class="el-icon-check"></i>
       <i v-if="successed=='no'" class="el-icon-close"></i>
       <p>{{msg}}</p>
+      <p>{{checking}}</p>
     </div>
   </div>
 </template>
@@ -23,7 +24,9 @@ export default {
     return {
       successed: "waiting",
       msg:'确认中...',
-      name:''
+      checking:'',
+      name:'',
+      win:null
     };
   },
   methods:{
@@ -43,48 +46,118 @@ export default {
 	    });
     },
     btyMainCallback(res){
-      console.log(res)
-      // alert(res)
-      let payload = {hash:res}
-      this.msg = res
-      window.chrome.runtime.sendMessage({
-        action:'reply-background-bty-main-parallel',
-        payload
-      })
+      let resObj = JSON.parse(res)
+      console.log('callback= ')
+      console.log(resObj)
+      let payload = {}
+      this.checking = ''
+      // let payload = {hash:res}
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-bty-main-parallel',
+          payload
+        })
+        this.win.closeWindow(this.win.windowId);
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-bty-main-parallel',
+          payload
+        })
+        console.log('this.win.windowId='+this.win.windowId)
+        this.win.closeWindow(this.win.windowId);
+      }
     },
     btyParallelCallback(res){
+      let resObj = JSON.parse(res)
       console.log(res)
       // alert(res)
-      let payload = {hash:res}
-      this.msg = res
-      window.chrome.runtime.sendMessage({
-        action:'reply-background-bty-parallel-main',
-        payload
-      })
+      // let payload = {hash:res}
+      let payload = {}
+      this.checking = ''
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-bty-parallel-main',
+          payload
+        })
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-bty-parallel-main',
+          payload
+        })
+      }
+      this.win.closeWindow(this.win.windowId);
     },
     ccnyMainCallback(res){
+      let resObj = JSON.parse(res)
       console.log(res)
-      // alert(res)
-      let payload = {hash:res}
-      this.msg = res
-      window.chrome.runtime.sendMessage({
-        action:'reply-background-ccny-main-parallel',
-        payload
-      })
+      // let payload = {hash:res}
+      let payload = {}
+      this.checking = ''
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-ccny-main-parallel',
+          payload
+        })
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-ccny-main-parallel',
+          payload
+        })
+      }
+      this.win.closeWindow(this.win.windowId);
     },
     ccnyParallelCallback(res){
+      let resObj = JSON.parse(res)
       console.log(res)
-      // alert(res)
-      let payload = {hash:res}
-      this.msg = res
-      window.chrome.runtime.sendMessage({
-        action:'reply-background-ccny-parallel-main',
-        payload
-      })
+      let payload = {}
+      // let payload = {hash:res}
+      this.checking = ''
+      if(resObj.hash){
+        this.successed = 'yes'
+        this.msg = resObj.hash
+        payload = {result:resObj.hash,error:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-ccny-parallel-main',
+          payload
+        })
+      }else{
+        this.successed = 'no'
+        this.checking = ''
+        this.msg = resObj.desc + " " + resObj.msg
+        payload = {error:resObj.desc + " " + resObj.msg,result:null}
+        window.chrome.runtime.sendMessage({
+          action:'reply-background-ccny-parallel-main',
+          payload
+        })
+      }
+      // this.win.closeWindow(this.win.windowId);
     }
   },
   mounted() {
     window.chrome.runtime.getBackgroundPage(win => {
+    console.log('-=-=-=-=-=-=-=-=-=-=-='+win.txType+'=-=-=-=-=-=')
+      this.win = win
       let time = setTimeout(() => {
         if (this.successed != "yes") {
           this.successed = "no";
@@ -114,13 +187,13 @@ export default {
             action:'reply-background-sign-tx',
             payload,
           })
-          setTimeout(() => {
+          // setTimeout(() => {
             this.successed = "yes";
             this.msg = '签名完成。'
-            setTimeout(() => {
-              // win.closeWindow(win.windowId);
-            }, 500);
-          }, 100);
+            // setTimeout(() => {
+              win.closeWindow(win.windowId);
+          //   }, 500);
+          // }, 100);
           // return Promise.resolve({signedTx})
           // return this.sendTransaction(signedTx, win.txObj.url);
         })
@@ -145,6 +218,7 @@ export default {
           }, 300);
         });
       }else if(win.txType == 'sign-group-tx'){
+        console.log('==================sign-group-tx')
         getChromeStorage("parallelNodeList").then(res=>{
           console.log(res)
           if (res.parallelNodeList) {
@@ -162,6 +236,7 @@ export default {
                 }, 3000);
                 return
               }else{
+                this.msg = '交易组签名中...'
                 return Promise.resolve().then(()=>{
                   console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
                   if(win.currentAccount.hexPrivateKey){
@@ -171,8 +246,9 @@ export default {
                     return
                   }
                 }).then(signedTx=>{
-                  console.log('signGroupTx')
+                  console.log('signGroupTx==')
                   console.log(signedTx)
+                  console.log(win.txObj.url)
                   return this.sendTransaction(signedTx, win.txObj.url);
                 }).then(res=>{
                   console.log('交易组签名完成。')
@@ -180,19 +256,42 @@ export default {
                   setTimeout(() => {
                     this.successed = "yes";
                     this.msg = '交易组签名完成。'
-                    let payload = {hash:res}
-                    window.chrome.runtime.sendMessage({
-                      action:'reply-background-sign-group-tx',
-                      payload,
+                    this.checking = '交易检测中...'
+                    // let payload = {hash:res}
+                    let payload = {}
+                    this.txStateCheckTask(res,win.txObj.url,error=>{
+                      console.log('===error===')
+                      console.log(error)
+                      this.checking = ''
+                      if (error) {
+                        this.checking = error
+                        payload = {error,result:res}
+                        window.chrome.runtime.sendMessage({
+                          action:'reply-background-sign-group-tx',
+                          payload,
+                        })
+                        // return
+                      }else{
+                        if(res.substr(0,2) == '0x'){
+                          payload = {result:res,error:null}
+                          window.chrome.runtime.sendMessage({
+                            action:'reply-background-sign-group-tx',
+                            payload,
+                          })
+                          win.closeWindow(win.windowId);
+                        }
+                      }
+                      // window.chrome.runtime.sendMessage({
+                      //   action:'reply-background-sign-group-tx',
+                      //   payload,
+                      // })
                     })
-                    setTimeout(() => {
-                      // win.closeWindow(win.windowId);
-                    }, 500);
                   }, 0);
                 }).catch(err=>{
+                  console.log('捕获异常')
                   console.log(err)
                   this.successed = "no";
-                    this.msg = err
+                  this.msg = err
                 })
               }
             })
@@ -368,6 +467,7 @@ export default {
                 }, 3000);
                 return
               }else{
+                this.msg = '数字资产跨链兑换中...'
                 if(win.txType == 'bty-main-parallel'){
                   this.btyMain2parallel(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.btyMainCallback)
                 }else if(win.txType == 'bty-parallel-main'){
@@ -398,6 +498,16 @@ export default {
     i {
       margin-bottom: 10px;
       font-size: 40px;
+    }
+    >p{
+      width: 100%;
+      padding: 0 10px;
+      text-align: center;
+      word-wrap:break-word;
+      word-break:break-all;
+      &:nth-of-type(2){
+        margin-top: 15px;
+      }
     }
   }
 }
