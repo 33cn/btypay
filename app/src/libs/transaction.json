@@ -79,7 +79,21 @@
             }
         },
         "CoinsAction": {
+            "oneofs": {
+                "value": {
+                    "oneof": [
+                        "transfer",
+                        "withdraw",
+                        "genesis",
+                        "transferToExec"
+                    ]
+                }
+            },
             "fields": {
+                "ty": {
+                    "type": "int32",
+                    "id": 3
+                },
                 "transfer": {
                     "type": "AssetsTransfer",
                     "id": 1
@@ -88,77 +102,93 @@
                     "type": "AssetsWithdraw",
                     "id": 4
                 },
+                "genesis": {
+                    "type": "AssetsGenesis",
+                    "id": 2
+                },
                 "transferToExec": {
                     "type": "AssetsTransferToExec",
                     "id": 5
                 }
             }
         },
-        "AssetsTransfer":{
-            "fields":{
-                "cointoken":{
-                    "type":"string",
-                    "id":1
+        "AssetsGenesis": {
+            "fields": {
+                "amount": {
+                    "type": "int64",
+                    "id": 2
                 },
-                "amount":{
-                    "type":"int64",
-                    "id":2
-                },
-                "note":{
-                    "type":"bytes",
-                    "id":3
-                },
-                "to":{
-                    "type":"string",
-                    "id":4
+                "returnAddress": {
+                    "type": "string",
+                    "id": 3
                 }
             }
         },
-        "AssetsWithdraw":{
-            "fields":{
-                "cointoken":{
-                    "type":"string",
-                    "id":1
+        "AssetsTransfer": {
+            "fields": {
+                "cointoken": {
+                    "type": "string",
+                    "id": 1
                 },
-                "amount":{
-                    "type":"int64",
-                    "id":2
+                "amount": {
+                    "type": "int64",
+                    "id": 2
                 },
-                "note":{
-                    "type":"bytes",
-                    "id":3
+                "note": {
+                    "type": "bytes",
+                    "id": 3
                 },
-                "execName":{
-                    "type":"string",
-                    "id":4
-                },
-                "to":{
-                    "type":"string",
-                    "id":5
+                "to": {
+                    "type": "string",
+                    "id": 4
                 }
             }
         },
-        "AssetsTransferToExec":{
-            "fields":{
-                "cointoken":{
-                    "type":"string",
-                    "id":1
+        "AssetsWithdraw": {
+            "fields": {
+                "cointoken": {
+                    "type": "string",
+                    "id": 1
                 },
-                "amount":{
-                    "type":"int64",
-                    "id":2
+                "amount": {
+                    "type": "int64",
+                    "id": 2
                 },
-                "note":{
-                    "type":"bytes",
-                    "id":3
+                "note": {
+                    "type": "bytes",
+                    "id": 3
                 },
-                "execName":{
-                    "type":"string",
-                    "id":4
+                "execName": {
+                    "type": "string",
+                    "id": 4
                 },
-                "to":{
-                    "type":"string",
-                    "id":5
+                "to": {
+                    "type": "string",
+                    "id": 5
+                }
+            }
+        },
+        "AssetsTransferToExec": {
+            "fields": {
+                "cointoken": {
+                    "type": "string",
+                    "id": 1
+                },
+                "amount": {
+                    "type": "int64",
+                    "id": 2
+                },
+                "note": {
+                    "type": "bytes",
+                    "id": 3
+                },
+                "execName": {
+                    "type": "string",
+                    "id": 4
+                },
+                "to": {
+                    "type": "string",
+                    "id": 5
                 }
             }
         }

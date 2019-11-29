@@ -71,23 +71,42 @@ export default {
       this.$refs['loginForm'].validate(valid=>{
         if(valid){
           this.isLogining = true;
-          const mnemonic = decrypt(this.cipherMnemonic, this.form.pwd);
-          // console.log(mnemonic);
-          // console.log(mnemonic.split(" "));
-          if (mnemonic.split(" ").length !== 15) {
-            this.$message.error("密码错误");
-            this.isLogining = false;
-            return;
+          if(this.cipherMnemonic == ''){
+            getChromeStorage("ciphertext").then(result =>{
+              if (result&&result.ciphertext) {
+                this.cipherMnemonic = result.ciphertext;
+                const mnemonic = decrypt(this.cipherMnemonic, this.form.pwd);
+                if (mnemonic.split(" ").length !== 15) {
+                  this.$message.error("密码错误");
+                  this.isLogining = false;
+                  return;
+                }
+                this.createHDWallet(mnemonic);
+                this.recoverAccount();
+                this.$message.success("登录成功");
+                this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
+                setChromeStorage("password", this.form.pwd).then(res=>{
+                  this.$router.push("/WalletIndex");
+                })
+              }
+            })
+          }else{
+            const mnemonic = decrypt(this.cipherMnemonic, this.form.pwd);
+            console.log(mnemonic);
+            console.log(mnemonic.split(" "));
+            if (mnemonic.split(" ").length !== 15) {
+              this.$message.error("密码错误");
+              this.isLogining = false;
+              return;
+            }
+            this.createHDWallet(mnemonic);
+            this.recoverAccount();
+            this.$message.success("登录成功");
+            this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
+            setChromeStorage("password", this.form.pwd).then(res=>{
+              this.$router.push("/WalletIndex");
+            })
           }
-          this.createHDWallet(mnemonic);
-          this.recoverAccount();
-          this.$message.success("登录成功");
-          this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
-          setChromeStorage("password", this.form.pwd).then(res=>{
-            this.$router.push("/WalletIndex");
-          })
-          setTimeout(() => {
-          }, 500);
         }
       })
     },
@@ -119,12 +138,13 @@ export default {
         getChromeStorage("loginTime").then(res => {
           if (res.loginTime) {
             let time = 1 * 24 * 60 * 60 * 1000;
-            // console.log(res.loginTime)
-            // console.log(new Date().valueOf())
-            // console.log(new Date().valueOf() - parseInt(res.loginTime))
             if (new Date().valueOf() - parseInt(res.loginTime) >= time) {
               console.log("大于24小时");
-              //   this.$router.push({ name: "login" });
+              getChromeStorage("ciphertext").then(result =>{
+                if (result&&result.ciphertext) {
+                  this.cipherMnemonic = result.ciphertext;
+                }
+              })
             } else {
               // this.$router.push("/WalletIndex");
               getChromeStorage('beforePath').then(res=>{
