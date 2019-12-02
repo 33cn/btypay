@@ -54,12 +54,12 @@
       <p>温馨提示：跨链兑换支持使用BTY兑换{{currentParallel.coin}}，也可将{{currentParallel.coin}}兑换成BTY。</p>
     </section>
     <p @click="convertHandle">{{isOperatoring?'兑换中，请稍候...':'跨链兑换'}}</p>
-    <!-- <p @click="test('btymain')">bty正向跨链</p>
+    <p @click="test('btymain')">bty正向跨链</p>
     <p @click="test('btypara')">bty反向跨链</p>
     <p @click="test('ccnymain')">ccny正向跨链</p>
     <p @click="test('ccnypara')">ccny反向跨链</p>
     <p @click="showBalance">查余额</p>
-    <p @click="testt">测试</p> -->
+    <p @click="testt">测试</p>
   </div>
 </template>
 
@@ -74,7 +74,7 @@ import { createNamespacedHelpers } from "vuex";
 import Long from "long";
 const { mapState } = createNamespacedHelpers("Account");
 export default {
-  mixins: [walletAPI, parallelAPI,test],
+  mixins: [walletAPI, parallelAPI],
   components: { AssetBack },
   computed: {
     ...mapState([
@@ -115,16 +115,15 @@ export default {
 
     test(val){
       console.log('===============')
-      console.log(this.currentMain.url)
       console.log(val)
       if(val == 'btymain'){
-        this.btyMain2parallel(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.btyMain2parallel(this.currentAccount.hexPrivateKey,10*1e8,this.tipHandle)
       }else if(val == 'btypara'){
-        this.btyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.btyParallel2Main(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'ccnymain'){
-        this.ccnyMain2parallel(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.ccnyMain2parallel(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'ccnypara'){
-        this.ccnyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.ccnyParallel2Main(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }
     },
     testt(){

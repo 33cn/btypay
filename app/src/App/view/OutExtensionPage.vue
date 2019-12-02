@@ -60,7 +60,7 @@ export default {
           action:'reply-background-bty-main-parallel',
           payload
         })
-        this.win.closeWindow(this.win.windowId);
+        // this.win.closeWindow(this.win.windowId);
       }else{
         this.successed = 'no'
         this.checking = ''
@@ -71,7 +71,7 @@ export default {
           payload
         })
         console.log('this.win.windowId='+this.win.windowId)
-        this.win.closeWindow(this.win.windowId);
+        // this.win.closeWindow(this.win.windowId);
       }
     },
     btyParallelCallback(res){
