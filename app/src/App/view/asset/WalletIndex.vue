@@ -6,20 +6,17 @@
       刷新
     </p>
     <section class="content">
-      <p>我的资产</p>
-      <!-- <i>我的资产<i class="el-icon-arrow-down el-icon--right"></i></p> -->
-      <!-- <el-dropdown trigger="click" @command="handleCommand">
+      <!-- <p>我的资产</p> -->
+      <el-dropdown trigger="click" @command="handleCommand">
         <span class="el-dropdown-link">
-          下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+          账户一<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">黄金糕</el-dropdown-item>
-          <el-dropdown-item command="b">狮子头</el-dropdown-item>
-          <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>
-          <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>
-          <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>
+          <el-dropdown-item command="a" class="currentAccount">账户一</el-dropdown-item>
+          <el-dropdown-item command="b">账户二</el-dropdown-item>
+          <el-dropdown-item command="c">账户三</el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown> -->
+      </el-dropdown>
       <ul>
         <li @click="toBty">
           <div class="left">
@@ -250,7 +247,7 @@ export default {
     font-weight: bold;
     position: absolute;
     right: 45px;
-    top: 138px;
+    top: 128px;
     color: rgba(245, 185, 71, 1);
     cursor: pointer;
     a {
@@ -258,13 +255,22 @@ export default {
     }
   }
   > section.content {
-    margin: 41px 26px 0px 31px;
+    margin: 31px 26px 0px 31px;
     > p {
       font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
       color: rgba(255, 255, 255, 1);
       margin-bottom: 14px;
+    }
+    >div.el-dropdown{
+      margin: 0 0 20px 2px;
+      span{
+        line-height: 1;
+        font-size:16px;
+        font-family:Microsoft YaHei;
+        color:rgba(255,255,255,1);
+      }
     }
     ul {
       li {

@@ -15,30 +15,49 @@
                     <img v-if="mouseEnterIndex==i" src="../../../assets/images/selected.png" alt="">
                 </div>
                 <div class="middle">
-                    <p>总资产：<span>{{item.assets}} USD</span></p>
+                    <p>总资产：<span>{{item.assets}} {{$store.state.currency}}</span></p>
                     <p>
                         <span>{{item.address | addressFilter}}</span>
                         <img @click="copyHandle($event, item.address)" src="../../../assets/images/copy.png" alt="">
                     </p>
                 </div>
                 <div class="down">
-                    <p @click.stop="delHandle(item)">
+                    <p @click.stop="dialogIsShow=true;editOrDel='del'">
                         <img src="../../../assets/images/delAccount.png" alt="">
                         <span>删除账户</span>
                     </p>
-                    <p @click.stop="exportHandle(item)">
+                    <p @click.stop="dialogIsShow=true;editOrDel='edit'">
                         <img src="../../../assets/images/exportAccount.png" alt="">
                         <span>导出账户</span>
                     </p>
                 </div>
             </li>
         </ul>
+        <el-dialog
+            :title="title"
+            :visible.sync="dialogIsShow"
+            width="324px"
+            :show-close="false"
+            :class="editOrDel=='del'?'mainNode delAccount':'mainNode editAccount'">
+            <div v-if="editOrDel=='del'">
+                <p>您确定要删除账户吗？</p>
+            </div>
+            <div v-if="editOrDel=='edit'">
+                <p>名称</p>
+                <input type="text">
+            </div>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogIsShow = false">取消</el-button>
+              <el-button type="primary" @click="submitHandle">确认</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import HomeHeader from "@/components/HomeHeader.vue";
 import AssetBack from "@/components/AssetBack.vue";
+import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
 import { clip } from "@/libs/clip.js";
 export default {
     components: { HomeHeader,AssetBack },
@@ -71,12 +90,14 @@ export default {
                     paraNode:[],
                     parallelNodeList:[],
                     ciphertext:'',
-                    accountIndexList:null,
+                    accountIndexList:{},
                     currentAccountIndex:''
                 }
             ],
             mouseIsEnter:true,
             mouseEnterIndex:1,
+            dialogIsShow:false,
+            editOrDel:'edit'
         }
     },
     methods:{
@@ -88,6 +109,13 @@ export default {
         },
         exportHandle(val){
             console.log('导出了')
+        },
+        submitHandle(){
+            if(this.editOrDel == 'edit'){
+
+            }else if(this.editOrDel == 'del'){
+
+            }
         },
         copyHandle(event, text) {
           clip({
@@ -102,6 +130,14 @@ export default {
                 }
           });
         },
+    },
+    computed:{
+        title(){
+            return this.editOrDel=='edit'?'更改账户名称':this.editOrDel=='del'?'删除账户':''
+        }
+    },
+    mounted(){
+
     },
     filters:{
         addressFilter(val){

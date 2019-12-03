@@ -124,6 +124,40 @@
       }
     }
   }
+  &.delAccount{
+    .el-dialog{
+      padding-bottom: 32px;
+      .el-dialog__body{
+        margin: 40px 0 32px;
+        p{
+          text-align: center;
+          font-size:16px;
+          font-family:Microsoft YaHei;
+          color:rgba(22,42,84,0.68);
+        }
+      }
+    }
+  }
+  &.editAccount{
+    .el-dialog{
+      padding-bottom: 32px;
+      .el-dialog__body{
+        margin: 32px 30px 33px;
+        padding-bottom: 0px;
+        p{
+          text-align: left;
+          font-size:16px;
+          font-family:Microsoft YaHei;
+          color:rgba(22,42,84,0.68);
+          margin-left: 8px;
+        }
+        input{
+          margin-top: 10px;
+          padding: 10px;
+        }
+      }
+    }
+  }
   .el-button--primary{
     box-shadow: none!important;
   }
@@ -167,6 +201,35 @@
         border:1px solid rgba(33,123,244,1);
         border-radius:10px;
       }
+    }
+  }
+}
+
+
+ul.el-dropdown-menu.el-popper{
+  width: 80px;
+  min-width: 80px;
+  margin: 4px 0 0 0;
+  padding: 16px 0;
+  background:rgba(168,191,239,1);
+  box-shadow:0px 16px 45px 1px rgba(124,154,218,0.63);
+  border-radius:4px;
+  left: 54px!important;
+  li{
+    width: 100%;
+    min-width: 100%;
+    font-size:14px;
+    font-family:Microsoft YaHei;
+    color:rgba(255,255,255,1);
+    padding: 8px 0 5px;
+    text-align: center;
+    margin-bottom: 6px;
+    line-height: 1!important;
+    &:nth-last-of-type(1){
+      margin-bottom: 0px;
+    }
+    &.currentAccount{
+      background: #99B4E8;
     }
   }
 }

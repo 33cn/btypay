@@ -89,9 +89,11 @@ export default {
     },
     newAccount(name) {
       return this.getWallet().then(wallet => {
-        // console.log('newAccount')
-        // console.log(wallet)
+        console.log('========newAccount=========')
+        console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
+        console.log('========account=========')
+        console.log(account)
         if(wallet&&wallet.accountMap){
           this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         }
