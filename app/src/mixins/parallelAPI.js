@@ -594,17 +594,17 @@ export default {
             })
         },
         transferGameCoin2BTY(privateKey, amt, callback) {
-            // window.chrome.runtime.getBackgroundPage(win=>{
-            //     if(win&&win.currentAccount){
-            //         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
-            //     }
-            //     let to = ''
-            //     if(win.currentAccount.address){
-            //         to = win.currentAccount.address
-            //     }else{
-            //         to = this.currentAccount.address
-            //     }
-                let to = this.currentAccount.address
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+                // let to = this.currentAccount.address
                 console.log(to)
                 let mainUrl = this.currentMain.url
                 let paraUrl = this.currentParallel.url
@@ -629,40 +629,40 @@ export default {
                             return
                         }
     
-                        // this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
-                        //     console.log('hash2')
-                        //     console.log(hash2)
-                        //     this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
-                        //         if(err2 && err2 == 'no times'){
-                        //             callback(JSON.stringify({desc:'主链paracross余额为'+paraAmt,msg:'paraAmt'}))
-                        //             return
-                        //         }
-                        //         if (err2) {
-                        //             this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
-                        //             callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
-                        //             return
-                        //         }
+                        this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
+                            console.log('hash2')
+                            console.log(hash2)
+                            this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
+                                if(err2 && err2 == 'no times'){
+                                    callback(JSON.stringify({desc:'主链paracross余额为'+paraAmt,msg:'paraAmt'}))
+                                    return
+                                }
+                                if (err2) {
+                                    this.PARA_ERROR.G2B_PARA_ERROR.msg = err2
+                                    callback(JSON.stringify(this.PARA_ERROR.G2B_PARA_ERROR))
+                                    return
+                                }
     
-                        //         this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
-                        //             console.log('hash3')
-                        //             console.log(hash3)
-                        //             this.txStateCheckTask(hash3, mainUrl, err3 => {
+                                this.mainParacross2Coins(privateKey, paraAmt, mainUrl).then(hash3 => {
+                                    console.log('hash3')
+                                    console.log(hash3)
+                                    this.txStateCheckTask(hash3, mainUrl, err3 => {
     
-                        //                 if (err3) {
-                        //                     this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
-                        //                     callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
-                        //                     return
-                        //                 }
-                        //                 callback(JSON.stringify({hash:hash3}))
+                                        if (err3) {
+                                            this.PARA_ERROR.G2B_PARA2COIN_ERROR.msg = err3
+                                            callback(JSON.stringify(this.PARA_ERROR.G2B_PARA2COIN_ERROR))
+                                            return
+                                        }
+                                        callback(JSON.stringify({hash:hash3}))
     
-                        //             })
+                                    })
     
-                        //         })
-                        //     })
-                        // })
+                                })
+                            })
+                        })
                     })
                 })
-            // })
+            })
         },
 
 
@@ -781,17 +781,17 @@ export default {
         },
         // CCNY主链向平行链
         ccnyMain2parallel(privateKey, amt, callback){
-            // window.chrome.runtime.getBackgroundPage(win=>{
-            //     if(win&&win.currentAccount){
-            //         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
-            //     }
-            //     let to = ''
-            //     if(win.currentAccount.address){
-            //         to = win.currentAccount.address
-            //     }else{
-            //         to = this.currentAccount.address
-            //     }
-                let to = this.currentAccount.address
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+                // let to = this.currentAccount.address
                 this.BUY_ID = '39a7d4d7f171c2be87985e7689d5778f9a675a0c61d02ae003824ea4b19b753c'
                 this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','token.CCNY')
                 // let to = this.currentAccount.address
@@ -847,21 +847,21 @@ export default {
                         })
                     })
                 })
-            // })
+            })
         },
         // CCNY平行链向主链
         ccnyParallel2Main(privateKey, amt, callback){
-            // window.chrome.runtime.getBackgroundPage(win=>{
-            //     if(win&&win.currentAccount){
-            //         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
-            //     }
-            //     let to = ''
-            //     if(win.currentAccount.address){
-            //         to = win.currentAccount.address
-            //     }else{
-            //         to = this.currentAccount.address
-            //     }
-            let to = this.currentAccount.address
+            window.chrome.runtime.getBackgroundPage(win=>{
+                if(win&&win.currentAccount){
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+                }
+                let to = ''
+                if(win.currentAccount.address){
+                    to = win.currentAccount.address
+                }else{
+                    to = this.currentAccount.address
+                }
+            // let to = this.currentAccount.address
                 this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
                 this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY')
                 let mainUrl = this.currentMain.url
@@ -919,7 +919,7 @@ export default {
                         })
                     })
                 })
-            // })
+            })
         },
         testCurrentMain(){
             console.log('---------this.currentAccount-----------')

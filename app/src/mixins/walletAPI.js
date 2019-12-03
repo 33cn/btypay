@@ -189,7 +189,10 @@ export default {
     refreshMainAsset() {
       console.log('refreshMainAsset')
       console.log(this.currentAccount)
-      let addr = this.currentAccount.address
+      let addr = ''
+      if(this.currentAccount){
+        addr = this.currentAccount.address
+      }
       let url = this.currentMain.url
       return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
@@ -210,7 +213,10 @@ export default {
     },
 
     refreshParallelAsset() {
-      let addr = this.currentAccount.address
+      let addr = ''
+      if(this.currentAccount){
+        addr = this.currentAccount.address
+      }
       let url = this.currentParallel.url
       return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {

@@ -54,12 +54,12 @@
       <p>温馨提示：跨链兑换支持使用BTY兑换{{currentParallel.coin}}，也可将{{currentParallel.coin}}兑换成BTY。</p>
     </section>
     <p @click="convertHandle">{{isOperatoring?'兑换中，请稍候...':'跨链兑换'}}</p>
-    <p @click="test('btymain')">bty正向跨链</p>
+    <!-- <p @click="test('btymain')">bty正向跨链</p>
     <p @click="test('btypara')">bty反向跨链</p>
     <p @click="test('ccnymain')">ccny正向跨链</p>
     <p @click="test('ccnypara')">ccny反向跨链</p>
     <p @click="showBalance">查余额</p>
-    <p @click="testt">测试</p>
+    <p @click="testt">测试</p> -->
   </div>
 </template>
 
@@ -117,7 +117,7 @@ export default {
       console.log('===============')
       console.log(val)
       if(val == 'btymain'){
-        this.btyMain2parallel(this.currentAccount.hexPrivateKey,10*1e8,this.tipHandle)
+        this.btyMain2parallel(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'btypara'){
         this.btyParallel2Main(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'ccnymain'){
@@ -271,13 +271,13 @@ export default {
         if (this.currentAccount) {
           // B2G
           if (this.convert == "B2G") {
-            this.transferBTY2GameCoin(
+            this.btyMain2parallel(
               this.currentAccount.hexPrivateKey,
               parseInt(this.exportVal * 1e8),
               this.convertResHandle
             );
           } else if (this.convert == "G2B") {
-            this.transferGameCoin2BTY(
+            this.btyParallel2Main(
               this.currentAccount.hexPrivateKey,
               parseInt(this.exportVal * 1e8),
               this.convertResHandle
