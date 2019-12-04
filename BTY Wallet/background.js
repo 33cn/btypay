@@ -368,7 +368,27 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
           },
         })
       }
-      
+      break
+    case 'query-current-para-node':
+      if (isWalletUnlock()) {
+        window.chrome.storage.local.get('paraNode', (result) => {
+          sendMessage({
+            action: 'answer-query-current-para-node',
+            payload: {
+              error: null,
+              result:result.paraNode
+            },
+          })
+        })
+      } else {
+        sendMessage({
+          action: 'answer-query-current-para-node',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
       break
     default:
       
