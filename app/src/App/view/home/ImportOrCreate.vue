@@ -35,9 +35,13 @@ export default {
         setChromeStorage('element',{}).then(res=>{
             // console.log(res)
         })
-        getChromeStorage("Accounts").then(res=>{
-            if(!res.Accounts){
-                setChromeStorage("Accounts",[]).then(res=>{})
+        getChromeStorage("AccountList").then(res=>{
+            if(!res.AccountList){
+                setChromeStorage("AccountList",[]).then(res=>{})
+            }else{
+                if(!res.AccountList.length){
+                    setChromeStorage("AccountList",[]).then(res=>{})
+                }
             }
         })
     }

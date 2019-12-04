@@ -3,7 +3,7 @@
     <home-header></home-header>
     <p @click="getBalance">
       <!-- <router-link :to="{ name: 'login'}">刷新</router-link> -->
-      刷新
+      刷新test
     </p>
     <section class="content">
       <!-- <p>我的资产</p> -->
@@ -164,39 +164,39 @@ export default {
     },
     getBalance(){
       setTimeout(() => {
-      this.refreshMainAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('bty',{
-              time: 1500,
-              num: this.numFilter(this.mainAsset.amt),
-              regulator: 50
-            })
-            this.NumAutoPlusAnimation('btyPrice',{
-              time: 1500,
-              num: this.numFilter(this.mainAsset.amt*10),
-              regulator: 50
-            })
+        this.refreshMainAsset().then(res=>{
+          if(res == 'success'){
+            if(this.numIsAnimation){
+              this.NumAutoPlusAnimation('bty',{
+                time: 1500,
+                num: this.numFilter(this.mainAsset.amt),
+                regulator: 50
+              })
+              this.NumAutoPlusAnimation('btyPrice',{
+                time: 1500,
+                num: this.numFilter(this.mainAsset.amt*10),
+                regulator: 50
+              })
+            }
           }
-        }
-      })
-      this.refreshParallelAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('game',{
-              time: 1500,
-              num: this.numFilter(this.parallelAsset.amt),
-              regulator: 50
-            })
-            this.NumAutoPlusAnimation('gamePrice',{
-              time: 1500,
-              num: this.numFilter(this.parallelAsset.amt*10),
-              regulator: 50
-            })
+        })
+        this.refreshParallelAsset().then(res=>{
+          if(res == 'success'){
+            if(this.numIsAnimation){
+              this.NumAutoPlusAnimation('game',{
+                time: 1500,
+                num: this.numFilter(this.parallelAsset.amt),
+                regulator: 50
+              })
+              this.NumAutoPlusAnimation('gamePrice',{
+                time: 1500,
+                num: this.numFilter(this.parallelAsset.amt*10),
+                regulator: 50
+              })
+            }
           }
-        }
-      });
-    }, 10);
+        });
+      }, 10);
     }
   },
   mounted() {

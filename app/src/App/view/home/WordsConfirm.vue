@@ -85,11 +85,12 @@ export default {
       const walletObj = this.createHDWallet(seedString);
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
-      // setChromeStorage({ciphertext: ciphertext}).then(res=>{})
+      // setChromeStorage({ciphertext, ciphertext}).then(res=>{})
       getChromeStorage("CreateingWallet").then(res=>{
         if(res.CreateingWallet){
           let obj = res.CreateingWallet
           obj.ciphertext = ciphertext
+          obj.isLogout = false
           // obj.name = walletObj.accountMap[0].name
           // obj.address = walletObj.accountMap[0].address
           // obj.hexPrivateKey = walletObj.accountMap[0].hexPrivateKey
@@ -101,9 +102,11 @@ export default {
             console.log('=====钱包账户存储成功=====')
           })
           // 创建钱包账户，先判断已有钱包名称
-          getChromeStorage("Accounts").then(res=>{
-            if(res.Accounts){
-              let arr = res.Accounts
+          getChromeStorage("AccountList").then(res=>{
+            console.log('========AccountList==========')
+            console.log(res)
+            if(res.AccountList){
+              let arr = res.AccountList
               let name = ''
               for(let i=0; i<arr.length;i++){
                 if(arr[i].name.indexOf('钱包') > -1){
@@ -112,18 +115,18 @@ export default {
               }
               if(name){
                 let num = zhDigit_To_Arabic(name.substr(2,name.length-2))+1
-                this.newAccount('钱包'+Arabia_To_zhDigit(num));
+                this.newAccount('钱包'+Arabia_To_zhDigit(num),'create');
                 
               }else{
-                this.newAccount("钱包一");
+                this.newAccount("钱包一",'create');
               }
             }else{
-              this.$message.error("无Accounts");
+              this.$message.error("无AccountList");
             }
           })
 
         }else{
-          this.$message.error("无CreateingWallet");
+          this.$message.error("无CreateingWallet1");
         }
       })
       // this.newAccount("创世地址");
@@ -140,6 +143,11 @@ export default {
     }
   },
   mounted() {
+    let obj = {a:1}
+    let obj1 = {b:2}
+    let obj2 = {c:3}
+    obj = {...obj1,...obj2}
+    console.log(obj)
     // console.log(this.$store.state.Account.password)
     this.seedCharts = this.seedString.split(" ");
     this.seedChartsRandom = addPropToArrElem(

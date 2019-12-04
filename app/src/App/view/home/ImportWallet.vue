@@ -87,20 +87,11 @@ export default {
       this.$refs['createForm'].validate(valid=>{
         if(valid){
           this.saveSeed(this.seedStringInput, this.createForm.pwd)
-          // // 保存登录时间
-          // setChromeStorage('loginTime',(new Date()).valueOf()).then(res=>{
-          //   console.log(res)
-          // })
-          // this.initTxList('bty', res => {
-          //   if(res === "finish"){
-
-          //   }
-          // })
           setTimeout(() => {
             this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
-            setChromeStorage("password", this.createForm.pwd).then(res=>{
-              this.$router.push({ name: 'WalletIndex' })
-            })
+            // setChromeStorage("password", this.createForm.pwd).then(res=>{
+            //   this.$router.push({ name: 'WalletIndex' })
+            // })
           }, 500)
 
         }
@@ -110,10 +101,34 @@ export default {
       const walletObj = this.createHDWallet(seedString)
       // 加密助记词 
       let ciphertext = encrypt(seedString, password)
-      window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
-        // console.log('ciphertext is set to ' + ciphertext);
+      let obj = {
+        ciphertext,
+        password,
+        isLogout:false
+      }
+      // 在AccountList中找出登出的钱包
+      getChromeStorage("AccountList").then(res=>{
+        if(res.AccountList){
+          let account = {}
+          for(let i=0; i<res.AccountList.length;i++){
+            if(res.AccountList[i].isLogout){
+              account = res.AccountList[i]
+              account = {...obj}
+            }
+          }
+          if(!account){
+            alert('error：导入钱包找不到name')
+            return
+          }
+          setChromeStorage("CreateingWallet", account).then(res=>{
+            console.log('=====钱包账户存储成功=====')
+            this.newAccount(account.name,'import')
+          })
+        }else{
+          this.$message.error("无AccountList3");
+        }
       })
-      this.newAccount('创世地址')
+      // this.newAccount('创世地址')
       return walletObj
     },
   },

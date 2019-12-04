@@ -87,7 +87,7 @@ export default {
         }
       })
     },
-    newAccount(name) {
+    newAccount(name,type) {
       return this.getWallet().then(wallet => {
         console.log('========newAccount=========')
         console.log(wallet)
@@ -96,17 +96,9 @@ export default {
         console.log(account)
         if(wallet&&wallet.accountMap){
           this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
-          // 将创建、导入的钱包存入Accounts里
-          getChromeStorage("Accounts").then(res=>{
-            if(res.Accounts){
-
-            }else{
-              this.$message.error("无CreateingWallet");
-            }
-          })
         }
         // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
-        this.setCurrentAccount(account)
+        this.setCurrentAccount(account,type)
         // setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
     },
@@ -144,10 +136,60 @@ export default {
         })
       })
     },
-    setCurrentAccount(account) {
+    setCurrentAccount(account,type) {
       return getBackgroundPage().then(win => {
         win.currentAccount = account
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
+        // 将创建、导入的钱包存入AccountList里
+        getChromeStorage("CreateingWallet").then(res=>{
+          console.log('==============')
+          console.log(account)
+          console.log(res.CreateingWallet)
+          console.log(type)
+          console.log(this.currentMain)
+          console.log(this.currentParallel)
+          console.log('==============')
+          if(res.CreateingWallet){
+            let obj = {...res.CreateingWallet,...account}
+            if(!obj.address){
+              obj.address = account.address
+              obj.hexPrivateKey = account.hexPrivateKey
+            }
+            if(type == 'create'){
+              obj.currentMainNode = this.currentMain
+              obj.currentParaNode = this.currentParallel
+              obj.mainNodeList = [this.currentMain]
+              obj.parallelNodeList = [this.currentParallel]
+            }
+            console.log('即将存入AccountList')
+            console.log(obj)
+            // 将钱包名称name存入CurrentAccountName
+            setChromeStorage("CurrentAccountName", obj.name).then(res=>{
+              console.log('=====钱包名称存储成功=====')
+            })
+            getChromeStorage("AccountList").then(res=>{
+              console.log('========AccountList==========')
+              console.log(res)
+              if(res.AccountList){
+                let arr = []
+                if(res.AccountList.length){
+                  arr = res.AccountList.push(obj)
+                }else{
+                  arr = [obj]
+                }
+                console.log(arr)
+                setChromeStorage("AccountList", arr).then(res=>{
+                  console.log(res)
+                  console.log('=====钱包存入AccountList里=====')
+                })
+              }else{
+                this.$message.error("无AccountList2");
+              }
+            })
+          }else{
+            this.$message.error("无CreateingWallet2");
+          }
+        })
         return account
       }).then(account => {
         // setChromeStorage('currentAccountIndex', account.index)
