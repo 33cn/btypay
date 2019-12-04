@@ -233,3 +233,10 @@ ul.el-dropdown-menu.el-popper{
     }
   }
 }
+
+div.el-tooltip__popper{
+  padding: 3px 6px;
+  border: none!important;
+  transform: scale(0.85);
+  // background: #303133;
+}

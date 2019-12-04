@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import {setChromeStorage} from '@/libs/chromeUtil.js'
+import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
 export default {
     mounted(){
         console.log('ImportOrCreate')
@@ -34,6 +34,11 @@ export default {
         })
         setChromeStorage('element',{}).then(res=>{
             // console.log(res)
+        })
+        getChromeStorage("Accounts").then(res=>{
+            if(!res.Accounts){
+                setChromeStorage("Accounts",[]).then(res=>{})
+            }
         })
     }
 }

@@ -9,12 +9,12 @@
       <!-- <p>我的资产</p> -->
       <el-dropdown trigger="click" @command="handleCommand">
         <span class="el-dropdown-link">
-          账户一<i class="el-icon-arrow-down el-icon--right"></i>
+          钱包一<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a" class="currentAccount">账户一</el-dropdown-item>
-          <el-dropdown-item command="b">账户二</el-dropdown-item>
-          <el-dropdown-item command="c">账户三</el-dropdown-item>
+          <el-dropdown-item command="a" class="currentAccount">钱包一</el-dropdown-item>
+          <el-dropdown-item command="b">钱包二</el-dropdown-item>
+          <el-dropdown-item command="c">钱包三</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <ul>

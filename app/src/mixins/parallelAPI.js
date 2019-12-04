@@ -851,17 +851,17 @@ export default {
         },
         // CCNY平行链向主链
         ccnyParallel2Main(privateKey, amt, callback){
-            window.chrome.runtime.getBackgroundPage(win=>{
-                if(win&&win.currentAccount){
-                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
-                }
-                let to = ''
-                if(win.currentAccount.address){
-                    to = win.currentAccount.address
-                }else{
-                    to = this.currentAccount.address
-                }
-            // let to = this.currentAccount.address
+            // window.chrome.runtime.getBackgroundPage(win=>{
+            //     if(win&&win.currentAccount){
+            //         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
+            //     }
+            //     let to = ''
+            //     if(win.currentAccount.address){
+            //         to = win.currentAccount.address
+            //     }else{
+            //         to = this.currentAccount.address
+            //     }
+            let to = this.currentAccount.address
                 this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
                 this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY')
                 let mainUrl = this.currentMain.url
@@ -919,7 +919,7 @@ export default {
                         })
                     })
                 })
-            })
+            // })
         },
         testCurrentMain(){
             console.log('---------this.currentAccount-----------')

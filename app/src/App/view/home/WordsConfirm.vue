@@ -28,9 +28,10 @@ import DargableBtnGroup from "@/components/DragableBtnGroup.vue";
 import AssetBack from "@/components/AssetBack.vue";
 import { randomSort, addPropToArrElem } from "@/libs/common.js";
 import { encrypt } from "@/libs/crypto.js";
-import {setChromeStorage} from '@/libs/chromeUtil.js'
 import recover from "@/mixins/recover.js";
 import walletAPI from "@/mixins/walletAPI.js";
+import {getChromeStorage,setChromeStorage} from '@/libs/chromeUtil.js'
+import {Arabia_To_zhDigit,zhDigit_To_Arabic} from '@/libs/digit.js'
 export default {
   components: { AssetBack, DargableBtnGroup },
   mixins:[walletAPI,recover],
@@ -82,20 +83,50 @@ export default {
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
       const walletObj = this.createHDWallet(seedString);
-      // this.setPasswd('',password,this.mainUrl.url).then(res=>{
-      //   console.log('111111111111111111111')
-      //   console.log(res)
-      // }).catch(err=>{
-      //   console.log('22222222222222222222222')
-      //   console.log(err)
-      // })
-      // console.log(walletObj)
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
-      window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
-        // console.log('ciphertext is set to ' + ciphertext);
+      // setChromeStorage({ciphertext: ciphertext}).then(res=>{})
+      getChromeStorage("CreateingWallet").then(res=>{
+        if(res.CreateingWallet){
+          let obj = res.CreateingWallet
+          obj.ciphertext = ciphertext
+          // obj.name = walletObj.accountMap[0].name
+          // obj.address = walletObj.accountMap[0].address
+          // obj.hexPrivateKey = walletObj.accountMap[0].hexPrivateKey
+          obj = {...obj,...walletObj.accountMap[0]}
+          console.log('========钱包账户=======')
+          console.log(obj)
+          // 存储加密助记词
+          setChromeStorage("CreateingWallet", obj).then(res=>{
+            console.log('=====钱包账户存储成功=====')
+          })
+          // 创建钱包账户，先判断已有钱包名称
+          getChromeStorage("Accounts").then(res=>{
+            if(res.Accounts){
+              let arr = res.Accounts
+              let name = ''
+              for(let i=0; i<arr.length;i++){
+                if(arr[i].name.indexOf('钱包') > -1){
+                  name = arr[i].name
+                }
+              }
+              if(name){
+                let num = zhDigit_To_Arabic(name.substr(2,name.length-2))+1
+                this.newAccount('钱包'+Arabia_To_zhDigit(num));
+                
+              }else{
+                this.newAccount("钱包一");
+              }
+            }else{
+              this.$message.error("无Accounts");
+            }
+          })
+
+        }else{
+          this.$message.error("无CreateingWallet");
+        }
       })
-      this.newAccount("创世地址");
+      // this.newAccount("创世地址");
       return walletObj;
     },
     toggleChart(item) {

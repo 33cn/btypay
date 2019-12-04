@@ -96,10 +96,18 @@ export default {
         console.log(account)
         if(wallet&&wallet.accountMap){
           this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+          // 将创建、导入的钱包存入Accounts里
+          getChromeStorage("Accounts").then(res=>{
+            if(res.Accounts){
+
+            }else{
+              this.$message.error("无CreateingWallet");
+            }
+          })
         }
         // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
         this.setCurrentAccount(account)
-        setChromeStorage('accountIndexList', wallet.accountIndexList)
+        // setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
     },
 
@@ -142,7 +150,7 @@ export default {
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
         return account
       }).then(account => {
-        setChromeStorage('currentAccountIndex', account.index)
+        // setChromeStorage('currentAccountIndex', account.index)
       })
     },
     getCurrentAccount() {

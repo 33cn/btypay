@@ -3,10 +3,18 @@
         <div class="head" :style="isHidden?'display: none':'display:flex'">
             <p><img src="../assets/images/logo.png" alt=""></p>
             <div class="menu" v-if="!WalletIndex">
-                <router-link :to="{ name: 'dapps'}"><img src="../assets/images/zhaobi.png" alt=""></router-link>
-                <router-link :to="{ name: 'dapps'}"><img src="../assets/images/dappIcon.png" alt=""></router-link>
-                <img @click="lockHandle" src="../assets/images/lock.png" alt="">
-                <img src="../assets/images/menu.png" alt="" @click="dropdownIsShow=true">
+                <el-tooltip class="item" effect="dark" content="交易所" placement="bottom">
+                    <router-link :to="{ name: 'dapps'}"><img src="../assets/images/zhaobi.png" alt=""></router-link>
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="DAPP" placement="bottom">
+                    <router-link :to="{ name: 'dapps'}"><img src="../assets/images/dappIcon.png" alt=""></router-link> 
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="锁定" placement="bottom">
+                    <img @click="lockHandle" src="../assets/images/lock.png" alt="">  
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="菜单" placement="bottom">
+                    <img src="../assets/images/menu.png" alt="" @click="dropdownIsShow=true">  
+                </el-tooltip>
             </div>
         </div>
         <div class="mask" v-if="dropdownIsShow" @click="dropdownIsShow=false"></div>

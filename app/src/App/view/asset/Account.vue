@@ -65,17 +65,17 @@ export default {
         return{
             lists:[
                 {
-                    name:'账户一',
+                    name:'钱包一',
                     assets:1000,
                     address:'12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg'
                 },
                 {
-                    name:'账户一',
+                    name:'钱包二',
                     assets:1000,
                     address:'12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudd'
                 },
                 {
-                    name:'账户一',
+                    name:'钱包三',
                     assets:1000,
                     address:'12evczYyX9ZKPYvwSEvRkRyTjpSrJuLud1'
                 },
@@ -118,7 +118,7 @@ export default {
             }
         },
         copyHandle(event, text) {
-          clip({
+            clip({
                 event,
                 text,
                 response: (err, msg) => {
@@ -128,7 +128,7 @@ export default {
                     }
                     this.$message.success(msg);
                 }
-          });
+            });
         },
     },
     computed:{
@@ -164,6 +164,7 @@ export default {
         position: absolute;
         right: 63px;
         top: 126px;
+        cursor: pointer;
     }
     >ul{
         width: 366px;

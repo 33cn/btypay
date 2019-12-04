@@ -110,13 +110,6 @@ export default {
       const walletObj = this.createHDWallet(seedString)
       // 加密助记词 
       let ciphertext = encrypt(seedString, password)
-      // this.setPasswd(password,password,this.currentMain.url).then(res=>{
-      //   console.log('111111111111111111111')
-      //   console.log(res)
-      // }).catch(err=>{
-      //   console.log('22222222222222222222222')
-      //   console.log(err)
-      // })
       window.chrome.storage.local.set({ciphertext: ciphertext}, () => {
         // console.log('ciphertext is set to ' + ciphertext);
       })
