@@ -218,7 +218,7 @@ export default {
     }
   },
   mounted() {
-    this.shortAddress = this.currentAccount.address.substr(0,15)+'…'+this.currentAccount.address.substr(-4,4)
+    this.shortAddress = this.currentAccount.address.substr(0,14)+'…'+this.currentAccount.address.substr(-4,4)
     // let addr = '12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg'
     // console.log('HHHHHHHHHHHHHHHHHHHHHHH')
     // // console.log(addr.substr(0,14))

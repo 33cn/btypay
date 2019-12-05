@@ -769,13 +769,13 @@ export default {
         },
         // BTY主链向平行链
         btyMain2parallel(privateKey, amt, callback){
-            this.BUY_ID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
+            this.BUY_ID = '31cb55e4aec9939e3e43e3911e41b8f8811ac0d693948b332acbfd59a1ab2657'
             this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','coins.bty')
             this.transferBTY2GameCoin(privateKey, amt, callback)
         },
         // BTY平行链向主链
         btyParallel2Main(privateKey, amt, callback){
-            this.BUY_ID = '1a8b6f5cfab8ebe4208a58be4a33768d20122ac750715fb4229951c624a8819e'
+            this.BUY_ID = '814b6ae46ec4e5ab0ef86d0a45f87fac8db512e29173d4f57557028d70680c9c'
             this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','para')
             this.transferGameCoin2BTY(privateKey, amt, callback)
         },
@@ -792,8 +792,8 @@ export default {
                     to = this.currentAccount.address
                 }
                 // let to = this.currentAccount.address
-                this.BUY_ID = '39a7d4d7f171c2be87985e7689d5778f9a675a0c61d02ae003824ea4b19b753c'
-                this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','token.CCNY')
+                this.BUY_ID = 'fc1385b733208093afea7f00adfb4bd2766d266203bc5ca2a1507763dfd60fad'
+                this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','token.CCNY')
                 // let to = this.currentAccount.address
                 let mainUrl = this.currentMain.url
                 let paraUrl = this.currentParallel.url
@@ -862,8 +862,8 @@ export default {
                     to = this.currentAccount.address
                 }
             // let to = this.currentAccount.address
-                this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
-                this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY')
+                this.BUY_ID = 'c1b64f931468a2e03e41eb4263fca5e04790b8ecff50771c362239a3d6b45604'
+                this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','CCNY')
                 let mainUrl = this.currentMain.url
                 let paraUrl = this.currentParallel.url
     
