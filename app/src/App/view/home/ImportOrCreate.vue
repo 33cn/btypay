@@ -1,6 +1,6 @@
 <template>
     <div class="ImportOrCreate_container">
-        <p>您是新用户吗?</p>
+        <p @click="tesst">您是新用户吗?</p>
         <ul>
             <li>
                 <p class="desc">不是，我已经有比特元钱包了。</p>
@@ -27,6 +27,11 @@
 <script>
 import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
 export default {
+    methods:{
+        tesst(){
+           setChromeStorage("AccountList", [] ).then(res=>{})
+        }
+    },
     mounted(){
         console.log('ImportOrCreate')
         setChromeStorage('beforePath',{}).then(res=>{

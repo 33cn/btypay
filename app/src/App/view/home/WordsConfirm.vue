@@ -109,8 +109,9 @@ export default {
               let arr = res.AccountList
               let name = ''
               for(let i=0; i<arr.length;i++){
-                if(arr[i].name.indexOf('钱包') > -1){
-                  name = arr[i].name
+                let pA = JSON.parse(arr[i])
+                if(pA.name.indexOf('钱包') > -1){
+                  name = pA.name
                 }
               }
               if(name){

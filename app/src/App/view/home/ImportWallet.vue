@@ -89,9 +89,7 @@ export default {
           this.saveSeed(this.seedStringInput, this.createForm.pwd)
           setTimeout(() => {
             this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
-            // setChromeStorage("password", this.createForm.pwd).then(res=>{
-            //   this.$router.push({ name: 'WalletIndex' })
-            // })
+            this.$router.push({ name: 'WalletIndex' })
           }, 500)
 
         }
@@ -108,15 +106,25 @@ export default {
       }
       // 在AccountList中找出登出的钱包
       getChromeStorage("AccountList").then(res=>{
+        console.log('=====res.AccountList==========')
+        console.log(res.AccountList)
+        console.log(res.AccountList.length)
+        console.log(JSON.parse(res.AccountList[0]))
+        // console.log(JSON.parse(res.AccountList[1]))
         if(res.AccountList){
           let account = {}
           for(let i=0; i<res.AccountList.length;i++){
-            if(res.AccountList[i].isLogout){
-              account = res.AccountList[i]
-              account = {...obj}
+            let pA = JSON.parse(res.AccountList[i])
+            if(pA.isLogout){
+              console.log('存在name')
+              console.log(pA)
+              // account = {...pA}
+              account = {...pA,...obj}
+              break
             }
           }
-          if(!account){
+          console.log(account)
+          if(!account.name){
             alert('error：导入钱包找不到name')
             return
           }

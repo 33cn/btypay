@@ -4,13 +4,13 @@
         <asset-back title="我的账户" backPath="/WalletIndex"></asset-back>
         <p>新增</p>
         <ul>
-            <li v-for="(item,i) in lists" :key="i" :class="mouseEnterIndex==i?'mouseEnter':''" 
+            <li v-for="(item,i) in lists" :key="item.address" :class="mouseEnterIndex==i?'mouseEnter':''" 
                 @mouseover="mouseEnterIndex=i" @mouseleave="mouseEnterIndex=null"
                 @click="mouseEnterIndex=i">
                 <div class="upper">
                     <p>
                         <span>{{item.name}}</span>
-                        <img @click="editHandle(item)" src="../../../assets/images/edit.png" alt="">
+                        <img @click="item=item;dialogIsShow=true;editOrDel='edit'" src="../../../assets/images/edit.png" alt="">
                     </p>
                     <img v-if="mouseEnterIndex==i" src="../../../assets/images/selected.png" alt="">
                 </div>
@@ -22,11 +22,11 @@
                     </p>
                 </div>
                 <div class="down">
-                    <p @click.stop="dialogIsShow=true;editOrDel='del'">
+                    <p @click.stop="dialogIsShow=true;editOrDel='del';item=item">
                         <img src="../../../assets/images/delAccount.png" alt="">
                         <span>删除账户</span>
                     </p>
-                    <p @click.stop="dialogIsShow=true;editOrDel='edit'">
+                    <p @click.stop="exportHandle">
                         <img src="../../../assets/images/exportAccount.png" alt="">
                         <span>导出账户</span>
                     </p>
@@ -44,7 +44,7 @@
             </div>
             <div v-if="editOrDel=='edit'">
                 <p>名称</p>
-                <input type="text">
+                <input type="text" v-model="walletName">
             </div>
             <div slot="footer" class="dialog-footer">
               <el-button @click="dialogIsShow = false">取消</el-button>
@@ -59,8 +59,10 @@ import HomeHeader from "@/components/HomeHeader.vue";
 import AssetBack from "@/components/AssetBack.vue";
 import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
 import { clip } from "@/libs/clip.js";
+import walletAPI from "@/mixins/walletAPI.js";
 export default {
     components: { HomeHeader,AssetBack },
+    mixins:[walletAPI],
     data(){
         return{
             lists:[
@@ -94,27 +96,51 @@ export default {
                     currentAccountIndex:''
                 }
             ],
+            walletName:'',
             mouseIsEnter:true,
-            mouseEnterIndex:1,
+            mouseEnterIndex:null,
             dialogIsShow:false,
-            editOrDel:'edit'
+            editOrDel:'edit',
+            item:{},
+            // accountIndex:null
         }
     },
     methods:{
-        editHandle(val){
-
+        editHandle(){
+            if(this.walletName){
+                let arr = []
+                this.lists[this.mouseEnterIndex].name = this.walletName
+                for(let i = 0; i < this.lists.length; i++){
+                    delete this.lists[i].assets
+                    arr.push(JSON.stringify(this.lists[i]))
+                }
+                setChromeStorage("AccountList", arr ).then(res=>{
+                    console.log(res)
+                })
+            }else{
+                this.$message.warning("请输入钱包名称");
+                return
+            }
         },
-        delHandle(val){
-            console.log('删除了')
+        delHandle(){
+            this.lists.splice(this.mouseEnterIndex,1)
+            let arr = []
+            for(let i = 0; i < this.lists.length; i++){
+                delete this.lists[i].assets
+                arr.push(JSON.stringify(this.lists[i]))
+            }
+            setChromeStorage("AccountList", arr ).then(res=>{
+                console.log(res)
+            })
         },
         exportHandle(val){
-            console.log('导出了')
+            this.$router.push({name:'exportAccount'})
         },
         submitHandle(){
             if(this.editOrDel == 'edit'){
-
+                this.editHandle()
             }else if(this.editOrDel == 'del'){
-
+                this.delHandle()
             }
         },
         copyHandle(event, text) {
@@ -130,14 +156,40 @@ export default {
                 }
             });
         },
+        getAccountList(){
+            getChromeStorage("AccountList").then(res=>{
+                for(let i = 0; i < res.AccountList.length; i++){
+                    let obj = JSON.parse(res.AccountList[i])
+                    if(obj.name == this.$store.state.currentAccount.name){
+                        this.mouseEnterIndex = i
+                    }
+                    obj.assets = this.getMainBalance(obj.address)
+                    this.lists.push(obj)
+                }
+            })
+        },
+        getMainBalance(addr){
+            this.getAddrBalance(addr, 'coins', this.currentMain.url).then(res => {
+                if(res[0].balance){
+                    res[0].balance / 1e8
+                }else{
+                    return 0
+                }
+            }).catch(err => {
+              console.log(err)
+            })
+        }
     },
     computed:{
         title(){
-            return this.editOrDel=='edit'?'更改账户名称':this.editOrDel=='del'?'删除账户':''
+            return this.editOrDel=='edit'?'更改钱包名称':this.editOrDel=='del'?'删除钱包':''
+        },
+        currentMain(){
+            return this.$store.state.currentMain
         }
     },
     mounted(){
-
+        this.getAccountList()
     },
     filters:{
         addressFilter(val){

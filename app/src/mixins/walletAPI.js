@@ -170,17 +170,34 @@ export default {
             getChromeStorage("AccountList").then(res=>{
               console.log('========AccountList==========')
               console.log(res)
+              // 如果导入钱包，应是替换name所在钱包记录；创建则push
               if(res.AccountList){
                 let arr = []
-                if(res.AccountList.length){
-                  arr = res.AccountList.push(obj)
+                if(type == 'import'){
+                  for(let i=0; i<res.AccountList.length;i++){
+                    let pA = JSON.parse(res.AccountList[i])
+                    if(pA.name == obj.name){
+                      res.AccountList[i] = JSON.stringify(obj)
+                      arr = res.AccountList
+                      break
+                    }
+                  }
                 }else{
-                  arr = [obj]
+                  if(res.AccountList.length){
+                    arr = res.AccountList
+                    arr.push(JSON.stringify(obj))
+                  }else{
+                    arr = [JSON.stringify(obj)]
+                  }
                 }
                 console.log(arr)
-                setChromeStorage("AccountList", arr).then(res=>{
+                setChromeStorage("AccountList", arr ).then(res=>{
                   console.log(res)
                   console.log('=====钱包存入AccountList里=====')
+                  getChromeStorage("AccountList").then(res=>{
+                    console.log('存完再拿')
+                    console.log(res)
+                  })
                 })
               }else{
                 this.$message.error("无AccountList2");
@@ -212,6 +229,25 @@ export default {
         win.currentAccount = null
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', null)
         this.$router.push('login')
+      })
+    },
+
+    // 获取所有账户
+    getAccountList(){
+      return new Promise((resolve, reject) => {
+        getChromeStorage("AccountList").then(res=>{
+          if(res.AccountList){
+            let arr = []
+            for(let i = 0; i < res.AccountList.length; i++){
+              arr.push(JSON.parse(res.AccountList[i]))
+            }
+            resolve(arr)
+          }else{
+            reject('没有找到钱包')
+            this.$message.error("无AccountList");
+          }
+        })
+
       })
     },
     /* 账户相关 -- end */

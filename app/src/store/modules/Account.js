@@ -15,7 +15,7 @@ const state = {
     // hexPrivateKey: "c8d3065b50038faef1e73740e1d0295f2be66e18dbee1311a0c90dc0c200db40",   //2
     hexPrivateKey: '0554e6348328a6c2a38859dc00ebadcefe3863d8086f5c2988d19779cfb50ec3', //3
     index: 0,
-    name: "创世地址"
+    name: ""
   },
   mainIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
   parallelIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
