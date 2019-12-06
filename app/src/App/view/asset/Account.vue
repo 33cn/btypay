@@ -1,32 +1,32 @@
 <template>
     <div class="account_container">
         <home-header></home-header>
-        <asset-back title="我的账户" backPath="/WalletIndex"></asset-back>
-        <p>新增</p>
+        <asset-back title="我的钱包" backPath="/WalletIndex"></asset-back>
+        <p @click="$router.push('/ImportOrCreate')">新增</p>
         <ul>
             <li v-for="(item,i) in lists" :key="item.address" :class="mouseEnterIndex==i?'mouseEnter':''" 
-                @mouseover="mouseEnterIndex=i" @mouseleave="mouseEnterIndex=null"
-                @click="mouseEnterIndex=i">
+                @mouseover="mouseEnterIndex=i"
+                @click="mouseEnterIndex=i;editOrDel='pass';wallet=item;dialogIsShow=true">
                 <div class="upper">
                     <p>
                         <span>{{item.name}}</span>
-                        <img @click="item=item;dialogIsShow=true;editOrDel='edit'" src="../../../assets/images/edit.png" alt="">
+                        <img @click="wallet=item;dialogIsShow=true;editOrDel='edit'" src="../../../assets/images/edit.png" alt="">
                     </p>
                     <img v-if="mouseEnterIndex==i" src="../../../assets/images/selected.png" alt="">
                 </div>
                 <div class="middle">
-                    <p>总资产：<span>{{item.assets}} {{$store.state.currency}}</span></p>
+                    <p>总资产：<span>{{item.assets}} {{$store.state.Account.currency}}</span></p>
                     <p>
                         <span>{{item.address | addressFilter}}</span>
                         <img @click="copyHandle($event, item.address)" src="../../../assets/images/copy.png" alt="">
                     </p>
                 </div>
                 <div class="down">
-                    <p @click.stop="dialogIsShow=true;editOrDel='del';item=item">
+                    <p @click.stop="dialogIsShow=true;editOrDel='del';wallet=item">
                         <img src="../../../assets/images/delAccount.png" alt="">
                         <span>删除账户</span>
                     </p>
-                    <p @click.stop="exportHandle">
+                    <p @click.stop="exportHandle(item.name)">
                         <img src="../../../assets/images/exportAccount.png" alt="">
                         <span>导出账户</span>
                     </p>
@@ -42,8 +42,8 @@
             <div v-if="editOrDel=='del'">
                 <p>您确定要删除账户吗？</p>
             </div>
-            <div v-if="editOrDel=='edit'">
-                <p>名称</p>
+            <div v-else>
+                <p v-if="editOrDel=='edit'">名称</p><p v-if="editOrDel=='pass'">密码</p>
                 <input type="text" v-model="walletName">
             </div>
             <div slot="footer" class="dialog-footer">
@@ -59,49 +59,22 @@ import HomeHeader from "@/components/HomeHeader.vue";
 import AssetBack from "@/components/AssetBack.vue";
 import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
 import { clip } from "@/libs/clip.js";
+import { decrypt,encrypt } from "@/libs/crypto.js";
 import walletAPI from "@/mixins/walletAPI.js";
+import importOrExchange from "@/mixins/importOrExchange.js";
+
 export default {
     components: { HomeHeader,AssetBack },
-    mixins:[walletAPI],
+    mixins:[walletAPI,importOrExchange],
     data(){
         return{
-            lists:[
-                {
-                    name:'钱包一',
-                    assets:1000,
-                    address:'12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg'
-                },
-                {
-                    name:'钱包二',
-                    assets:1000,
-                    address:'12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudd'
-                },
-                {
-                    name:'钱包三',
-                    assets:1000,
-                    address:'12evczYyX9ZKPYvwSEvRkRyTjpSrJuLud1'
-                },
-            ],
-            list:[
-                {
-                    name:'',
-                    password:'',
-                    address:'',
-                    mainNodeList:[],
-                    mainNode:[],
-                    paraNode:[],
-                    parallelNodeList:[],
-                    ciphertext:'',
-                    accountIndexList:{},
-                    currentAccountIndex:''
-                }
-            ],
+            lists:[],
             walletName:'',
             mouseIsEnter:true,
             mouseEnterIndex:null,
             dialogIsShow:false,
             editOrDel:'edit',
-            item:{},
+            wallet:{},
             // accountIndex:null
         }
     },
@@ -109,6 +82,8 @@ export default {
         editHandle(){
             if(this.walletName){
                 let arr = []
+                console.log(this.mouseEnterIndex)
+                console.log(this.lists[this.mouseEnterIndex])
                 this.lists[this.mouseEnterIndex].name = this.walletName
                 for(let i = 0; i < this.lists.length; i++){
                     delete this.lists[i].assets
@@ -116,6 +91,13 @@ export default {
                 }
                 setChromeStorage("AccountList", arr ).then(res=>{
                     console.log(res)
+                    // 如果更改的是当前钱包，改store,window
+                    let obj = JSON.parse(JSON.stringify(this.currentAccount))
+                    obj.name = this.walletName
+                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT',obj)
+                    this.getBackgroundPage().then(win=>{
+                        win.currentAccount = obj
+                    })
                 })
             }else{
                 this.$message.warning("请输入钱包名称");
@@ -133,14 +115,35 @@ export default {
                 console.log(res)
             })
         },
+        passHandle(){
+            console.log(this.wallet.password)
+            console.log(this.walletName)
+            if(this.wallet.password == this.walletName){
+                // 切换钱包<=>相当于导入钱包,区别在于是否需要输入助记词
+                this.mnemonic = decrypt(this.wallet.ciphertext, this.walletName);
+                this.saveSeed(this.mnemonic, this.walletName).then(res=>{
+                    if(res == 'success'){
+                        this.dialogIsShow = false
+                        this.$message.success('钱包切换成功。')
+                    }
+                }).catch(error=>{
+                    console.log(error)
+                })
+            }else{
+                this.$message.warning("输入的密码有误。");
+            }
+        },
         exportHandle(val){
-            this.$router.push({name:'exportAccount'})
+            // this.$router.push({name:'exportAccount'})
+            this.$router.push({ path: "/exportAccount?name="+val });
         },
         submitHandle(){
             if(this.editOrDel == 'edit'){
                 this.editHandle()
             }else if(this.editOrDel == 'del'){
                 this.delHandle()
+            }else if(this.editOrDel == 'pass'){
+                this.passHandle()
             }
         },
         copyHandle(event, text) {
@@ -156,15 +159,17 @@ export default {
                 }
             });
         },
-        getAccountList(){
-            getChromeStorage("AccountList").then(res=>{
-                for(let i = 0; i < res.AccountList.length; i++){
-                    let obj = JSON.parse(res.AccountList[i])
-                    if(obj.name == this.$store.state.currentAccount.name){
+        getAccountLists(){
+            this.getAccountList().then(res=>{
+                console.log('====AccountList====')
+                console.log(res)
+                for(let i = 0; i < res.length; i++){
+                    // let obj = JSON.parse(res[i])
+                    if(res[i].name == this.$store.state.Account.currentAccount.name){
                         this.mouseEnterIndex = i
                     }
-                    obj.assets = this.getMainBalance(obj.address)
-                    this.lists.push(obj)
+                    res[i].assets = this.getMainBalance(res[i].address)
+                    this.lists.push(res[i])
                 }
             })
         },
@@ -178,18 +183,31 @@ export default {
             }).catch(err => {
               console.log(err)
             })
-        }
+        },
     },
     computed:{
         title(){
-            return this.editOrDel=='edit'?'更改钱包名称':this.editOrDel=='del'?'删除钱包':''
+            return this.editOrDel=='edit'?'更改钱包名称':this.editOrDel=='del'?'删除钱包':this.editOrDel=='pass'?'请输入'+this.wallet.name+'密码':''
         },
         currentMain(){
-            return this.$store.state.currentMain
+            return this.$store.state.Account.currentMain;
+        },
+        currentAccount(){
+            this.$store.state.Account.currentAccount
         }
     },
     mounted(){
-        this.getAccountList()
+        this.getAccountLists()
+        console.log(this.currentMain)
+        console.log('this.currentMain')
+    },
+    watch:{
+        dialogIsShow(val){
+            if(!val){
+                this.walletName = ''
+                this.password = ''
+            }
+        }
     },
     filters:{
         addressFilter(val){

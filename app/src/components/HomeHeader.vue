@@ -39,10 +39,10 @@ export default {
             dropdownIsShow:false,
             menus:[
                 {name:'节点设置',img:'nodeSetIcon',path:'node'},
-                {name:'我的账户',img:'exportIcon',path:'account'},
+                {name:'我的钱包',img:'exportIcon',path:'account'},
                 {name:'货币设置',img:'currencyIcon',path:'currencySet'},
                 {name:'关于我们',img:'aboutIcon',path:'about'},
-                {name:'退出登录',img:'logoutIcon',path:'ImportOrCreate'},
+                // {name:'退出登录',img:'logoutIcon',path:'ImportOrCreate'},
             ],
             WalletIndex:false
         }
@@ -51,7 +51,7 @@ export default {
         // 锁定
         lockHandle(){
             this.getBackgroundPage().then(win => {
-                win.myChain33WalletInstance = null
+                // win.myChain33WalletInstance = null
                 setTimeout(() => {
                     this.$router.push({name:'login'})
                 }, 100);
@@ -70,6 +70,7 @@ export default {
                 Promise.all([p1, p2,p3,p4]).then(([r1,r2,r3,win])=>{
                     console.log('success')
                     console.log(r3)
+                    console.log(r3.AccountList.length)
                     console.log(win.currentAccount)
                     let obj = {}
                     let list = {}
@@ -86,13 +87,13 @@ export default {
                             obj.currentParaNode = pA.currentParaNode
                             obj.isLogout = true
                         }
-                        console.log(index)
-                        r3.AccountList[index] = JSON.stringify(obj)
-                        console.log('=====r3[index]=====')
-                        console.log(r3.AccountList[index])
-                        list = r3.AccountList
                         break
                     }
+                    console.log(index)
+                    r3.AccountList[index] = JSON.stringify(obj)
+                    console.log('=====r3[index]=====')
+                    console.log(r3.AccountList[index])
+                    list = r3.AccountList
                     console.log('=====list======')
                     console.log(list)
                     setChromeStorage("AccountList", list ).then(res=>{
@@ -115,17 +116,17 @@ export default {
                 this.$router.push({name})
             }
         },
-        getBackgroundPage(){
-            return new Promise((resolve) => {
-                if (isDev) {
-                  resolve(window)
-                } else {
-                  window.chrome.runtime.getBackgroundPage(win => {
-                    resolve(win)
-                  })
-                }
-            })
-        }
+        // getBackgroundPage(){
+        //     return new Promise((resolve) => {
+        //         if (isDev) {
+        //           resolve(window)
+        //         } else {
+        //           window.chrome.runtime.getBackgroundPage(win => {
+        //             resolve(win)
+        //           })
+        //         }
+        //     })
+        // }
     },
     mounted(){
         this.WalletIndex = window.location.href.indexOf('WalletIndex') == -1

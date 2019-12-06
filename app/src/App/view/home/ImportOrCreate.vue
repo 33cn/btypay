@@ -3,7 +3,7 @@
         <p @click="tesst">您是新用户吗?</p>
         <ul>
             <li>
-                <p class="desc">不是，我已经有比特元钱包了。</p>
+                <p @click="ttt" class="desc">不是，我已经有比特元钱包了。</p>
                 <div class="import">
                     <img src="../../../assets/images/down.png" alt="">
                     <p class="btn">
@@ -26,10 +26,22 @@
 
 <script>
 import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
+import walletAPI from "@/mixins/walletAPI.js";
 export default {
+    mixins: [walletAPI],
     methods:{
+        ttt(){
+            let mnemonic = 'auction river law survey impulse axis actress fragile absent foot car sort wheat artist guard'
+            this.createHDWallet(mnemonic)
+        },
         tesst(){
-           setChromeStorage("AccountList", [] ).then(res=>{})
+            setChromeStorage("AccountList", [] ).then(res=>{})
+            setChromeStorage('beforePath',{}).then(res=>{
+                // console.log(res)
+            })
+            setChromeStorage('element',{}).then(res=>{
+                // console.log(res)
+            })
         }
     },
     mounted(){

@@ -215,6 +215,9 @@ ul.el-dropdown-menu.el-popper{
   box-shadow:0px 16px 45px 1px rgba(124,154,218,0.63);
   border-radius:4px;
   left: 54px!important;
+  &.loginPage{
+    left: 85px!important;
+  }
   li{
     width: 100%;
     min-width: 100%;

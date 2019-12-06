@@ -13,7 +13,7 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
-            :command="item" :class="currentAccount.name==item?'currentAccount':''">{{item}}</el-dropdown-item>
+            :command="item" :class="currentAccount.name==item?'currentAccount':''">{{item.name}}</el-dropdown-item>
           <!-- <el-dropdown-item command="b">钱包二</el-dropdown-item>
           <el-dropdown-item command="c">钱包三</el-dropdown-item> -->
         </el-dropdown-menu>
@@ -45,9 +45,21 @@
         </li>
       </ul>
     </section>
-    <!-- <section class="btn">
-      <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
-    </section>-->
+    <el-dialog
+      :title="'请输入'+this.wallet.name+'密码'"
+      :visible.sync="dialogIsShow"
+      width="324px"
+      :show-close="false"
+      class="mainNode editAccount">
+      <div>
+          <p>密码</p>
+          <input type="text" v-model="password">
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogIsShow = false">取消</el-button>
+        <el-button type="primary" @click="submitHandle">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -58,11 +70,11 @@ import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
 import { eventBus } from "@/libs/eventBus";
 import { setChromeStorage,getChromeStorage } from "@/libs/chromeUtil.js";
-
+import { decrypt,encrypt } from "@/libs/crypto.js";
 const { mapState } = createNamespacedHelpers("Account");
-
+import importOrExchange from "@/mixins/importOrExchange.js";
 export default {
-  mixins: [walletAPI, chain33API],
+  mixins: [walletAPI, chain33API,importOrExchange],
   components: { HomeHeader },
   data() {
     return {
@@ -71,8 +83,11 @@ export default {
         top: 0
       },
       menuIsShow: false,
+      dialogIsShow:false,
       numIsAnimation:true,
-      accountList:[]
+      accountList:[],
+      password:'',
+      wallet:{}
     };
   },
   computed: {
@@ -87,8 +102,26 @@ export default {
     ])
   },
   methods: {
-    handleCommand(command) {
-      this.$message('click on item ' + command);
+    handleCommand(val) {
+      this.wallet = val
+      console.log(this.wallet)
+      this.dialogIsShow = true
+    },
+    submitHandle(){
+      if(this.wallet.password == this.password){
+        // 切换钱包<=>相当于导入钱包,区别在于是否需要输入助记词
+        let mnemonic = decrypt(this.wallet.ciphertext, this.password);
+        this.saveSeed(mnemonic, this.password).then(res=>{
+            if(res == 'success'){
+                this.dialogIsShow = false
+                this.$message.success('钱包切换成功。')
+            }
+        }).catch(error=>{
+            console.log(error)
+        })
+      }else{
+        this.$message.warning("输入的密码有误。");
+      }
     },
     toBty() {
       this.$store.commit("Records/ASSET_TYPE", "bty");
@@ -200,17 +233,19 @@ export default {
         });
       }, 10);
     },
-    getAccountList(){
-      getChromeStorage("AccountList").then(res=>{
-        for(let i = 0; i < res.AccountList.length; i++){
-          this.accountList.push(JSON.parse(res.AccountList[i]).name)
-        }
+    getAccountLists(){
+      this.getAccountList().then(res=>{
+        this.accountList = res
       })
+      // getChromeStorage("AccountList").then(res=>{
+      //   for(let i = 0; i < res.AccountList.length; i++){
+      //     this.accountList.push(JSON.parse(res.AccountList[i]).name)
+      //   }
+      // })
     }
   },
   mounted() {
-    this.init();
-    // this.recoverAccount();
+    // this.init();
     this.getBalance()
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
     setChromeStorage('element',{}).then(res=>{
@@ -219,18 +254,7 @@ export default {
     setChromeStorage('beforePath',{}).then(res=>{
       // console.log(res)
     })
-    this.getAccountList()
-    // let tx = '0a15757365722e702e67616d65546573742e636f696e73124f180a2a4b1080c2d72f2220757365722e702e757365722e702e676274746573742e2e7761736d2e646963652a223147556862657953534e797751634763736a685050584d583769525a3650366f76621a6e08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a473045022100cede87ff1cc13591dbb747206dff068b386c016acfc177f5149afc2c3238d2c402200c2524d0d5b95264e3796f860c5368775ded8a99d57653fee963d95e985bd15a20c09a0c30bf92c4bc96ee89a6683a22313831447942764c36417135744c51516d7279695835623276467947544d4536504240024a82050ad0020a15757365722e702e67616d65546573742e636f696e73124f180a2a4b1080c2d72f2220757365722e702e757365722e702e676274746573742e2e7761736d2e646963652a223147556862657953534e797751634763736a685050584d583769525a3650366f76621a6e08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a473045022100cede87ff1cc13591dbb747206dff068b386c016acfc177f5149afc2c3238d2c402200c2524d0d5b95264e3796f860c5368775ded8a99d57653fee963d95e985bd15a20c09a0c30bf92c4bc96ee89a6683a22313831447942764c36417135744c51516d7279695835623276467947544d4536504240024a203fbe4fca37b584ff8bdf5aba3dc3f606dd69eaecf939c3829b472d3a2c2b27dd5220167862ab535edd15435c7bca8d7e09ab4e77d544f6737d97c3d72e61670803c60aac020a17757365722e702e67616d65546573742e6c6f747465727912505002124c0a42307831663261333331343930623261313464353966313933346138373461393338303363613761306235643864626435353664303036316333366263623736363665100118db930420051a6d08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a46304402204843c9d287240a6bb28507c7e35b82c0a7eb2b934e4c44631eca56373481cd3d02201da03281812ecff8701c8afc8eb96aa3165df8359cfa24b5ef8d0bc99368d5e230fedf92afb4c1b5eb7e3a22314442756359366d57486d6e706251574c503177546142315676705536423373434a40024a203fbe4fca37b584ff8bdf5aba3dc3f606dd69eaecf939c3829b472d3a2c2b27dd5220167862ab535edd15435c7bca8d7e09ab4e77d544f6737d97c3d72e61670803c6'
-    // this.sendTransaction(tx,'https://jiedian1.bityuan.com:8801/').then(res=>{
-    //   console.log('()()()()()()()()()(')
-    //   console.log(res)
-    // }).catch(err=>{
-    //   console.log('()()()()()()()()()')
-    //   console.log(err)
-    //   console.log(JSON.stringify(err))
-    //   console.log(JSON.parse(err))
-    //   console.log(err.id)
-    // })
+    this.getAccountLists()
   },
   beforeRouteEnter(to, from, next){
     next(vm=>{

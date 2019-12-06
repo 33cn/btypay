@@ -5,14 +5,20 @@
       <img src="../../../assets/images/loginLogo.png" alt />
       <p>欢迎回来</p>
     </div>
-    <ul>
-      <li v-for="item in accountList" :key="item.name" @click="wallet=item" style="padding:2px 10px">
-        {{item.name}}
-      </li>
-    </ul>
+    <el-dropdown trigger="click" @command="handleCommand">
+      <span class="el-dropdown-link">
+        {{$store.state.Account.currentAccount.name}}<i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown" class="loginPage">
+        <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
+          :command="item" :class="mouseEnterIndex==i?'mouseEnter':''">{{item.name}}</el-dropdown-item>
+        <!-- <el-dropdown-item command="b">钱包二</el-dropdown-item>
+        <el-dropdown-item command="c">钱包三</el-dropdown-item> -->
+      </el-dropdown-menu>
+    </el-dropdown>
     <el-form label-position="top" :rules="rules" :model="form" ref="loginForm" class="password">
       <el-form-item label prop="pwd">
-        <el-input ref="pwdInput" v-model="form.pwd" type="password" autocomplete="off"></el-input>
+        <el-input ref="pwdInput" v-model="form.pwd" type="password" placeholder="请输入您的密码" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div class="btn">
@@ -44,9 +50,11 @@ export default {
   data() {
     return {
       accountList:[
-        {name:'121212'},{name:'121212'},{name:'121212'}
+        {name:'钱包一'},{name:'钱包二'},{name:'钱包三'}
       ],
       wallet:{},
+      mouseEnterIndex:null,
+      // walletName:'',
       cipherMnemonic: "",
       isLogining:false,
       form: {
@@ -77,54 +85,43 @@ export default {
   },
   methods: {
     loginHandle() {
-      if(this.wallet.name){
+      if(this.wallet.name&&this.wallet.ciphertext){
         this.$refs['loginForm'].validate(valid=>{
           if(valid){
             this.isLogining = true;
-            if(this.cipherMnemonic == ''){
-              for(let i = 0; i < this.accountList.length; i++){
-                
-              }
-              getChromeStorage("ciphertext").then(result =>{
-                if (result&&result.ciphertext) {
-                  this.cipherMnemonic = result.ciphertext;
-                  const mnemonic = decrypt(this.cipherMnemonic, this.form.pwd);
-                  if (mnemonic.split(" ").length !== 15) {
-                    this.$message.error("密码错误");
-                    this.isLogining = false;
-                    return;
-                  }
-                  this.createHDWallet(mnemonic);
-                  this.recoverAccount();
-                  this.$message.success("登录成功");
-                  this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
-                  setChromeStorage("password", this.form.pwd).then(res=>{
-                    this.$router.push("/WalletIndex");
-                  })
-                }
-              })
-            }else{
-              const mnemonic = decrypt(this.cipherMnemonic, this.form.pwd);
-              console.log(mnemonic);
-              console.log(mnemonic.split(" "));
-              if (mnemonic.split(" ").length !== 15) {
-                this.$message.error("密码错误");
-                this.isLogining = false;
-                return;
-              }
-              this.createHDWallet(mnemonic);
-              this.recoverAccount();
-              this.$message.success("登录成功");
-              this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
-              setChromeStorage("password", this.form.pwd).then(res=>{
-                this.$router.push("/WalletIndex");
-              })
+            let mnemonic = decrypt(this.wallet.ciphertext, this.form.pwd);
+            console.log(mnemonic);
+            console.log(this.wallet)
+            console.log(this.wallet.account)
+            console.log(this.wallet.wallet)
+            // console.log(mnemonic.split(" "));
+            if (mnemonic.split(" ").length !== 15) {
+              this.$message.error("输入的密码有误。");
+              this.isLogining = false;
+              return;
             }
+            let myWallet = this.createHDWallet(mnemonic);//创建钱包并赋值给window
+            this.recoverAccount(this.wallet.name).then(res=>{
+              if(res == 'success'){
+                this.isLogining = false;
+                this.$message.success("登录成功");
+                this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
+                this.$router.push("/WalletIndex");
+              }
+            }).catch(err=>{
+              this.isLogining = false;
+            })
           }
         })
       }else{
-        this.$message.warning("请选择要登录的钱包");
+        this.$message.warning("请选择您要登录的钱包");
+        console.log(this.wallet.name)
+        console.log(this.wallet.ciphertext)
       }
+    },
+    handleCommand(val){
+      console.log(val)
+      this.wallet = val
     },
     getElements(path){
       getChromeStorage('element').then(ele=>{
@@ -145,13 +142,18 @@ export default {
   mounted() {
     this.getAccountList().then(res=>{
       this.accountList = res
+      
       this.getWallet().then(wallet=>{
         console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
         console.log(wallet)
         console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
         if(wallet){
           // 已创建/导入钱包(钱包锁定)
-
+          for(let i = 0; i < res.length; i++){
+            if(res[i].name == this.$store.state.Account.currentAccount.name){
+                this.mouseEnterIndex = i
+            }
+          }
         }else{
           // 钱包登出、无钱包
           this.$router.push("/ImportOrCreate");
@@ -299,12 +301,12 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 107px 0 71px;
+    padding: 107px 0 57px;
     p {
       font-family: Microsoft YaHei;
       font-weight: 400;
       font-size: 30px;
-      margin: 31px 0 0px;
+      margin: 19px 0 0px;
       color: rgba(255, 255, 255, 1);
       // &:nth-of-type(1) {
       //   font-size: 18px;
@@ -315,8 +317,21 @@ export default {
       // }
     }
     img {
-      width: 115px;
-      height: 126px;
+      width: 105px;
+      height: 121px;
+    }
+  }
+  >div.el-dropdown{
+    margin: 0 0 18px 65px;
+    cursor: pointer;
+    >span{
+      font-size:16px;
+      font-family:Microsoft YaHei;
+      color:rgba(255,255,255,1);
+      i{
+        color: rgba(158,185,239,1);
+        font-weight: bold;
+      }
     }
   }
   > form {
@@ -330,6 +345,7 @@ export default {
           border-bottom: 1px solid rgba(255, 255, 255, 0.68);
           border-radius: 0px;
           color: #fff;
+          padding: 0 4px;
           // padding: 10px 0 0 0;
         }
         input:-webkit-autofill , textarea:-webkit-autofill, select:-webkit-autofill {
@@ -344,7 +360,7 @@ export default {
   }
   div.btn {
     height: 66px;
-    margin: 0 56px 54px;
+    margin: 0 56px 26px;
     background-image: url("../../../assets/images/loginBtn.png");
     background-size: 100% 100%;
     p {

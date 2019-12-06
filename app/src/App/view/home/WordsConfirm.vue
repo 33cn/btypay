@@ -83,6 +83,11 @@ export default {
     //保存加密助记词并创建钱包
     saveSeed(seedString, password) {
       const walletObj = this.createHDWallet(seedString);
+      console.log('+++++++++++++++')
+      console.log(walletObj)
+      console.log(walletObj.accountMap)
+      console.log(walletObj.accountMap[0])
+      console.log('+++++++++++++++')
       // 加密助记词
       let ciphertext = encrypt(seedString, password);
       // setChromeStorage({ciphertext, ciphertext}).then(res=>{})
@@ -91,6 +96,8 @@ export default {
           let obj = res.CreateingWallet
           obj.ciphertext = ciphertext
           obj.isLogout = false
+          // obj.wallet = JSON.stringify(walletObj)
+          // obj.account = walletObj.accountMap[0]
           // obj.name = walletObj.accountMap[0].name
           // obj.address = walletObj.accountMap[0].address
           // obj.hexPrivateKey = walletObj.accountMap[0].hexPrivateKey
