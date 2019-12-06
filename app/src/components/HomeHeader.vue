@@ -3,6 +3,7 @@
         <div class="head" :style="isHidden?'display: none':'display:flex'">
             <p><img src="../assets/images/logo.png" alt=""></p>
             <div class="menu" v-if="!WalletIndex">
+                <!-- <router-link :to="{ name: 'dapps'}"><img src="../assets/images/zhaobi.png" alt=""></router-link> -->
                 <router-link :to="{ name: 'dapps'}"><img src="../assets/images/dappIcon.png" alt=""></router-link>
                 <img @click="lockHandle" src="../assets/images/lock.png" alt="">
                 <img src="../assets/images/menu.png" alt="" @click="dropdownIsShow=true">
@@ -30,10 +31,10 @@ export default {
             dropdownIsShow:false,
             menus:[
                 {name:'节点设置',img:'nodeSetIcon',path:'node'},
-                {name:'导出账户',img:'exportIcon',path:'exportAccount'},
+                {name:'我的账户',img:'exportIcon',path:'exportAccount'},
                 {name:'货币设置',img:'currencyIcon',path:'currencySet'},
-                {name:'关于',img:'aboutIcon',path:'about'},
-                {name:'切换账号',img:'logoutIcon',path:'ImportOrCreate'},
+                {name:'关于我们',img:'aboutIcon',path:'about'},
+                {name:'退出登录',img:'logoutIcon',path:'ImportOrCreate'},
             ],
             WalletIndex:false
         }
@@ -128,13 +129,16 @@ export default {
                     width: 100%;
                     height: 100%;
                 }
+                &:nth-of-type(2){
+                    margin-left: 10px;
+                }
             }
             >img{
                 width: 34px;
                 height: 34px;
                 cursor: pointer;
                 &:nth-of-type(1){
-                    margin: 0 13px;
+                    margin: 0 10px;
                 }
             }
         }

@@ -71,7 +71,7 @@ export default {
           payload
         })
         console.log('this.win.windowId='+this.win.windowId)
-        this.win.closeWindow(this.win.windowId);
+        // this.win.closeWindow(this.win.windowId);
       }
     },
     btyParallelCallback(res){
@@ -469,13 +469,13 @@ export default {
               }else{
                 this.msg = '数字资产跨链兑换中...'
                 if(win.txType == 'bty-main-parallel'){
-                  this.btyMain2parallel(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.btyMainCallback)
+                  this.btyMain2parallel(win.currentAccount.hexPrivateKey,parseInt(win.txObj.amount*1e8),this.btyMainCallback)
                 }else if(win.txType == 'bty-parallel-main'){
-                  this.btyParallel2Main(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.btyParallelCallback)
+                  this.btyParallel2Main(win.currentAccount.hexPrivateKey,parseInt(win.txObj.amount*1e8),this.btyParallelCallback)
                 }else if(win.txType == 'ccny-main-parallel'){
-                  this.ccnyMain2parallel(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.ccnyMainCallback)
+                  this.ccnyMain2parallel(win.currentAccount.hexPrivateKey,parseInt(win.txObj.amount*1e8),this.ccnyMainCallback)
                 }else if(win.txType == 'ccny-parallel-main'){
-                  this.ccnyParallel2Main(win.currentAccount.hexPrivateKey,win.txObj.amount*1e8,this.ccnyParallelCallback)
+                  this.ccnyParallel2Main(win.currentAccount.hexPrivateKey,parseInt(win.txObj.amount*1e8),this.ccnyParallelCallback)
                 }
               }
             })

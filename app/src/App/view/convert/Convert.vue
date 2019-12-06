@@ -74,7 +74,7 @@ import { createNamespacedHelpers } from "vuex";
 import Long from "long";
 const { mapState } = createNamespacedHelpers("Account");
 export default {
-  mixins: [walletAPI, parallelAPI,test],
+  mixins: [walletAPI, parallelAPI],
   components: { AssetBack },
   computed: {
     ...mapState([
@@ -115,16 +115,15 @@ export default {
 
     test(val){
       console.log('===============')
-      console.log(this.currentMain.url)
       console.log(val)
       if(val == 'btymain'){
-        this.btyMain2parallel(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.btyMain2parallel(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'btypara'){
-        this.btyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.btyParallel2Main(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'ccnymain'){
-        this.ccnyMain2parallel(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.ccnyMain2parallel(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }else if(val == 'ccnypara'){
-        this.ccnyParallel2Main(this.currentAccount.hexPrivateKey,1*1e8,this.tipHandle)
+        this.ccnyParallel2Main(this.currentAccount.hexPrivateKey,0.1*1e8,this.tipHandle)
       }
     },
     testt(){
@@ -272,13 +271,13 @@ export default {
         if (this.currentAccount) {
           // B2G
           if (this.convert == "B2G") {
-            this.transferBTY2GameCoin(
+            this.btyMain2parallel(
               this.currentAccount.hexPrivateKey,
               parseInt(this.exportVal * 1e8),
               this.convertResHandle
             );
           } else if (this.convert == "G2B") {
-            this.transferGameCoin2BTY(
+            this.btyParallel2Main(
               this.currentAccount.hexPrivateKey,
               parseInt(this.exportVal * 1e8),
               this.convertResHandle

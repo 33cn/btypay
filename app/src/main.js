@@ -24,8 +24,8 @@ Vue.use({
     // 注入定制样式的消息提示
     Vue.prototype.$serverErrNotify = errNotify
     Vue.prototype.$serverSucNotify = sucNotify
-    Vue.prototype.$chain33Sdk = new BtyBaseSdk('http://47.107.15.126:8801', (res) => {
-      if (res.error === null) {
+    Vue.prototype.$chain33Sdk = new BtyBaseSdk('http://114.55.11.139:1193', (res) => {
+      if (res.error === null) {//http://47.107.15.126:8801
         return res.result
       } else {
         console.error(res.error)

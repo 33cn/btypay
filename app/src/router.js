@@ -55,6 +55,10 @@ export default new Router({
       name:'node',
       component:() => import('./App/view/node/Node')
     },{
+      path:'/account',
+      name:'account',
+      component:() => import('./App/view/asset/Account')
+    },{
       path:'/coin',
       name:'bty',
       component:() => import('./App/view/asset/Bty')
