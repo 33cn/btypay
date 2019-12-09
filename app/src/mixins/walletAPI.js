@@ -46,7 +46,7 @@ export default {
       // console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
       console.log(mnemonic)
-      console.log('=====createHDWallet=============')
+      console.log('================createHDWallet=============')
       console.log(wallet)
       // 保存登录时间
       setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
@@ -80,7 +80,7 @@ export default {
     },
     newAccount(name,type) {
       return this.getWallet().then(wallet => {
-        console.log('========newAccount=========')
+        console.log('===============newAccount=====================')
         console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
         console.log('========account=========')
@@ -161,6 +161,14 @@ export default {
                       break
                     }
                   }
+                  if(arr.length == 0){
+                    obj.currentMainNode = this.currentMain
+                    obj.currentParaNode = this.currentParallel
+                    obj.mainNodeList = [this.currentMain]
+                    obj.parallelNodeList = [this.currentParallel]
+                    // arr.push(JSON.stringify(obj))
+                    arr = res.AccountList.concat([JSON.stringify(obj)])
+                  }
                 }else{
                   if(res.AccountList.length){
                     arr = res.AccountList
@@ -227,6 +235,18 @@ export default {
           }
         })
 
+      })
+    },
+    getCurrentWalletName(){
+      return new Promise((resolve,reject)=>{
+        getChromeStorage('CurrentAccountName').then(res=>{
+          if(res.CurrentAccountName){
+            resolve(res.CurrentAccountName)
+          }else{
+            reject()
+            reject('error')
+          }
+        })
       })
     },
     getBackgroundPage() {

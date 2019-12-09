@@ -88,6 +88,8 @@ export default {
       this.$refs['createForm'].validate(valid=>{
         if(valid){
           this.saveSeed(this.seedStringInput, this.createForm.pwd).then(res=>{})
+          // const walletObj = this.createHDWallet(this.seedStringInput)
+          // this.newAccount('test')
           setTimeout(() => {
             this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd)
             this.$router.push({ name: 'WalletIndex' })

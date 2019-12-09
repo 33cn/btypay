@@ -10,7 +10,7 @@
                 <div class="upper">
                     <p>
                         <span>{{item.name}}</span>
-                        <img @click="wallet=item;dialogIsShow=true;editOrDel='edit'" src="../../../assets/images/edit.png" alt="">
+                        <img @click.stop="wallet=item;dialogIsShow=true;editOrDel='edit'" src="../../../assets/images/edit.png" alt="">
                     </p>
                     <img v-if="mouseEnterIndex==i" src="../../../assets/images/selected.png" alt="">
                 </div>
@@ -18,7 +18,7 @@
                     <p>总资产：<span>{{item.assets}} {{$store.state.Account.currency}}</span></p>
                     <p>
                         <span>{{item.address | addressFilter}}</span>
-                        <img @click="copyHandle($event, item.address)" src="../../../assets/images/copy.png" alt="">
+                        <img @click.stop="copyHandle($event, item.address)" src="../../../assets/images/copy.png" alt="">
                     </p>
                 </div>
                 <div class="down">
@@ -92,11 +92,12 @@ export default {
                 setChromeStorage("AccountList", arr ).then(res=>{
                     console.log(res)
                     // 如果更改的是当前钱包，改store,window
-                    let obj = JSON.parse(JSON.stringify(this.currentAccount))
+                    let obj = JSON.parse(JSON.stringify(this.$store.state.Account.currentAccount))
                     obj.name = this.walletName
                     this.$store.commit('Account/UPDATE_CURRENTACCOUNT',obj)
                     this.getBackgroundPage().then(win=>{
                         win.currentAccount = obj
+                        this.dialogIsShow = false
                     })
                 })
             }else{
@@ -124,7 +125,7 @@ export default {
                 this.saveSeed(this.mnemonic, this.walletName).then(res=>{
                     if(res == 'success'){
                         this.dialogIsShow = false
-                        this.$message.success('钱包切换成功。')
+                        this.$message.success('已切换到'+this.wallet.name)
                     }
                 }).catch(error=>{
                     console.log(error)

@@ -1,17 +1,6 @@
 <template>
   <div class="addAddress_container">
     <asset-back title="添加地址" backPath="/coin/address"></asset-back>
-    <!-- <section class="content">
-            <div>
-                <p>地址标签</p>
-                <input type="text" placeholder="请输入标签内容">
-            </div>
-            <div>
-                <p>地址</p>
-                <input class="address" type="text" placeholder="请输入地址">
-                <img src="../../../assets/images/scan.png" alt="">
-            </div>
-    </section>-->
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
       <el-form-item label="地址标签" prop="label">
         <el-input v-model="ruleForm.label" placeholder="请输入标签内容" autocomplete="off" @input="inputHandle"></el-input>
@@ -52,20 +41,37 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // console.log("submit!");
-          getChromeStorage('address').then(res=>{
-            // console.log(res)
-            let arr = [];
-            if(res.address){
-              arr = res.address.concat(this.ruleForm);
-            }else{
-              arr = [this.ruleForm]
-            }
-            setChromeStorage('address',arr).then(res=>{
-              if(res=='success'){
-                this.$router.go(-1)
+          let transferAddress = [],
+            arr =[],
+            list = []
+          this.getCurrentWalletName().then(name=>{
+            this.getAccountList().then(wallets=>{
+              for(let i = 0; i < wallets.length; i++){
+                if(wallets[i].name == name){
+                  transferAddress = wallets[i].transferAddress
+                  break
+                }
               }
+              arr = transferAddress.concat(this.ruleForm);
+              console.log(arr)
+              console.log(wallets)
+              console.log(wallets.length)
+              for(let i = 0; i < wallets.length; i++){
+                if(wallets[i].name == name){
+                  wallets[i].transferAddress = arr
+                }
+                list.push(JSON.stringify(wallets[i]))
+              }
+              console.log(list)
+              setChromeStorage("AccountList", list ).then(res=>{
+                if (res == "success") {
+                  this.$router.go(-1)
+                }
+              })
             })
+          }).catch(error=>{
+            console.log('发生错误')
+            this.$message.error('当前钱包名为空')
           })
         } else {
           console.log("error submit!!");

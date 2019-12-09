@@ -3,7 +3,7 @@
     <home-header></home-header>
     <p @click="getBalance">
       <!-- <router-link :to="{ name: 'login'}">刷新</router-link> -->
-      刷新test
+      刷新
     </p>
     <section class="content">
       <!-- <p>我的资产</p> -->
@@ -114,7 +114,7 @@ export default {
         this.saveSeed(mnemonic, this.password).then(res=>{
             if(res == 'success'){
                 this.dialogIsShow = false
-                this.$message.success('钱包切换成功。')
+                this.$message.success('已切换到'+this.wallet.name)
             }
         }).catch(error=>{
             console.log(error)
@@ -237,11 +237,13 @@ export default {
       this.getAccountList().then(res=>{
         this.accountList = res
       })
-      // getChromeStorage("AccountList").then(res=>{
-      //   for(let i = 0; i < res.AccountList.length; i++){
-      //     this.accountList.push(JSON.parse(res.AccountList[i]).name)
-      //   }
-      // })
+    }
+  },
+  watch:{
+    dialogIsShow(val){
+      if(!val){
+        this.password = ''
+      }
     }
   },
   mounted() {

@@ -224,18 +224,18 @@ export default {
                 }
             }
             &:nth-of-type(4){
+                margin-bottom: 0px;
                 img{
                     width: 12px;
                     height: 12px;
                 }
             }
-            &:nth-of-type(5){
-                margin-bottom: 0px;
-                img{
-                    width: 13px;
-                    height: 13px;
-                }
-            }
+            // &:nth-of-type(5){
+            //     img{
+            //         width: 13px;
+            //         height: 13px;
+            //     }
+            // }
         }
         &::after{
             content:'';

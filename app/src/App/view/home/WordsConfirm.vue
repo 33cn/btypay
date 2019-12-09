@@ -95,7 +95,8 @@ export default {
         if(res.CreateingWallet){
           let obj = res.CreateingWallet
           obj.ciphertext = ciphertext
-          obj.isLogout = false
+          obj.transferAddress = []
+          // obj.isLogout = false
           // obj.wallet = JSON.stringify(walletObj)
           // obj.account = walletObj.accountMap[0]
           // obj.name = walletObj.accountMap[0].name
@@ -104,7 +105,6 @@ export default {
           obj = {...obj,...walletObj.accountMap[0]}
           console.log('========钱包账户=======')
           console.log(obj)
-          // 存储加密助记词
           setChromeStorage("CreateingWallet", obj).then(res=>{
             console.log('=====钱包账户存储成功=====')
           })

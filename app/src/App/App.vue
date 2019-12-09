@@ -15,23 +15,23 @@ export default {
       this.$chain33Sdk.httpProvider.setUrl(val) 
       // eventBus.$emit('provider-changed')
     })
-    getChromeStorage('mainNodeList').then(res=>{
-      if(res.mainNodeList && res.mainNodeList.length > 0){
-        // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
-        // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
-      }else{
-        chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://114.55.11.139:1193',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
-        // console.log(this.$store.state.Account.mainNode)
-      }
-    })
-    getChromeStorage('parallelNodeList').then(res=>{
-      if(res.parallelNodeList && res.parallelNodeList.length > 0){
-        // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-      }else{
-        chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gameTest',coin:"GBTY",url:"http://114.55.11.139:1200",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-        // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
-      }
-    })
+    // getChromeStorage('mainNodeList').then(res=>{
+    //   if(res.mainNodeList && res.mainNodeList.length > 0){
+    //     // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
+    //     // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
+    //   }else{
+    //     chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://114.55.11.139:1193',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
+    //     // console.log(this.$store.state.Account.mainNode)
+    //   }
+    // })
+    // getChromeStorage('parallelNodeList').then(res=>{
+    //   if(res.parallelNodeList && res.parallelNodeList.length > 0){
+    //     // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+    //   }else{
+    //     chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gameTest',coin:"GBTY",url:"http://114.55.11.139:1200",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+    //     // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
+    //   }
+    // })
     // getChromeStorage('DefaultMainNode').then(res=>{
     //   if(res.DefaultMainNode){
     //     this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.DefaultMainNode)

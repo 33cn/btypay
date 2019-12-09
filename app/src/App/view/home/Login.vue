@@ -7,7 +7,7 @@
     </div>
     <el-dropdown trigger="click" @command="handleCommand">
       <span class="el-dropdown-link">
-        {{$store.state.Account.currentAccount.name}}<i class="el-icon-arrow-down el-icon--right"></i>
+        {{$store.state.Account.currentAccount.name || '请选择钱包'}}<i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <el-dropdown-menu slot="dropdown" class="loginPage">
         <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
@@ -53,6 +53,7 @@ export default {
         {name:'钱包一'},{name:'钱包二'},{name:'钱包三'}
       ],
       wallet:{},
+      // winWallet:{},
       mouseEnterIndex:null,
       // walletName:'',
       cipherMnemonic: "",
@@ -103,10 +104,13 @@ export default {
             let myWallet = this.createHDWallet(mnemonic);//创建钱包并赋值给window
             this.recoverAccount(this.wallet.name).then(res=>{
               if(res == 'success'){
-                this.isLogining = false;
-                this.$message.success("登录成功");
-                this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
-                this.$router.push("/WalletIndex");
+                setChromeStorage("CurrentAccountName", this.wallet.name).then(res=>{
+                  console.log('=====钱包名称存储成功=====')
+                  this.isLogining = false;
+                  this.$message.success("登录成功");
+                  this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
+                  this.$router.push("/WalletIndex");
+                })
               }
             }).catch(err=>{
               this.isLogining = false;
@@ -122,6 +126,7 @@ export default {
     handleCommand(val){
       console.log(val)
       this.wallet = val
+      this.$store.commit('Account/UPDATE_CURRENTACCOUNT', val)
     },
     getElements(path){
       getChromeStorage('element').then(ele=>{
@@ -137,12 +142,23 @@ export default {
       setChromeStorage('beforePath',{}).then(res=>{
           console.log(res)
       })
+    },
+    getWinCurrentAccount(){
+      this.getBackgroundPage().then(win=>{
+        // this.winWallet = win.currentAccount
+        for(let i = 0; i < this.accountList.length; i++){
+          if(this.accountList[i].name == win.currentAccount.name){
+            this.wallet = this.accountList[i]
+            break
+          }
+        }
+      })
     }
   },
   mounted() {
     this.getAccountList().then(res=>{
       this.accountList = res
-      
+      this.getWinCurrentAccount()
       this.getWallet().then(wallet=>{
         console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
         console.log(wallet)
@@ -152,6 +168,7 @@ export default {
           for(let i = 0; i < res.length; i++){
             if(res[i].name == this.$store.state.Account.currentAccount.name){
                 this.mouseEnterIndex = i
+                break
             }
           }
         }else{

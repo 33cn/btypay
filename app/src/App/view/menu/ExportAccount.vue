@@ -53,20 +53,24 @@ export default {
         getSeed(){
             this.getAccountList().then(res=>{
                 let obj = {}
+                let le = res.length
                 console.log('====AccountList====')
                 console.log(res)
-                for(let i = 0; i < res.length; i++){
+                for(let i = 0; i < le; i++){
+                    console.log(i)
+                    console.log(res[i])
                     if(res[i].name == this.walletName){
                         obj = res[i]
+                        break
                     }
-                    break
                 }
                 this.hexPrivateKey = obj.hexPrivateKey
                 this.mnemonic = decrypt(obj.ciphertext, obj.password);
                 console.log(this.mnemonic)
                 let arr = []
+                let mn = this.mnemonic.split(' ')
                 for(let i = 0;i<15;i++){
-                    arr[i] = this.mnemonic.split(' ')[i]
+                    arr[i] = mn[i]
                 }
                 for(let i = 0;i<4;i++){
                     if(!arr[i*4+3]){
@@ -92,6 +96,7 @@ export default {
     },
     mounted(){
         this.walletName = this.$route.query.name;
+        console.log(this.walletName)
         this.getSeed()
     }
 }
