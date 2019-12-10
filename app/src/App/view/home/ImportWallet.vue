@@ -3,7 +3,7 @@
     <asset-back title style="padding-top:0" :backPath="haveWallet?'/':'/ImportOrCreate'"></asset-back>
     <section class="content">
       <div class="words">
-        <p>请输入您12位钱包助记词，用空格分隔！</p>
+        <p>请输入您15位钱包助记词，用空格分隔！</p>
         <!-- <div class="seed-ui__word-group_zh">
           <one-box-one-word :box-num="15" v-model="seedStringInput"></one-box-one-word>
         </div>-->

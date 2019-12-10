@@ -30,9 +30,10 @@ import {clip} from '@/libs/clip.js'
 import HomeHeader from "@/components/HomeHeader.vue";
 import walletAPI from "@/mixins/walletAPI.js";
 import AssetBack from "@/components/AssetBack.vue";
+import recover from "@/mixins/recover.js";
 export default {
     components: { HomeHeader,AssetBack },
-    mixins:[walletAPI],
+    mixins:[walletAPI,recover],
     data(){
         return{
             mnemonic:'',

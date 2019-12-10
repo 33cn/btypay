@@ -301,7 +301,7 @@ export default {
         }).catch(err => {
           this.$store.commit('Account/UPDATE_MAIN_ASSET', {
             amt: 0.0000,
-            price: 10
+            price: 1
           })
           this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
           reject(err)
@@ -326,7 +326,7 @@ export default {
           this.$store.commit('Account/UPDATE_PARALLEL_ASSET', {
             name: "GBT",
             amt: 0.0000,
-            price: 10
+            price: 1
           })
           this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
           reject(err)

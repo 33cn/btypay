@@ -214,7 +214,7 @@ export default {
       console.log(this.seedString)
       // console.log(this.seedString);
       this.seedCharts = this.seedString.split(" ");
-      // this.getAndSet('seedCharts',this.seedCharts)
+      this.getAndSet('seedCharts',this.seedCharts)
       this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
   },

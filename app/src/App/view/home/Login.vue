@@ -6,8 +6,8 @@
       <p>欢迎回来</p>
     </div>
     <el-dropdown trigger="click" @command="handleCommand">
-      <span class="el-dropdown-link">
-        {{$store.state.Account.currentAccount.name || '请选择钱包'}}<i class="el-icon-arrow-down el-icon--right"></i>
+      <span class="el-dropdown-link" @click="isRotate=!isRotate">
+        {{$store.state.Account.currentAccount.name || wallet.name || '请选择钱包'}}<i :class="isRotate?'el-icon-arrow-down el-icon--right rotate':'el-icon-arrow-down el-icon--right'"></i>
       </span>
       <el-dropdown-menu slot="dropdown" class="loginPage">
         <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       accountList:[
-        {name:'钱包一'},{name:'钱包二'},{name:'钱包三'}
+        {name:'钱包一'},{name:'钱包二'},{name:'钱包三'},{name:'钱包四'},{name:'钱包五'}
       ],
       wallet:{},
       // winWallet:{},
@@ -66,23 +66,14 @@ export default {
           { required: true, message: "请输入您的密码", trigger: "blur" },
           { min: 8, max: 16, message: "8 到 16位字符", trigger: "blur" }
         ]
-      }
+      },
+      isRotate:false
     };
   },
   computed:{
     pageIsClose(){
       return this.$store.state.Records.pageIsClose
     },
-    // ...mapState([
-    //   //   "accountMap",
-    //   "currentAccount",
-    //   "currentMain",
-    //   "currentParallel",
-    //   "mainAsset",
-    //   "parallelAsset"
-    //   //   "mainNode",
-    //   //   "parallelNode"
-    // ]),
   },
   methods: {
     loginHandle() {
@@ -93,8 +84,6 @@ export default {
             let mnemonic = decrypt(this.wallet.ciphertext, this.form.pwd);
             console.log(mnemonic);
             console.log(this.wallet)
-            console.log(this.wallet.account)
-            console.log(this.wallet.wallet)
             // console.log(mnemonic.split(" "));
             if (mnemonic.split(" ").length !== 15) {
               this.$message.error("输入的密码有误。");
@@ -153,26 +142,101 @@ export default {
           }
         }
       })
+    },
+    update_store(){
+      this.getCurrentWalletName().then(name=>{
+        let wallets = this.accountList
+        for(let i = 0; i < wallets.length; i++){
+          if(wallets[i].name == name){
+            this.wallet = wallets[i]
+            let account = {}
+            account.address = wallets[i].address
+            account.hexPrivateKey = wallets[i].hexPrivateKey
+            account.name = wallets[i].name
+            account.pasword = wallets[i].password
+            account.ciphertext = wallets[i].ciphertext
+            this.$store.commit('Account/UPDATE_MAIN_NODE', wallets[i].mainNodeList)
+            this.$store.commit('Account/UPDATE_PARALLEL_NODE', wallets[i].parallelNodeList)
+            this.$store.commit('Account/UPDATE_CURRENT_MAIN', wallets[i].currentMainNode)
+            this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', wallets[i].currentParaNode)
+            this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
+          }
+        }
+      })
     }
   },
   mounted() {
     this.getAccountList().then(res=>{
+      if(res.length == 0){
+        setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
+          console.log('保存钱包打开时间')
+        })
+        this.$router.push("/ImportOrCreate");
+        return
+      }
       this.accountList = res
-      this.getWinCurrentAccount()
+      // this.getWinCurrentAccount()
       this.getWallet().then(wallet=>{
         console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
         console.log(wallet)
         console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
         if(wallet){
+          this.update_store()
           // 已创建/导入钱包(钱包锁定)
-          for(let i = 0; i < res.length; i++){
-            if(res[i].name == this.$store.state.Account.currentAccount.name){
-                this.mouseEnterIndex = i
-                break
+          getChromeStorage("loginTime").then(res=>{
+            console.log(res.loginTime)
+            if (res.loginTime) {
+              let limitTime = 1 * 24 * 60 * 60 * 1000;
+              console.log(new Date().valueOf() - parseInt(res.loginTime) - limitTime)
+              if (new Date().valueOf() - parseInt(res.loginTime) >= limitTime) {
+                console.log("大于24小时");
+                setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
+                  console.log('保存钱包打开时间')
+                })
+                return
+              }else{
+                getChromeStorage('beforePath').then(res=>{
+                  console.log('res.beforePath.path')
+                  console.log(res)
+                  setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
+                    console.log('保存钱包打开时间')
+                  })
+                  if(res.beforePath&&res.beforePath.path){
+                    if(res.beforePath.path == '/ImportWallet' || res.beforePath.path == '/CreateWallet'){
+                      console.log('进来了1'+this.pageIsClose)
+                      if(this.pageIsClose){
+                        let path = res.beforePath.path;
+                        this.clearPath();
+                        this.$router.push(path);
+                      }else{
+                        this.clearPath();
+                      }
+                      return
+                    }
+                    let queryArr = Object.keys(res.beforePath.query)
+                    if(queryArr.length>0){
+                      this.$router.push(res.beforePath.path+'?'+queryArr[0]+'='+res.beforePath.query[queryArr[0]]);
+                      return
+                    }else if(Object.keys(res.beforePath.params).length>0){
+                    }else{
+                      this.$router.push(res.beforePath.path);
+                    }
+                  }else{
+                    // this.$router.push("/WalletIndex");
+                  }
+                })
+              }
+            }else{
+              setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
+                console.log('保存钱包打开时间')
+              })
             }
-          }
+          })
         }else{
           // 钱包登出、无钱包
+          setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
+            console.log('保存钱包打开时间')
+          })
           this.$router.push("/ImportOrCreate");
         }
       })
@@ -348,6 +412,10 @@ export default {
       i{
         color: rgba(158,185,239,1);
         font-weight: bold;
+        transition: transform 0.2s linear;
+        &.rotate{
+          transform: rotate(180deg);
+        }
       }
     }
   }

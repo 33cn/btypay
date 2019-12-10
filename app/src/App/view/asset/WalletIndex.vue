@@ -8,8 +8,9 @@
     <section class="content">
       <!-- <p>我的资产</p> -->
       <el-dropdown trigger="click" @command="handleCommand">
-        <span class="el-dropdown-link">
-          {{currentAccount.name}}<i class="el-icon-arrow-down el-icon--right"></i>
+        <span class="el-dropdown-link" @click="isRotate=!isRotate">
+          {{currentAccount.name}}
+          <i :class="isRotate?'el-icon-arrow-down el-icon--right rotate':'el-icon-arrow-down el-icon--right'"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
@@ -28,7 +29,8 @@
             <p v-if="numIsAnimation" id="bty">0.0000</p>
             <p v-if="numIsAnimation" id="btyPrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ mainAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈{{ mainAsset.amt * mainAsset.price | numFilter(4)}}{{currency}}</p>
+            <p v-if="!numIsAnimation">≈<span v-if="currency=='USD'">$</span><span v-else>￥</span>
+            {{ mainAsset.amt * mainAsset.price | numFilter(4)}}{{currency}}</p>
           </div>
         </li>
         <li @click="toGame" ref="game">
@@ -40,7 +42,8 @@
             <p v-if="numIsAnimation" id="game">0.0000</p>
             <p v-if="numIsAnimation" id="gamePrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ parallelAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}{{currency}}</p>
+            <p v-if="!numIsAnimation">≈<span v-if="currency=='USD'">$</span><span v-else>￥</span>
+              {{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}{{currency }}</p>
           </div>
         </li>
       </ul>
@@ -73,8 +76,10 @@ import { setChromeStorage,getChromeStorage } from "@/libs/chromeUtil.js";
 import { decrypt,encrypt } from "@/libs/crypto.js";
 const { mapState } = createNamespacedHelpers("Account");
 import importOrExchange from "@/mixins/importOrExchange.js";
+import recover from "@/mixins/recover.js";
+var httpRequest = new XMLHttpRequest();
 export default {
-  mixins: [walletAPI, chain33API,importOrExchange],
+  mixins: [walletAPI, chain33API,importOrExchange,recover],
   components: { HomeHeader },
   data() {
     return {
@@ -87,7 +92,8 @@ export default {
       numIsAnimation:true,
       accountList:[],
       password:'',
-      wallet:{}
+      wallet:{},
+      isRotate:false,
     };
   },
   computed: {
@@ -97,9 +103,11 @@ export default {
       "currentMain",
       "currentParallel",
       "mainAsset",
-      "parallelAsset",
-      "currency"
-    ])
+      "parallelAsset"
+    ]),
+    currency(){
+        return this.$store.state.Account.currency || 'CNY'
+    }
   },
   methods: {
     handleCommand(val) {
@@ -115,6 +123,7 @@ export default {
             if(res == 'success'){
                 this.dialogIsShow = false
                 this.$message.success('已切换到'+this.wallet.name)
+                this.getBalance()
             }
         }).catch(error=>{
             console.log(error)
@@ -175,7 +184,8 @@ export default {
         regulator = options.regulator || 100, //调速器，改变regulator的数值可以调节数字改变的速度
         step = finalNum / (time / regulator) /*每30ms增加的数值--*/,
         count = 0.0, //计数器
-        initial = 0;
+        initial = 0,
+        currency = this.currency;
 
       let timer = setInterval(function() {
         count = count + step;
@@ -191,7 +201,11 @@ export default {
 
         initial = t;
         if(ele.indexOf('Price') > -1){
-          document.querySelector('#'+ele).innerHTML = '≈￥'+initial;
+          if(currency=='CNY'){
+            document.querySelector('#'+ele).innerHTML = '≈￥'+initial+currency;
+          }else if(currency=='USD'){
+            document.querySelector('#'+ele).innerHTML = '≈$'+initial+currency;
+          }
         }else{
           document.querySelector('#'+ele).innerHTML = initial;
         }
@@ -207,9 +221,11 @@ export default {
                 num: this.numFilter(this.mainAsset.amt),
                 regulator: 50
               })
+              console.log('this.mainAsset.amt*this.mainAsset.price')
+              console.log(this.mainAsset.amt*this.mainAsset.price)
               this.NumAutoPlusAnimation('btyPrice',{
                 time: 1500,
-                num: this.numFilter(this.mainAsset.amt*10),
+                num: this.numFilter(this.mainAsset.amt*this.mainAsset.price),
                 regulator: 50
               })
             }
@@ -225,18 +241,72 @@ export default {
               })
               this.NumAutoPlusAnimation('gamePrice',{
                 time: 1500,
-                num: this.numFilter(this.parallelAsset.amt*10),
+                num: this.numFilter(this.parallelAsset.amt*this.parallelAsset.price),
                 regulator: 50
               })
             }
           }
         });
-      }, 10);
+      }, 200);
     },
-    getAccountLists(){
-      this.getAccountList().then(res=>{
-        this.accountList = res
+    // 登录、创建、导入钱包后更新store==》currentAccount，node
+    update_store(){
+      let p1 = this.getAccountList()
+      let p2 = this.getCurrentWalletName()
+      Promise.all([p1, p2]).then(([wallets,name])=>{
+        this.accountList = wallets
+        for(let i = 0; i < wallets.length; i++){
+          if(wallets[i].name == name){
+            let account = {}
+            account.address = wallets[i].address
+            account.hexPrivateKey = wallets[i].hexPrivateKey
+            account.name = wallets[i].name
+            account.pasword = wallets[i].password
+            account.ciphertext = wallets[i].ciphertext
+            this.$store.commit('Account/UPDATE_MAIN_NODE', wallets[i].mainNodeList)
+            this.$store.commit('Account/UPDATE_PARALLEL_NODE', wallets[i].parallelNodeList)
+            this.$store.commit('Account/UPDATE_CURRENT_MAIN', wallets[i].currentMainNode)
+            this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', wallets[i].currentParaNode)
+            this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
+          }
+        }
       })
+    },
+    // 获取bty价格
+    getPrice(){
+      httpRequest.open('GET', 'https://m.zhaobi.xyz/api/data/Ticker?sort=cname', true)
+      httpRequest.send();
+      httpRequest.onreadystatechange =  ()=> {
+          if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+              var json = httpRequest.responseText;
+              let obj = JSON.parse(json).data
+              console.log(obj)
+              console.log(this.currency)
+              console.log(this.$store.state.Account.currency)
+              if(this.currency == 'USD'){
+                let val = obj.USDT
+                for(let i = 0; i < val.length; i++){
+                  if(val[i].symbol == "BTYUSDT"){
+                    this.$store.commit('Account/UPDATE_MAIN_ASSET', {price:val[i].last})
+                    this.getBalance(val[i].last)
+                    console.log(val[i].last)
+                    break
+                  }
+                }
+              }else{
+                let val = obj.CCNY
+                console.log(val)
+                for(let i = 0; i < val.length; i++){
+                  if(val[i].symbol == "BTYCCNY"){
+                    this.$store.commit('Account/UPDATE_MAIN_ASSET', {price:val[i].last})
+                    this.getBalance(val[i].last)
+                    console.log(val[i].last)
+                    break
+                  }
+                }
+              }
+          }
+      };
     }
   },
   watch:{
@@ -247,16 +317,12 @@ export default {
     }
   },
   mounted() {
-    // this.init();
-    this.getBalance()
+    this.getPrice()
+    // this.getBalance()
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
-    setChromeStorage('element',{}).then(res=>{
-        // console.log(res)
-    })
-    setChromeStorage('beforePath',{}).then(res=>{
-      // console.log(res)
-    })
-    this.getAccountLists()
+    // setChromeStorage('element',{}).then(res=>{})
+    // setChromeStorage('beforePath',{}).then(res=>{})
+    this.update_store()
   },
   beforeRouteEnter(to, from, next){
     next(vm=>{
@@ -306,6 +372,15 @@ export default {
         font-size:16px;
         font-family:Microsoft YaHei;
         color:rgba(255,255,255,1);
+        cursor: pointer;
+        i{
+          color: rgba(158,185,239,1);
+          font-weight: bold;
+          transition: transform 0.2s linear;
+          &.rotate{
+            transform: rotate(180deg);
+          }
+        }
       }
     }
     ul {

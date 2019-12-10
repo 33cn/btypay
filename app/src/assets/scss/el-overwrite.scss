@@ -209,6 +209,7 @@
 ul.el-dropdown-menu.el-popper{
   width: 80px;
   min-width: 80px;
+  max-height: 170px;
   margin: 4px 0 0 0;
   padding: 16px 0;
   background:rgba(168,191,239,1);
@@ -234,6 +235,15 @@ ul.el-dropdown-menu.el-popper{
     &.currentAccount{
       background: #99B4E8;
     }
+    &.el-dropdown-menu__item:hover{
+      background: rgba(153,180,232,1)!important;
+      color: #fff!important;
+    }
+  }
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
   }
 }
 

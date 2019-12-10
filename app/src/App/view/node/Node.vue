@@ -5,7 +5,7 @@
       <router-link :to="{ name: 'WalletIndex'}">
         <img src="../../../assets/images/back.png" alt />
       </router-link>
-      <p>节点设置</p>
+      <p>节点设置{{isEditing}}</p>
       <p></p>
     </section>
     <ul>
@@ -70,17 +70,18 @@
               <p class="line"></p>
             </div>
           </section>
-          <p class="add" @click="paraDialog=true;form={name:'',coin:'',url:''}">添加自定义节点</p>
+          <p class="add" @click="paraDialog=true;isEditing = false;form={name:'',coin:'',url:''}">添加自定义节点</p>
         </div>
       </li>
     </ul>
     <el-dialog
-      title="主链节点设置"
+      :title="isEditing?'主链节点编辑':'主链节点设置'"
       :visible.sync="mainDialog"
       width="324px"
       :show-close="false"
       class="mainNode">
-      <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
+      <p v-if="!isEditing">请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
+      <p v-else>请输入您要编辑的主链节点地址，建议您使用默认的主链节点</p>
       <input type="text" class="mainAddress" ref="mainName" v-model="mainData" @input.prevent="inputHandle($event,'main')"/>
       <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
       <div slot="footer" class="dialog-footer">
@@ -89,7 +90,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="平行链节点设置"
+      :title="isEditing?'平行链节点编辑':'平行链节点设置'"
       :visible.sync="paraDialog"
       width="324px"
       :show-close="false"
@@ -181,9 +182,10 @@ export default {
   methods: {
     test(){
       this.mainDialog=true;
+      this.isEditing = false
       this.mainIsInput=false;
       this.mainData=''
-      // this.getAndSet('mainDialog',true)
+      this.getAndSet('mainDialog',true)
     },
     editHandle(val,type){
       console.log('编辑')
@@ -217,9 +219,9 @@ export default {
       // console.log(e)
       // console.log(node)
       if(node == 'main'){
-        // this.getAndSet('mainData',e.target.value)
+        this.getAndSet('mainData',e.target.value)
       }else if(node == 'para'){
-        // this.getAndSet('form',this.form)
+        this.getAndSet('form',this.form)
       }
     },
     // 添加、编辑平行链节点
@@ -303,7 +305,7 @@ export default {
                 }else{
                   this.$message.success("平行链节点添加成功");
                 }
-                // this.getAndSet('form',{name:'',coin:'',url:''})
+                this.getAndSet('form',{name:'',coin:'',url:''})
                 this.getCurrentWallet()//更新视图
               }
              this.paraAdding = false;
@@ -383,13 +385,15 @@ export default {
       }
       setChromeStorage("AccountList", arr ).then(res=>{
         if (res == "success") {
+          console.log('this.isEditing')
+          console.log(this.isEditing)
           if(!this.isEditing){
             this.$message.success("主链节点添加成功");
           }else{
             this.$message.success("主链节点更新成功");
-            // this.setNode(obj,'main')
+            this.setNode(obj,'main')
           }
-          // this.getAndSet('mainData','')
+          this.getAndSet('mainData','')
           this.getCurrentWallet()//更新视图
         }
         this.mainAdding = false
@@ -418,8 +422,10 @@ export default {
         if(this.wallets[i].name == this.walletName){
           if (target == "main"){
             this.wallets[i].currentMainNode = val
+            this.$store.commit('Account/UPDATE_CURRENT_MAIN', val)
           }else if (target == "para") {
             this.wallets[i].currentParaNode = val
+            this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', val)
           }
         }
         arr.push(JSON.stringify(this.wallets[i]))
@@ -482,6 +488,8 @@ export default {
           for(let i = 0; i < res.length; i++){
             if(res[i].name == this.walletName){
               this.wallet = res[i]
+              this.refreshMainAsset();
+              this.refreshParallelAsset();
               break
             }
           }
@@ -495,14 +503,14 @@ export default {
   },
   mounted() {
     this.getCurrentWallet()
-    this.refreshMainAsset();
-    this.refreshParallelAsset();
+    // this.refreshMainAsset();
+    // this.refreshParallelAsset();
   },
   watch: {
     paraDialog(val) {
       this.getAndSet('paraDialog',val)
       if (!val) {
-        this.isEditing = false
+        // this.isEditing = false
         this.$refs["ruleForm"].resetFields();
         // this.getParaNode();
       } else {
@@ -518,7 +526,7 @@ export default {
           this.$refs["mainName"] && this.$refs["mainName"].focus();
         }, 50);
       }else{
-        this.isEditing = false
+        // this.isEditing = false
       }
     }
   },

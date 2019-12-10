@@ -6,14 +6,9 @@ const state = {
   seed: '',//助记词
   accountMap: {},
   currentAccount: {
-    address: "16wDRZWBaHuKQVwH6Vexcd273FGkHnxPgg",   //1
-    // address: "1N2dRnD8dvBjDpT8vKUnyrY2zdivtK2PTm",   //2
-    // address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",   //3
-    // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",   //4
+    address: "",   
     base58PrivateKey: "",
-    // hexPrivateKey: "37fdb1ee53b13bb6091145eacfa5353991b0d81bf38cf6a9537637709ec017cd",   //1
-    // hexPrivateKey: "c8d3065b50038faef1e73740e1d0295f2be66e18dbee1311a0c90dc0c200db40",   //2
-    hexPrivateKey: '0554e6348328a6c2a38859dc00ebadcefe3863d8086f5c2988d19779cfb50ec3', //3
+    hexPrivateKey: '', 
     index: 0,
     name: ""
   },
@@ -23,7 +18,7 @@ const state = {
 
   mainAsset: {
     amt: 0.0000,
-    price: 10
+    price: 1
   },
   parallelAsset: {
     name: "GBT",

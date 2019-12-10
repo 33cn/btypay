@@ -62,9 +62,10 @@ import { clip } from "@/libs/clip.js";
 import { decrypt,encrypt } from "@/libs/crypto.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import importOrExchange from "@/mixins/importOrExchange.js";
+import recover from "@/mixins/recover.js";
 
 export default {
-    components: { HomeHeader,AssetBack },
+    components: { HomeHeader,AssetBack,recover },
     mixins:[walletAPI,importOrExchange],
     data(){
         return{
@@ -106,6 +107,10 @@ export default {
             }
         },
         delHandle(){
+            if(this.lists[this.mouseEnterIndex] == this.$store.state.Account.currentAccount.name){
+                this.$message.error('不能删除当前钱包，请切换后在操作。')
+                return
+            }
             this.lists.splice(this.mouseEnterIndex,1)
             let arr = []
             for(let i = 0; i < this.lists.length; i++){
@@ -114,6 +119,9 @@ export default {
             }
             setChromeStorage("AccountList", arr ).then(res=>{
                 console.log(res)
+                this.$message.success('删除成功。')
+                this.dialogIsShow = false
+                this.getAccountLists()
             })
         },
         passHandle(){
@@ -162,6 +170,7 @@ export default {
         },
         getAccountLists(){
             this.getAccountList().then(res=>{
+                this.lists = []
                 console.log('====AccountList====')
                 console.log(res)
                 for(let i = 0; i < res.length; i++){
