@@ -6,20 +6,19 @@
       刷新
     </p>
     <section class="content">
-      <p>我的资产</p>
-      <!-- <i>我的资产<i class="el-icon-arrow-down el-icon--right"></i></p> -->
-      <!-- <el-dropdown trigger="click" @command="handleCommand">
-        <span class="el-dropdown-link">
-          下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+      <!-- <p>我的资产</p> -->
+      <el-dropdown trigger="click" @command="handleCommand">
+        <span class="el-dropdown-link" @click="isRotate=!isRotate">
+          {{currentAccount.name}}
+          <i :class="isRotate?'el-icon-arrow-down el-icon--right rotate':'el-icon-arrow-down el-icon--right'"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">黄金糕</el-dropdown-item>
-          <el-dropdown-item command="b">狮子头</el-dropdown-item>
-          <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>
-          <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>
-          <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>
+          <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
+            :command="item" :class="currentAccount.name==item?'currentAccount':''">{{item.name}}</el-dropdown-item>
+          <!-- <el-dropdown-item command="b">钱包二</el-dropdown-item>
+          <el-dropdown-item command="c">钱包三</el-dropdown-item> -->
         </el-dropdown-menu>
-      </el-dropdown> -->
+      </el-dropdown>
       <ul>
         <li @click="toBty">
           <div class="left">
@@ -30,7 +29,8 @@
             <p v-if="numIsAnimation" id="bty">0.0000</p>
             <p v-if="numIsAnimation" id="btyPrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ mainAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈{{ mainAsset.amt * mainAsset.price | numFilter(4)}}{{currency}}</p>
+            <p v-if="!numIsAnimation">≈<span v-if="currency=='USD'">$</span><span v-else>￥</span>
+            {{ mainAsset.amt * mainAsset.price | numFilter(4)}}{{currency}}</p>
           </div>
         </li>
         <li @click="toGame" ref="game">
@@ -42,14 +42,27 @@
             <p v-if="numIsAnimation" id="game">0.0000</p>
             <p v-if="numIsAnimation" id="gamePrice">≈￥0.0000</p>
             <p v-if="!numIsAnimation">{{ parallelAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}{{currency}}</p>
+            <p v-if="!numIsAnimation">≈<span v-if="currency=='USD'">$</span><span v-else>￥</span>
+              {{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}{{currency }}</p>
           </div>
         </li>
       </ul>
     </section>
-    <!-- <section class="btn">
-      <router-link :to="{ name: 'ImportWallet'}">导入钱包</router-link>
-    </section>-->
+    <el-dialog
+      :title="'请输入'+this.wallet.name+'密码'"
+      :visible.sync="dialogIsShow"
+      width="324px"
+      :show-close="false"
+      class="mainNode editAccount">
+      <div>
+          <p>密码</p>
+          <input type="text" v-model="password">
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogIsShow = false">取消</el-button>
+        <el-button type="primary" @click="submitHandle">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -59,12 +72,14 @@ import { createNamespacedHelpers } from "vuex";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
 import { eventBus } from "@/libs/eventBus";
-import { setChromeStorage } from "@/libs/chromeUtil.js";
-
+import { setChromeStorage,getChromeStorage } from "@/libs/chromeUtil.js";
+import { decrypt,encrypt } from "@/libs/crypto.js";
 const { mapState } = createNamespacedHelpers("Account");
-
+import importOrExchange from "@/mixins/importOrExchange.js";
+import recover from "@/mixins/recover.js";
+var httpRequest = new XMLHttpRequest();
 export default {
-  mixins: [walletAPI, chain33API],
+  mixins: [walletAPI, chain33API,importOrExchange,recover],
   components: { HomeHeader },
   data() {
     return {
@@ -73,7 +88,12 @@ export default {
         top: 0
       },
       menuIsShow: false,
+      dialogIsShow:false,
       numIsAnimation:true,
+      accountList:[],
+      password:'',
+      wallet:{},
+      isRotate:false,
     };
   },
   computed: {
@@ -83,13 +103,34 @@ export default {
       "currentMain",
       "currentParallel",
       "mainAsset",
-      "parallelAsset",
-      "currency"
-    ])
+      "parallelAsset"
+    ]),
+    currency(){
+        return this.$store.state.Account.currency || 'CNY'
+    }
   },
   methods: {
-    handleCommand(command) {
-      this.$message('click on item ' + command);
+    handleCommand(val) {
+      this.wallet = val
+      console.log(this.wallet)
+      this.dialogIsShow = true
+    },
+    submitHandle(){
+      if(this.wallet.password == this.password){
+        // 切换钱包<=>相当于导入钱包,区别在于是否需要输入助记词
+        let mnemonic = decrypt(this.wallet.ciphertext, this.password);
+        this.saveSeed(mnemonic, this.password).then(res=>{
+            if(res == 'success'){
+                this.dialogIsShow = false
+                this.$message.success('已切换到'+this.wallet.name)
+                this.getBalance()
+            }
+        }).catch(error=>{
+            console.log(error)
+        })
+      }else{
+        this.$message.warning("输入的密码有误。");
+      }
     },
     toBty() {
       this.$store.commit("Records/ASSET_TYPE", "bty");
@@ -143,7 +184,8 @@ export default {
         regulator = options.regulator || 100, //调速器，改变regulator的数值可以调节数字改变的速度
         step = finalNum / (time / regulator) /*每30ms增加的数值--*/,
         count = 0.0, //计数器
-        initial = 0;
+        initial = 0,
+        currency = this.currency;
 
       let timer = setInterval(function() {
         count = count + step;
@@ -159,7 +201,11 @@ export default {
 
         initial = t;
         if(ele.indexOf('Price') > -1){
-          document.querySelector('#'+ele).innerHTML = '≈￥'+initial;
+          if(currency=='CNY'){
+            document.querySelector('#'+ele).innerHTML = '≈￥'+initial+currency;
+          }else if(currency=='USD'){
+            document.querySelector('#'+ele).innerHTML = '≈$'+initial+currency;
+          }
         }else{
           document.querySelector('#'+ele).innerHTML = initial;
         }
@@ -167,63 +213,116 @@ export default {
     },
     getBalance(){
       setTimeout(() => {
-      this.refreshMainAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('bty',{
-              time: 1500,
-              num: this.numFilter(this.mainAsset.amt),
-              regulator: 50
-            })
-            this.NumAutoPlusAnimation('btyPrice',{
-              time: 1500,
-              num: this.numFilter(this.mainAsset.amt*10),
-              regulator: 50
-            })
+        this.refreshMainAsset().then(res=>{
+          if(res == 'success'){
+            if(this.numIsAnimation){
+              this.NumAutoPlusAnimation('bty',{
+                time: 1500,
+                num: this.numFilter(this.mainAsset.amt),
+                regulator: 50
+              })
+              console.log('this.mainAsset.amt*this.mainAsset.price')
+              console.log(this.mainAsset.amt*this.mainAsset.price)
+              this.NumAutoPlusAnimation('btyPrice',{
+                time: 1500,
+                num: this.numFilter(this.mainAsset.amt*this.mainAsset.price),
+                regulator: 50
+              })
+            }
+          }
+        })
+        this.refreshParallelAsset().then(res=>{
+          if(res == 'success'){
+            if(this.numIsAnimation){
+              this.NumAutoPlusAnimation('game',{
+                time: 1500,
+                num: this.numFilter(this.parallelAsset.amt),
+                regulator: 50
+              })
+              this.NumAutoPlusAnimation('gamePrice',{
+                time: 1500,
+                num: this.numFilter(this.parallelAsset.amt*this.parallelAsset.price),
+                regulator: 50
+              })
+            }
+          }
+        });
+      }, 200);
+    },
+    // 登录、创建、导入钱包后更新store==》currentAccount，node
+    update_store(){
+      let p1 = this.getAccountList()
+      let p2 = this.getCurrentWalletName()
+      Promise.all([p1, p2]).then(([wallets,name])=>{
+        this.accountList = wallets
+        for(let i = 0; i < wallets.length; i++){
+          if(wallets[i].name == name){
+            let account = {}
+            account.address = wallets[i].address
+            account.hexPrivateKey = wallets[i].hexPrivateKey
+            account.name = wallets[i].name
+            account.pasword = wallets[i].password
+            account.ciphertext = wallets[i].ciphertext
+            this.$store.commit('Account/UPDATE_MAIN_NODE', wallets[i].mainNodeList)
+            this.$store.commit('Account/UPDATE_PARALLEL_NODE', wallets[i].parallelNodeList)
+            this.$store.commit('Account/UPDATE_CURRENT_MAIN', wallets[i].currentMainNode)
+            this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', wallets[i].currentParaNode)
+            this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
           }
         }
       })
-      this.refreshParallelAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('game',{
-              time: 1500,
-              num: this.numFilter(this.parallelAsset.amt),
-              regulator: 50
-            })
-            this.NumAutoPlusAnimation('gamePrice',{
-              time: 1500,
-              num: this.numFilter(this.parallelAsset.amt*10),
-              regulator: 50
-            })
+    },
+    // 获取bty价格
+    getPrice(){
+      httpRequest.open('GET', 'https://m.zhaobi.xyz/api/data/Ticker?sort=cname', true)
+      httpRequest.send();
+      httpRequest.onreadystatechange =  ()=> {
+          if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+              var json = httpRequest.responseText;
+              let obj = JSON.parse(json).data
+              console.log(obj)
+              console.log(this.currency)
+              console.log(this.$store.state.Account.currency)
+              if(this.currency == 'USD'){
+                let val = obj.USDT
+                for(let i = 0; i < val.length; i++){
+                  if(val[i].symbol == "BTYUSDT"){
+                    this.$store.commit('Account/UPDATE_MAIN_ASSET', {price:val[i].last})
+                    this.getBalance(val[i].last)
+                    console.log(val[i].last)
+                    break
+                  }
+                }
+              }else{
+                let val = obj.CCNY
+                console.log(val)
+                for(let i = 0; i < val.length; i++){
+                  if(val[i].symbol == "BTYCCNY"){
+                    this.$store.commit('Account/UPDATE_MAIN_ASSET', {price:val[i].last})
+                    this.getBalance(val[i].last)
+                    console.log(val[i].last)
+                    break
+                  }
+                }
+              }
           }
-        }
-      });
-    }, 10);
+      };
+    }
+  },
+  watch:{
+    dialogIsShow(val){
+      if(!val){
+        this.password = ''
+      }
     }
   },
   mounted() {
-    this.init();
-    // this.recoverAccount();
-    this.getBalance()
+    this.getPrice()
+    // this.getBalance()
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
-    setChromeStorage('element',{}).then(res=>{
-        // console.log(res)
-    })
-    setChromeStorage('beforePath',{}).then(res=>{
-      // console.log(res)
-    })
-    // let tx = '0a15757365722e702e67616d65546573742e636f696e73124f180a2a4b1080c2d72f2220757365722e702e757365722e702e676274746573742e2e7761736d2e646963652a223147556862657953534e797751634763736a685050584d583769525a3650366f76621a6e08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a473045022100cede87ff1cc13591dbb747206dff068b386c016acfc177f5149afc2c3238d2c402200c2524d0d5b95264e3796f860c5368775ded8a99d57653fee963d95e985bd15a20c09a0c30bf92c4bc96ee89a6683a22313831447942764c36417135744c51516d7279695835623276467947544d4536504240024a82050ad0020a15757365722e702e67616d65546573742e636f696e73124f180a2a4b1080c2d72f2220757365722e702e757365722e702e676274746573742e2e7761736d2e646963652a223147556862657953534e797751634763736a685050584d583769525a3650366f76621a6e08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a473045022100cede87ff1cc13591dbb747206dff068b386c016acfc177f5149afc2c3238d2c402200c2524d0d5b95264e3796f860c5368775ded8a99d57653fee963d95e985bd15a20c09a0c30bf92c4bc96ee89a6683a22313831447942764c36417135744c51516d7279695835623276467947544d4536504240024a203fbe4fca37b584ff8bdf5aba3dc3f606dd69eaecf939c3829b472d3a2c2b27dd5220167862ab535edd15435c7bca8d7e09ab4e77d544f6737d97c3d72e61670803c60aac020a17757365722e702e67616d65546573742e6c6f747465727912505002124c0a42307831663261333331343930623261313464353966313933346138373461393338303363613761306235643864626435353664303036316333366263623736363665100118db930420051a6d08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a46304402204843c9d287240a6bb28507c7e35b82c0a7eb2b934e4c44631eca56373481cd3d02201da03281812ecff8701c8afc8eb96aa3165df8359cfa24b5ef8d0bc99368d5e230fedf92afb4c1b5eb7e3a22314442756359366d57486d6e706251574c503177546142315676705536423373434a40024a203fbe4fca37b584ff8bdf5aba3dc3f606dd69eaecf939c3829b472d3a2c2b27dd5220167862ab535edd15435c7bca8d7e09ab4e77d544f6737d97c3d72e61670803c6'
-    // this.sendTransaction(tx,'https://jiedian1.bityuan.com:8801/').then(res=>{
-    //   console.log('()()()()()()()()()(')
-    //   console.log(res)
-    // }).catch(err=>{
-    //   console.log('()()()()()()()()()')
-    //   console.log(err)
-    //   console.log(JSON.stringify(err))
-    //   console.log(JSON.parse(err))
-    //   console.log(err.id)
-    // })
+    // setChromeStorage('element',{}).then(res=>{})
+    // setChromeStorage('beforePath',{}).then(res=>{})
+    this.update_store()
   },
   beforeRouteEnter(to, from, next){
     next(vm=>{
@@ -250,7 +349,7 @@ export default {
     font-weight: bold;
     position: absolute;
     right: 45px;
-    top: 138px;
+    top: 128px;
     color: rgba(245, 185, 71, 1);
     cursor: pointer;
     a {
@@ -258,13 +357,31 @@ export default {
     }
   }
   > section.content {
-    margin: 41px 26px 0px 31px;
+    margin: 31px 26px 0px 31px;
     > p {
       font-size: 16px;
       font-family: MicrosoftYaHei;
       font-weight: 400;
       color: rgba(255, 255, 255, 1);
       margin-bottom: 14px;
+    }
+    >div.el-dropdown{
+      margin: 0 0 20px 2px;
+      span{
+        line-height: 1;
+        font-size:16px;
+        font-family:Microsoft YaHei;
+        color:rgba(255,255,255,1);
+        cursor: pointer;
+        i{
+          color: rgba(158,185,239,1);
+          font-weight: bold;
+          transition: transform 0.2s linear;
+          &.rotate{
+            transform: rotate(180deg);
+          }
+        }
+      }
     }
     ul {
       li {

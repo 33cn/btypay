@@ -211,9 +211,10 @@ export default {
     //生成助记词
     generateSeed() {
       this.seedString = this.newMnemonic(2);
+      console.log(this.seedString)
       // console.log(this.seedString);
       this.seedCharts = this.seedString.split(" ");
-      // this.getAndSet('seedCharts',this.seedCharts)
+      this.getAndSet('seedCharts',this.seedCharts)
       this.$store.commit("Account/UPDATE_SEED", this.seedString);
     }
   },

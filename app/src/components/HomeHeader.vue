@@ -3,10 +3,18 @@
         <div class="head" :style="isHidden?'display: none':'display:flex'">
             <p><img src="../assets/images/logo.png" alt=""></p>
             <div class="menu" v-if="!WalletIndex">
-                <!-- <router-link :to="{ name: 'dapps'}"><img src="../assets/images/zhaobi.png" alt=""></router-link> -->
-                <router-link :to="{ name: 'dapps'}"><img src="../assets/images/dappIcon.png" alt=""></router-link>
-                <img @click="lockHandle" src="../assets/images/lock.png" alt="">
-                <img src="../assets/images/menu.png" alt="" @click="dropdownIsShow=true">
+                <el-tooltip class="item" effect="dark" content="交易所" placement="bottom">
+                    <a @click="tojys"><img src="../assets/images/zhaobi.png" alt=""></a>
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="DAPP" placement="bottom">
+                    <router-link :to="{ name: 'dapps'}"><img src="../assets/images/dappIcon.png" alt=""></router-link> 
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="锁定" placement="bottom">
+                    <img @click="lockHandle" src="../assets/images/lock.png" alt="">  
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="菜单" placement="bottom">
+                    <img src="../assets/images/menu.png" alt="" @click="dropdownIsShow=true">  
+                </el-tooltip>
             </div>
         </div>
         <div class="mask" v-if="dropdownIsShow" @click="dropdownIsShow=false"></div>
@@ -16,13 +24,11 @@
                 <p>{{item.name}}</p>
             </li>
         </ul>
-        <!-- <p>比特元钱包</p> -->
-        <!-- <input type="button" value="按钮1" @contextmenu.prevent="show1()">  -->
     </div>
 </template>
 
 <script>
-import { setChromeStorage } from "@/libs/chromeUtil.js";
+import { setChromeStorage,getChromeStorage } from "@/libs/chromeUtil.js";
 let isDev = process.env.NODE_ENV === 'development'
 export default {
     props:['isHidden'],
@@ -31,19 +37,24 @@ export default {
             dropdownIsShow:false,
             menus:[
                 {name:'节点设置',img:'nodeSetIcon',path:'node'},
-                {name:'我的账户',img:'exportIcon',path:'exportAccount'},
+                {name:'我的钱包',img:'exportIcon',path:'account'},
                 {name:'货币设置',img:'currencyIcon',path:'currencySet'},
                 {name:'关于我们',img:'aboutIcon',path:'about'},
-                {name:'退出登录',img:'logoutIcon',path:'ImportOrCreate'},
+                // {name:'退出登录',img:'logoutIcon',path:'ImportOrCreate'},
             ],
             WalletIndex:false
         }
     },
     methods:{
+        tojys(){
+            chrome.tabs.create({url:'https://m.zhaobi.xyz/index'});
+        },
         // 锁定
         lockHandle(){
             this.getBackgroundPage().then(win => {
-                win.myChain33WalletInstance = null
+                // win.myChain33WalletInstance = null
+                setChromeStorage('beforePath',{}).then(res=>{})
+                setChromeStorage('element',{}).then(res=>{})
                 setTimeout(() => {
                     this.$router.push({name:'login'})
                 }, 100);
@@ -54,38 +65,71 @@ export default {
         // 登出
         logoutHandle(name){
             console.log('登出'+name)
-            if(name == 'ImportOrCreate'){
-                let p1 = setChromeStorage('beforePath', {})
-                let p2 = setChromeStorage('ciphertext', '')
-                let p3 = this.getBackgroundPage()
-                Promise.all([p1, p2,p3]).then(([r1,r2,win])=>{
-                    console.log('success')
-                    win.myChain33WalletInstance = null
-                    this.dropdownIsShow = false
-                    this.$router.push({name})
-                }).catch(err=>{
-                    console.log(err)
-                })
-                // .then(res=>{
-                //     this.$router.push({name})
-                //     this.dropdownIsShow = false
-                // })
-            }else{
+            // if(name == 'ImportOrCreate'){
+            //     let p1 = setChromeStorage('beforePath', {})
+            //     let p2 = setChromeStorage('ciphertext', '')
+            //     let p3 = getChromeStorage("AccountList")
+            //     let p4 = this.getBackgroundPage()
+            //     Promise.all([p1, p2,p3,p4]).then(([r1,r2,r3,win])=>{
+            //         console.log('success')
+            //         console.log(r3)
+            //         console.log(r3.AccountList.length)
+            //         console.log(win.currentAccount)
+            //         let obj = {}
+            //         let list = {}
+            //         let index = null
+            //         for(let i = 0; i < r3.AccountList.length; i++){
+            //             let pA = JSON.parse(r3.AccountList[i])
+            //             console.log(pA)
+            //             if(pA.name == win.currentAccount.name){
+            //                 index = i
+            //                 obj.name = pA.name
+            //                 obj.mainNodeList = pA.mainNodeList
+            //                 obj.parallelNodeList = pA.parallelNodeList
+            //                 obj.currentMainNode = pA.currentMainNode
+            //                 obj.currentParaNode = pA.currentParaNode
+            //                 obj.isLogout = true
+            //             }
+            //             break
+            //         }
+            //         console.log(index)
+            //         r3.AccountList[index] = JSON.stringify(obj)
+            //         console.log('=====r3[index]=====')
+            //         console.log(r3.AccountList[index])
+            //         list = r3.AccountList
+            //         console.log('=====list======')
+            //         console.log(list)
+            //         setChromeStorage("AccountList", list ).then(res=>{
+            //             win.myChain33WalletInstance = null
+            //             win.currentAccount = null
+            //             this.$store.commit('Account/UPDATE_CURRENTACCOUNT', null)
+            //             this.$store.commit('Account/UPDATE_ACCOUNTS', null)
+            //             this.dropdownIsShow = false
+            //             this.$router.push({name})
+            //         })
+            //     }).catch(err=>{
+            //         console.log(err)
+            //     })
+            //     // .then(res=>{
+            //     //     this.$router.push({name})
+            //     //     this.dropdownIsShow = false
+            //     // })
+            // }else{
                 this.dropdownIsShow = false
                 this.$router.push({name})
-            }
+            // }
         },
-        getBackgroundPage(){
-            return new Promise((resolve) => {
-                if (isDev) {
-                  resolve(window)
-                } else {
-                  window.chrome.runtime.getBackgroundPage(win => {
-                    resolve(win)
-                  })
-                }
-            })
-        }
+        // getBackgroundPage(){
+        //     return new Promise((resolve) => {
+        //         if (isDev) {
+        //           resolve(window)
+        //         } else {
+        //           window.chrome.runtime.getBackgroundPage(win => {
+        //             resolve(win)
+        //           })
+        //         }
+        //     })
+        // }
     },
     mounted(){
         this.WalletIndex = window.location.href.indexOf('WalletIndex') == -1
@@ -183,18 +227,18 @@ export default {
                 }
             }
             &:nth-of-type(4){
+                margin-bottom: 0px;
                 img{
                     width: 12px;
                     height: 12px;
                 }
             }
-            &:nth-of-type(5){
-                margin-bottom: 0px;
-                img{
-                    width: 13px;
-                    height: 13px;
-                }
-            }
+            // &:nth-of-type(5){
+            //     img{
+            //         width: 13px;
+            //         height: 13px;
+            //     }
+            // }
         }
         &::after{
             content:'';

@@ -1,7 +1,7 @@
 <template>
     <div class="exportAccount_container">
         <home-header></home-header>
-        <asset-back title="导出账户" backPath="/WalletIndex"></asset-back>
+        <asset-back title="导出账户" backPath="/account"></asset-back>
         <section>
             <div>
                 <p>助记词</p>
@@ -28,47 +28,57 @@ import { getChromeStorage,setChromeStorage } from "@/libs/chromeUtil.js";
 import { decrypt } from "@/libs/crypto.js";
 import {clip} from '@/libs/clip.js'
 import HomeHeader from "@/components/HomeHeader.vue";
+import walletAPI from "@/mixins/walletAPI.js";
 import AssetBack from "@/components/AssetBack.vue";
+import recover from "@/mixins/recover.js";
 export default {
     components: { HomeHeader,AssetBack },
+    mixins:[walletAPI,recover],
     data(){
         return{
             mnemonic:'',
             mnemonicArr:[],
-            // hexPrivateKey:'c2b31057b8692a56c7dd18199df71c1d21b781c0b6858c52997c9dbf778e8550'
+            walletName:'',
+            hexPrivateKey:''
         }
     },
     computed:{
-        hexPrivateKey(){
-            return this.$store.state.Account.currentAccount.hexPrivateKey;
-        },
+        // hexPrivateKey(){
+        //     return this.$store.state.Account.currentAccount.hexPrivateKey;
+        // },
         password(){
             return this.$store.state.Account.password;
         }
     },
     methods:{
         getSeed(){
-            getChromeStorage("ciphertext").then(result => {
-                console.log("result");
-                console.log(result);
-                // console.log(this.password)
-                getChromeStorage('password').then(res=>{
-                    console.log(res)
-                    console.log('密码='+res.password)
-                    this.mnemonic = decrypt(result.ciphertext, res.password);
-                    console.log(this.mnemonic)
-                    let arr = []
-                    for(let i = 0;i<15;i++){
-                        arr[i] = this.mnemonic.split(' ')[i]
+            this.getAccountList().then(res=>{
+                let obj = {}
+                let le = res.length
+                console.log('====AccountList====')
+                console.log(res)
+                for(let i = 0; i < le; i++){
+                    console.log(i)
+                    console.log(res[i])
+                    if(res[i].name == this.walletName){
+                        obj = res[i]
+                        break
                     }
-                    for(let i = 0;i<4;i++){
-                        if(!arr[i*4+3]){
-                            arr[i*4+3] = ''
-                        }
-                        this.mnemonicArr.push([arr[i*4],arr[i*4+1],arr[i*4+2],arr[i*4+3]])
+                }
+                this.hexPrivateKey = obj.hexPrivateKey
+                this.mnemonic = decrypt(obj.ciphertext, obj.password);
+                console.log(this.mnemonic)
+                let arr = []
+                let mn = this.mnemonic.split(' ')
+                for(let i = 0;i<15;i++){
+                    arr[i] = mn[i]
+                }
+                for(let i = 0;i<4;i++){
+                    if(!arr[i*4+3]){
+                        arr[i*4+3] = ''
                     }
-                    console.log(this.mnemonicArr)
-                })
+                    this.mnemonicArr.push([arr[i*4],arr[i*4+1],arr[i*4+2],arr[i*4+3]])
+                }
             })
         },
         copyHandle(event,text){
@@ -86,18 +96,9 @@ export default {
         }
     },
     mounted(){
+        this.walletName = this.$route.query.name;
+        console.log(this.walletName)
         this.getSeed()
-        // let arr = []
-        // for(let i = 0;i<15;i++){
-        //     arr[i] = this.mnemonic.split(' ')[i]
-        // }
-        // for(let i = 0;i<4;i++){
-        //     if(!arr[i*4+3]){
-        //         arr[i*4+3] = ''
-        //     }
-        //     this.mnemonicArr.push([arr[i*4],arr[i*4+1],arr[i*4+2],arr[i*4+3]])
-        // }
-        // console.log(this.mnemonicArr)
     }
 }
 </script>
