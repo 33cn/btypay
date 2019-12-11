@@ -5,7 +5,7 @@
       <router-link :to="{ name: 'WalletIndex'}">
         <img src="../../../assets/images/back.png" alt />
       </router-link>
-      <p>节点设置{{isEditing}}</p>
+      <p>节点设置</p>
       <p></p>
     </section>
     <ul>
@@ -488,6 +488,8 @@ export default {
           for(let i = 0; i < res.length; i++){
             if(res[i].name == this.walletName){
               this.wallet = res[i]
+              console.log(this.wallet)
+              console.log('this.wallet')
               this.refreshMainAsset();
               this.refreshParallelAsset();
               break
@@ -502,6 +504,7 @@ export default {
     }
   },
   mounted() {
+    setChromeStorage('extensionStatus','').then(res=>{})
     this.getCurrentWallet()
     // this.refreshMainAsset();
     // this.refreshParallelAsset();

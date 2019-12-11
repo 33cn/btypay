@@ -1,9 +1,12 @@
 <template>
     <div class="ImportOrCreate_container">
-        <p @click="tesst">您是新用户吗?</p>
+        <p v-if="extensionStatus=='add'" style="margin-left:37px" @click="$router.push('account')">
+            <img src="../../../assets/images/back.png" alt="">
+        </p>
+        <p v-else>您是新用户吗?</p>
         <ul>
             <li>
-                <p class="desc">不是，我已经有比特元钱包了。</p>
+                <p class="desc" v-if="extensionStatus!='add'">不是，我已经有比特元钱包了。</p>
                 <div class="import">
                     <img src="../../../assets/images/down.png" alt="">
                     <p class="btn">
@@ -12,7 +15,7 @@
                 </div>
             </li>
             <li>
-                <p class="desc">是，让我们赶紧开始吧。</p>
+                <p class="desc" v-if="extensionStatus!='add'">是，让我们赶紧开始吧。</p>
                 <div class="create">
                     <img src="../../../assets/images/adds.png" alt="">
                     <p class="btn">
@@ -29,18 +32,33 @@ import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
 import walletAPI from "@/mixins/walletAPI.js";
 export default {
     mixins: [walletAPI],
+    data(){
+        return{
+            extensionStatus:false
+        }
+    },
     methods:{
         tesst(){
-            // setChromeStorage("AccountList", [] ).then(res=>{})
-            // setChromeStorage('beforePath',{}).then(res=>{
-            //     // console.log(res)
-            // })
-            // setChromeStorage('element',{}).then(res=>{
-            //     // console.log(res)
-            // })
+            setChromeStorage("AccountList", [] ).then(res=>{})
+            setChromeStorage('beforePath',{}).then(res=>{
+                // console.log(res)
+            })
+            setChromeStorage('element',{}).then(res=>{
+                // console.log(res)
+            })
         }
     },
     mounted(){
+        getChromeStorage("extensionStatus").then(res=>{
+          console.log(res)
+          if (res.extensionStatus == 'add'){
+            this.extensionStatus = 'add';
+          }else if (res.extensionStatus == 'lock'){
+            this.extensionStatus = 'lock';
+          }else{
+            this.extensionStatus = '';
+          }
+        })
         getChromeStorage("AccountList").then(res=>{
             if(!res.AccountList){
                 setChromeStorage("AccountList",[]).then(res=>{})
@@ -50,16 +68,16 @@ export default {
                 }
             }
         })
-        var httpRequest = new XMLHttpRequest();
-        httpRequest.open('GET', 'https://m.zhaobi.xyz/api/data/Ticker?sort=cname', true)
-        httpRequest.send();
-        httpRequest.onreadystatechange = function () {
-            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-                var json = httpRequest.responseText;
-                console.log(JSON.parse(json))
-            }
-        };
-    }
+    },
+    // beforeRouteEnter(to, from, next){
+    //     next(vm=>{
+    //         if(from.path == '/account'){
+    //             vm.fromAccount = true
+    //         }else{
+    //             vm.fromAccount = false
+    //         }
+    //     })
+    // }
 }
 </script>
 
@@ -72,6 +90,10 @@ export default {
         font-weight:bold;
         color:rgba(245,185,71,1);
         margin: 0 0 31px 67px;
+        img{
+            width: 25px;
+            height: 22px;
+        }
     }
     >ul{
         width: 278px; 

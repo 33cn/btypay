@@ -218,6 +218,7 @@ export default {
     }
   },
   mounted() {
+    setChromeStorage('extensionStatus','').then(res=>{})
     this.shortAddress = this.currentAccount.address.substr(0,13)+'…'+this.currentAccount.address.substr(-4,4)
     // let addr = '12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg'
     // console.log('HHHHHHHHHHHHHHHHHHHHHHH')

@@ -187,11 +187,11 @@ export default {
                   })
                 })
               }else{
-                this.$message.error("无AccountList2");
+                // this.$message.error("无AccountList2");
               }
             })
           }else{
-            this.$message.error("无CreateingWallet2");
+            // this.$message.error("无CreateingWallet2");
           }
         })
         return account
@@ -223,15 +223,30 @@ export default {
     getAccountList(){
       return new Promise((resolve, reject) => {
         getChromeStorage("AccountList").then(res=>{
+          // console.log('+++++++++++++++++++++++')
+          // console.log(res.AccountList)
+          // console.log(res.AccountList.length)
+          // console.log('+++++++++++++++++++++++')
           if(res.AccountList){
             let arr = []
-            for(let i = 0; i < res.AccountList.length; i++){
-              arr.push(JSON.parse(res.AccountList[i]))
+            if(res.AccountList.length > 0){
+              let pa = {}
+              let index = null
+              for(let i = 0; i < res.AccountList.length; i++){
+                pa = JSON.parse(res.AccountList[i])
+                if(pa.name == this.$store.state.Account.currentAccount.name){
+                  index = i
+                }
+                arr.push(pa)
+              }
+              if(index != 0){
+                arr[0] = arr.splice(index, 1, arr[0])[0];
+              }
             }
             resolve(arr)
           }else{
             reject('没有找到钱包')
-            this.$message.error("无AccountList");
+            // this.$message.error("无AccountList");
           }
         })
 
@@ -491,7 +506,8 @@ export default {
   },
   filters: {
     numFilter(val, num) {
-      if (val || val == 0) {
+      // console.log(val)
+      if (val) {
         let f = parseFloat(val),
           result = null;
         if (num == 4) {
@@ -500,6 +516,8 @@ export default {
           result = Math.floor(f * 100) / 100;
         }
         return parseFloat(result).toFixed(num)
+      }else{
+        return 0
       }
     },
     longFilter(val, num){

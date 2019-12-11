@@ -12,7 +12,7 @@
           {{currentAccount.name}}
           <i :class="isRotate?'el-icon-arrow-down el-icon--right rotate':'el-icon-arrow-down el-icon--right'"></i>
         </span>
-        <el-dropdown-menu slot="dropdown">
+        <el-dropdown-menu slot="dropdown" class="walletIndex">
           <el-dropdown-item v-for="(item,i) in accountList" :key="i" 
             :command="item" :class="currentAccount.name==item?'currentAccount':''">{{item.name}}</el-dropdown-item>
           <!-- <el-dropdown-item command="b">钱包二</el-dropdown-item>
@@ -49,14 +49,14 @@
       </ul>
     </section>
     <el-dialog
-      :title="'请输入'+this.wallet.name+'密码'"
+      :title="'请输入'+this.wallet.name+'钱包密码'"
       :visible.sync="dialogIsShow"
       width="324px"
       :show-close="false"
       class="mainNode editAccount">
       <div>
           <p>密码</p>
-          <input type="text" v-model="password">
+          <input type="password" v-model="password">
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogIsShow = false">取消</el-button>
@@ -111,6 +111,10 @@ export default {
   },
   methods: {
     handleCommand(val) {
+      if(val.name == this.currentAccount.name){
+        this.$message.warning('已是当前钱包')
+        return
+      }
       this.wallet = val
       console.log(this.wallet)
       this.dialogIsShow = true
@@ -317,6 +321,7 @@ export default {
     }
   },
   mounted() {
+    setChromeStorage('extensionStatus','').then(res=>{})
     this.getPrice()
     // this.getBalance()
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录

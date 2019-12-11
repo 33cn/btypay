@@ -101,6 +101,7 @@ export default {
     }
   },
   mounted() {
+    setChromeStorage('extensionStatus','').then(res=>{})
       // console.log(this.$store.state.Records.assetType)
     this.getAddress()
   }

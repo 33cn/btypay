@@ -1,6 +1,6 @@
 <template>
   <div class="createWallet_container">
-    <asset-back title style="padding-top:0" :backPath="haveWallet?'/':'/ImportOrCreate'"></asset-back>
+    <asset-back title style="padding-top:0" :backPath="backPath"></asset-back>
     <el-form
       label-position="top"
       :rules="createRules"
@@ -51,7 +51,8 @@ export default {
           { validator: confirmPwdValidate, trigger: "blur" }
         ]
       },
-      haveWallet:false
+      extensionStatus:false,
+      backPath:'/'
     };
   },
   methods: {
@@ -73,12 +74,16 @@ export default {
     }
   },
   mounted(){
-    getChromeStorage("ciphertext").then(res=>{
+    getChromeStorage("extensionStatus").then(res=>{
       console.log(res)
-      if (res.ciphertext){
-        this.haveWallet = true;
+      if (res.extensionStatus == 'add'){
+        this.extensionStatus = 'add';
+        this.backPath = '/ImportOrCreate'
+      }else if (res.extensionStatus == 'lock'){
+        this.extensionStatus = 'lock';
+        this.backPath = '/'
       }else{
-        this.haveWallet = false;
+        this.extensionStatus = '';
       }
     })
   }
