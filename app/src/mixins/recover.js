@@ -21,10 +21,10 @@ export default{
          */
         getAndSet(key,value){
             getChromeStorage('element').then(res=>{
-                console.log(res)
+                // console.log(res)
                 res.element[key] = value
                 setChromeStorage('element',res.element).then(res=>{
-                    console.log(res)
+                    // console.log(res)
                 })
             })
         }

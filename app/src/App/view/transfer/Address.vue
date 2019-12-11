@@ -1,9 +1,9 @@
 <template>
-  <div class="address_container" :class="addresses.length==0?'noAddress':'haveAddress'">
+  <div class="address_container" :class="transferAddress.length==0?'noAddress':'haveAddress'">
     <asset-back title="地址簿" :backPath='"/coin/transfer?coin="+coin'></asset-back>
-    <ul v-if="addresses.length>0">
+    <ul v-if="transferAddress.length>0">
       <li
-        v-for="(item,i) in addresses"
+        v-for="(item,i) in transferAddress"
         :key="i"
         @contextmenu.prevent="show1($event,item,i)"
         @click="selectedAddress(item.address)"
@@ -12,7 +12,7 @@
         <p>{{item.address}}</p>
       </li>
     </ul>
-    <div v-if="addresses.length==0" class="noAddress"></div>
+    <div v-if="transferAddress.length==0" class="noAddress"></div>
     <div v-if="menuIsShow" class="menu" :style="'top:'+delMenu.top+'px;left:'+delMenu.left+'px'">
       <p @click="delHandle">删除</p>
     </div>
@@ -32,16 +32,17 @@ export default {
   components: { AssetBack },
   data() {
     return {
-      addresses: [
-          // { label: "hhhh", address: "qsdfsdfsdfdsfsdfsdfsdfdsf" }
-        ],
+      transferAddress: [],
       delMenu: {
         left: 0,
         top: 0
       },
       menuIsShow: false,
       delItem: {},
-      delIndex: null
+      delIndex: null,
+      walletName:'',
+      wallets:[],
+      // wallet:{}
     };
   },
   methods: {
@@ -54,12 +55,19 @@ export default {
       // console.log("rrrrrrr");
     },
     delHandle() {
-      this.addresses.splice(this.delIndex, 1);
-      setChromeStorage("address", this.addresses).then(res => {
+      let arr = []
+      this.transferAddress.splice(this.delIndex, 1);
+      for(let i = 0; i < this.wallets.length; i++){
+        if(this.wallets[i].name == this.walletName){
+          this.wallets[i].transferAddress = this.transferAddress
+        }
+        arr.push(JSON.stringify(this.wallets[i]))
+      }
+      setChromeStorage("AccountList", arr ).then(res=>{
         if (res == "success") {
           this.getAddress()
         }
-      });
+      })
       this.menuIsShow = false;
     },
     show1(e, item, i) {
@@ -72,12 +80,24 @@ export default {
       // alert(1)
     },
     getAddress(){
-        getChromeStorage("address").then(res => {
-            // console.log(res)
-            if (res.address) {
-              this.addresses = res.address;
+      this.getCurrentWalletName().then(name=>{
+        this.walletName = name
+        this.getAccountList().then(res=>{
+          console.log('=======accountLIst=======')
+          console.log(res)
+          this.wallets = res
+          for(let i = 0; i < res.length; i++){
+            if(res[i].name == this.walletName){
+              // this.wallet = res[i]
+              this.transferAddress = res[i].transferAddress
+              break
             }
-        });
+          }
+        })
+      }).catch(error=>{
+        console.log('发生错误')
+        this.$message.error('当前钱包名为空')
+      })
     }
   },
   mounted() {

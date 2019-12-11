@@ -12,7 +12,9 @@
 </template>
 <script>
 import AssetBack from "@/components/AssetBack.vue";
+import recover from "@/mixins/recover.js";
 export default {
+    mixins: [recover],
     components: { AssetBack },
     data(){
         return{

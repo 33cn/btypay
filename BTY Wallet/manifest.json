@@ -1,7 +1,7 @@
 {
   "name": "BTY Wallet",
   "description": "比特元浏览器插件",
-  "version": "0.0.1",
+  "version": "1.2.0",
   "browser_action": {
     "default_popup": "dist/index.html",
     "default_icon": "icons/logo.png"

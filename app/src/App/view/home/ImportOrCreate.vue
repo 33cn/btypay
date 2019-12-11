@@ -1,6 +1,6 @@
 <template>
     <div class="ImportOrCreate_container">
-        <p>您是新用户吗?</p>
+        <p @click="tesst">您是新用户吗?</p>
         <ul>
             <li>
                 <p class="desc">不是，我已经有比特元钱包了。</p>
@@ -25,16 +25,40 @@
 </template>
 
 <script>
-import {setChromeStorage} from '@/libs/chromeUtil.js'
+import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
+import walletAPI from "@/mixins/walletAPI.js";
 export default {
+    mixins: [walletAPI],
+    methods:{
+        tesst(){
+            // setChromeStorage("AccountList", [] ).then(res=>{})
+            // setChromeStorage('beforePath',{}).then(res=>{
+            //     // console.log(res)
+            // })
+            // setChromeStorage('element',{}).then(res=>{
+            //     // console.log(res)
+            // })
+        }
+    },
     mounted(){
-        console.log('ImportOrCreate')
-        setChromeStorage('beforePath',{}).then(res=>{
-            // console.log(res)
+        getChromeStorage("AccountList").then(res=>{
+            if(!res.AccountList){
+                setChromeStorage("AccountList",[]).then(res=>{})
+            }else{
+                if(!res.AccountList.length){
+                    setChromeStorage("AccountList",[]).then(res=>{})
+                }
+            }
         })
-        setChromeStorage('element',{}).then(res=>{
-            // console.log(res)
-        })
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('GET', 'https://m.zhaobi.xyz/api/data/Ticker?sort=cname', true)
+        httpRequest.send();
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                var json = httpRequest.responseText;
+                console.log(JSON.parse(json))
+            }
+        };
     }
 }
 </script>

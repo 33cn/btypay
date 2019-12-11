@@ -23,17 +23,6 @@ const TABLE_DATA = {
 }
 const dbHelper = new DBHelper(DB_NAME, TABLE_NAME, TABLE_DATA)
 
-function getBackgroundPage() {
-  return new Promise((resolve) => {
-    if (isDev) {
-      resolve(window)
-    } else {
-      window.chrome.runtime.getBackgroundPage(win => {
-        resolve(win)
-      })
-    }
-  })
-}
 
 export default {
   mixins: [chain33API],
@@ -56,7 +45,9 @@ export default {
     createHDWallet(mnemonic) {
       // console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
-      // console.log(wallet)
+      console.log(mnemonic)
+      console.log('================createHDWallet=============')
+      console.log(wallet)
       // 保存登录时间
       setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
         // console.log(res)
@@ -64,7 +55,7 @@ export default {
       if (isDev) {
         window.myChain33WalletInstance = wallet
       } else {
-        getBackgroundPage().then(win => {
+        this.getBackgroundPage().then(win => {
           win.myChain33WalletInstance = wallet
           // console.log('createHDWallet')
           // console.log(win)
@@ -79,7 +70,7 @@ export default {
         if (isDev) {
           resolve(window.myChain33WalletInstance)
         } else {
-          getBackgroundPage().then(win => {
+          this.getBackgroundPage().then(win => {
             // console.log(win)
             // console.log(win.myChain33WalletInstance)
             resolve(win.myChain33WalletInstance)
@@ -87,65 +78,130 @@ export default {
         }
       })
     },
-    newAccount(name) {
+    newAccount(name,type) {
       return this.getWallet().then(wallet => {
-        // console.log('newAccount')
-        // console.log(wallet)
+        console.log('===============newAccount=====================')
+        console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
+        console.log('========account=========')
+        console.log(account)
         if(wallet&&wallet.accountMap){
           this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
         }
-        // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
-        this.setCurrentAccount(account)
-        setChromeStorage('accountIndexList', wallet.accountIndexList)
+        this.setCurrentAccount(account,type)
       })
     },
 
-    recoverAccount() {
-      this.getWallet().then(wallet => {
-        console.log('获取索引恢复账户')
-        // console.log(wallet)
-        //  获取索引恢复账户
-        window.chrome.storage.local.get(['accountIndexList'], (result) => {
-          // console.log(result)
-          if (result.accountIndexList) {
-            if(wallet && wallet.recoverAccount){
-              wallet.recoverAccount(result.accountIndexList)
-            }
-            // console.log('wallet.accountMap')
-            // console.log(wallet.accountMap)
-            if(wallet&&wallet.accountMap){
-              this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
-              // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', wallet.accountMap['0'])//待删
-            }
-            getChromeStorage(['currentAccountIndex']).then(result => {
-              let currentAccount = null;
-              if(wallet&&wallet.accountMap){
-                currentAccount = wallet.accountMap[result['currentAccountIndex']]
-              }
-              if (!currentAccount&&wallet&&wallet.firstAccount) {
-                currentAccount = wallet.firstAccount
-              }
-              this.setCurrentAccount(currentAccount)
+    recoverAccount(name) {
+      return new Promise((resolve,reject)=>{
+        this.getWallet().then(wallet => {
+          console.log('获取索引恢复账户')
+          console.log(wallet)
+          const account = wallet.newAccount(name)
+          console.log(account)
+          if(wallet){
+            this.$store.commit('Account/UPDATE_ACCOUNTS', account)
+            this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
+            this.getBackgroundPage().then(win=>{
+              win.currentAccount = account
+              resolve('success')
             })
-          } else {
-            // this.newAccount('Account 1')
+          }else{
+            console.log('登录未获取到wallet')
+            reject('error')
           }
         })
       })
     },
-    setCurrentAccount(account) {
-      return getBackgroundPage().then(win => {
+    setCurrentAccount(account,type) {
+      return this.getBackgroundPage().then(win => {
         win.currentAccount = account
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
+        // 将创建、导入的钱包存入AccountList里
+        getChromeStorage("CreateingWallet").then(res=>{
+          console.log('==============')
+          console.log(account)
+          console.log(res.CreateingWallet)
+          console.log(type)
+          console.log(this.currentMain)
+          console.log(this.currentParallel)
+          console.log('==============')
+          if(res.CreateingWallet){
+            let obj = {...res.CreateingWallet,...account}
+            if(!obj.address){
+              obj.address = account.address
+              obj.hexPrivateKey = account.hexPrivateKey
+            }
+            // obj.account = JSON.stringify(account)
+            // obj.wallet = JSON.stringify(win.myChain33WalletInstance)
+            if(type == 'create'){
+              obj.currentMainNode = this.currentMain
+              obj.currentParaNode = this.currentParallel
+              obj.mainNodeList = [this.currentMain]
+              obj.parallelNodeList = [this.currentParallel]
+            }
+            console.log('即将存入AccountList')
+            console.log(obj)
+            // 将钱包名称name存入CurrentAccountName
+            setChromeStorage("CurrentAccountName", obj.name).then(res=>{
+              console.log('=====钱包名称存储成功=====')
+            })
+            getChromeStorage("AccountList").then(res=>{
+              console.log('========AccountList==========')
+              console.log(res)
+              // 如果导入钱包，应是替换name所在钱包记录；创建则push
+              if(res.AccountList){
+                let arr = []
+                if(type == 'import'){
+                  for(let i=0; i<res.AccountList.length;i++){
+                    let pA = JSON.parse(res.AccountList[i])
+                    if(pA.name == obj.name){
+                      res.AccountList[i] = JSON.stringify(obj)
+                      arr = res.AccountList
+                      break
+                    }
+                  }
+                  if(arr.length == 0){
+                    obj.currentMainNode = this.currentMain
+                    obj.currentParaNode = this.currentParallel
+                    obj.mainNodeList = [this.currentMain]
+                    obj.parallelNodeList = [this.currentParallel]
+                    // arr.push(JSON.stringify(obj))
+                    arr = res.AccountList.concat([JSON.stringify(obj)])
+                  }
+                }else{
+                  if(res.AccountList.length){
+                    arr = res.AccountList
+                    arr.push(JSON.stringify(obj))
+                  }else{
+                    arr = [JSON.stringify(obj)]
+                  }
+                }
+                console.log(arr)
+                setChromeStorage("AccountList", arr ).then(res=>{
+                  console.log(res)
+                  console.log('=====钱包存入AccountList里=====')
+                  getChromeStorage("AccountList").then(res=>{
+                    console.log('存完再拿')
+                    console.log(res)
+                  })
+                })
+              }else{
+                this.$message.error("无AccountList2");
+              }
+            })
+          }else{
+            this.$message.error("无CreateingWallet2");
+          }
+        })
         return account
       }).then(account => {
-        setChromeStorage('currentAccountIndex', account.index)
+        // setChromeStorage('currentAccountIndex', account.index)
       })
     },
     getCurrentAccount() {
       // console.log('getCurrentAccount')
-      return getBackgroundPage().then(win => {
+      return this.getBackgroundPage().then(win => {
         // console.log('win')
         // console.log(win)
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
@@ -155,11 +211,53 @@ export default {
       })
     },
     logout() {
-      getBackgroundPage().then(win => {
+      this.getBackgroundPage().then(win => {
         win.myChain33WalletInstance = null
         win.currentAccount = null
         this.$store.commit('Account/UPDATE_CURRENTACCOUNT', null)
         this.$router.push('login')
+      })
+    },
+
+    // 获取所有账户
+    getAccountList(){
+      return new Promise((resolve, reject) => {
+        getChromeStorage("AccountList").then(res=>{
+          if(res.AccountList){
+            let arr = []
+            for(let i = 0; i < res.AccountList.length; i++){
+              arr.push(JSON.parse(res.AccountList[i]))
+            }
+            resolve(arr)
+          }else{
+            reject('没有找到钱包')
+            this.$message.error("无AccountList");
+          }
+        })
+
+      })
+    },
+    getCurrentWalletName(){
+      return new Promise((resolve,reject)=>{
+        getChromeStorage('CurrentAccountName').then(res=>{
+          if(res.CurrentAccountName){
+            resolve(res.CurrentAccountName)
+          }else{
+            reject()
+            reject('error')
+          }
+        })
+      })
+    },
+    getBackgroundPage() {
+      return new Promise((resolve) => {
+        if (isDev) {
+          resolve(window)
+        } else {
+          window.chrome.runtime.getBackgroundPage(win => {
+            resolve(win)
+          })
+        }
       })
     },
     /* 账户相关 -- end */
@@ -203,7 +301,7 @@ export default {
         }).catch(err => {
           this.$store.commit('Account/UPDATE_MAIN_ASSET', {
             amt: 0.0000,
-            price: 10
+            price: 1
           })
           this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
           reject(err)
@@ -228,11 +326,11 @@ export default {
           this.$store.commit('Account/UPDATE_PARALLEL_ASSET', {
             name: "GBT",
             amt: 0.0000,
-            price: 10
+            price: 1
           })
           this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
           reject(err)
-          console.log(err)
+          // console.log(err)
         })
       })
     },

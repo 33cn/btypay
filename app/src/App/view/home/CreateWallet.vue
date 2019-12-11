@@ -62,7 +62,10 @@ export default {
       this.$refs.createForm.validate(valid => {
         if (valid) {
           this.$store.commit("Account/UPDATE_PASSWORD", this.createForm.pwd);
-          setChromeStorage("password", this.createForm.pwd).then(res=>{
+          // setChromeStorage("password", this.createForm.pwd).then(res=>{
+          //   this.$router.push({ name: "WordsShow" });
+          // })
+          setChromeStorage("CreateingWallet", {password:this.createForm.pwd}).then(res=>{
             this.$router.push({ name: "WordsShow" });
           })
         }
