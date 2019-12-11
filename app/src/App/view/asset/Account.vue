@@ -2,27 +2,28 @@
     <div class="account_container">
         <home-header></home-header>
         <asset-back title="我的钱包" backPath="/WalletIndex"></asset-back>
-        <p @click="$router.push('/ImportOrCreate')">新增</p>
-        <ul>
+        <p @click="addHandle">新增</p>
+        <ul @mouseleave="mouseEnterIndex=0">
             <li v-for="(item,i) in lists" :key="item.address" :class="mouseEnterIndex==i?'mouseEnter':''" 
-                @mouseover="mouseEnterIndex=i"
-                @click="mouseEnterIndex=i;editOrDel='pass';wallet=item;dialogIsShow=true">
+                @mouseover="mouseEnterIndex=i" 
+                @click="selecteHandle(item,i)">
                 <div class="upper">
                     <p>
                         <span>{{item.name}}</span>
-                        <img @click.stop="wallet=item;dialogIsShow=true;editOrDel='edit'" src="../../../assets/images/edit.png" alt="">
+                        <img @click.stop="wallet=item;dialogIsShow=true;editOrDel='edit';mouseEnterIndex1=mouseEnterIndex" src="../../../assets/images/edit.png" alt="">
                     </p>
-                    <img v-if="mouseEnterIndex==i" src="../../../assets/images/selected.png" alt="">
+                    <img v-if="item.name==$store.state.Account.currentAccount.name" src="../../../assets/images/selected.png" alt="">
                 </div>
                 <div class="middle">
-                    <p>总资产：<span>{{item.assets}} {{$store.state.Account.currency}}</span></p>
+                    <p>总资产：<span>{{item.assets | numFilter(4)}} {{$store.state.Account.currency}}</span></p>
                     <p>
                         <span>{{item.address | addressFilter}}</span>
                         <img @click.stop="copyHandle($event, item.address)" src="../../../assets/images/copy.png" alt="">
                     </p>
                 </div>
                 <div class="down">
-                    <p @click.stop="dialogIsShow=true;editOrDel='del';wallet=item">
+                    <p @click.stop="delDialog(item)"
+                        :style="item.name==$store.state.Account.currentAccount.name?'cursor: not-allowed':''">
                         <img src="../../../assets/images/delAccount.png" alt="">
                         <span>删除账户</span>
                     </p>
@@ -40,11 +41,11 @@
             :show-close="false"
             :class="editOrDel=='del'?'mainNode delAccount':'mainNode editAccount'">
             <div v-if="editOrDel=='del'">
-                <p>您确定要删除账户吗？</p>
+                <p>您确定要删除钱包吗？</p>
             </div>
             <div v-else>
                 <p v-if="editOrDel=='edit'">名称</p><p v-if="editOrDel=='pass'">密码</p>
-                <input type="text" v-model="walletName">
+                <input :type="editOrDel=='pass'?'password':'text'" v-model="walletName">
             </div>
             <div slot="footer" class="dialog-footer">
               <el-button @click="dialogIsShow = false">取消</el-button>
@@ -72,7 +73,8 @@ export default {
             lists:[],
             walletName:'',
             mouseIsEnter:true,
-            mouseEnterIndex:null,
+            mouseEnterIndex:0,
+            mouseEnterIndex1:null,
             dialogIsShow:false,
             editOrDel:'edit',
             wallet:{},
@@ -81,12 +83,20 @@ export default {
         }
     },
     methods:{
+        selecteHandle(item,i){
+            if(item.name == this.$store.state.Account.currentAccount.name){
+              this.$message.warning('已是当前钱包')
+              return
+            }
+            this.mouseEnterIndex = i;
+            this.editOrDel = 'pass';
+            this.wallet = item;
+            this.dialogIsShow = true
+        },
         editHandle(){
             if(this.walletName){
                 let arr = []
-                console.log(this.mouseEnterIndex)
-                console.log(this.lists[this.mouseEnterIndex])
-                this.lists[this.mouseEnterIndex].name = this.walletName
+                this.lists[this.mouseEnterIndex1].name = this.walletName
                 for(let i = 0; i < this.lists.length; i++){
                     delete this.lists[i].assets
                     arr.push(JSON.stringify(this.lists[i]))
@@ -94,13 +104,22 @@ export default {
                 setChromeStorage("AccountList", arr ).then(res=>{
                     console.log(res)
                     // 如果更改的是当前钱包，改store,window
-                    let obj = JSON.parse(JSON.stringify(this.$store.state.Account.currentAccount))
-                    obj.name = this.walletName
-                    this.$store.commit('Account/UPDATE_CURRENTACCOUNT',obj)
-                    this.getBackgroundPage().then(win=>{
-                        win.currentAccount = obj
-                        this.dialogIsShow = false
-                    })
+                    console.log('如果更改的是当前钱包，改store,window')
+                    console.log(this.wallet.name)
+                    console.log(this.$store.state.Account.currentAccount.name)
+                    if(this.mouseEnterIndex1 == 0){
+                        setChromeStorage("CurrentAccountName", this.walletName).then(res=>{
+                          console.log('=====钱包名称存储成功=====')
+                        })
+                        let obj = JSON.parse(JSON.stringify(this.$store.state.Account.currentAccount))
+                        obj.name = this.walletName
+                        console.log(obj)
+                        this.$store.commit('Account/UPDATE_CURRENTACCOUNT',obj)
+                        this.getBackgroundPage().then(win=>{
+                            win.currentAccount = obj
+                        })
+                    }
+                    this.dialogIsShow = false
                 })
             }else{
                 this.$message.warning("请输入钱包名称");
@@ -108,11 +127,14 @@ export default {
             }
         },
         delHandle(){
-            if(this.lists[this.mouseEnterIndex].name == this.$store.state.Account.currentAccount.name){
+            console.log(this.mouseEnterIndex1)
+            console.log(this.lists[this.mouseEnterIndex1].name)
+            console.log(this.$store.state.Account.currentAccount.name)
+            if(this.lists[this.mouseEnterIndex1].name == this.$store.state.Account.currentAccount.name){
                 this.$message.warning('不能删除当前钱包，请切换钱包后再操作。')
                 return
             }
-            this.lists.splice(this.mouseEnterIndex,1)
+            this.lists.splice(this.mouseEnterIndex1,1)
             let arr = []
             for(let i = 0; i < this.lists.length; i++){
                 delete this.lists[i].assets
@@ -134,6 +156,10 @@ export default {
                 this.saveSeed(this.mnemonic, this.walletName).then(res=>{
                     if(res == 'success'){
                         this.dialogIsShow = false
+                        // this.mouseEnterIndex = this.mouseEnterIndex1
+                        setTimeout(() => {
+                            this.getAccountLists()
+                        }, 500);
                         this.$message.success('已切换到'+this.wallet.name)
                     }
                 }).catch(error=>{
@@ -142,6 +168,20 @@ export default {
             }else{
                 this.$message.warning("输入的密码有误。");
             }
+        },
+        addHandle(){
+            setChromeStorage('extensionStatus','add').then(res=>{})
+            this.$router.push('/ImportOrCreate')
+        },
+        delDialog(item){
+            if(item.name == this.$store.state.Account.currentAccount.name){
+                this.$message.warning('请勿删除当前钱包，请切换钱包后再操作。')
+                return
+            }
+            this.dialogIsShow = true;
+            this.editOrDel = 'del';
+            this.wallet = item;
+            this.mouseEnterIndex1 = this.mouseEnterIndex
         },
         exportHandle(val){
             // this.$router.push({name:'exportAccount'})
@@ -172,18 +212,20 @@ export default {
         getAccountLists(){
             this.getAccountList().then(res=>{
                 this.lists = []
-                console.log('====AccountList====')
+                console.log('++++++++++====AccountList====')
                 console.log(res)
                 for(let i = 0; i < res.length; i++){
                     // let obj = JSON.parse(res[i])
-                    if(res[i].name == this.$store.state.Account.currentAccount.name){
-                        this.mouseEnterIndex = i
-                    }
+                    // if(res[i].name == this.$store.state.Account.currentAccount.name){
+                        this.mouseEnterIndex = 0
+                    //     // this.mouseEnterIndex1 = i
+                    // }
                     this.getMainBalance(res[i].address,res[i].currentMainNode.url)
                     this.lists.push(res[i])
                 }
-                // console.log('this.lists')
-                // console.log(this.lists)
+                // if(this.mouseEnterIndex != 0){
+                //     this.lists[0] = this.lists.splice(this.mouseEnterIndex, 1, this.lists[0])[0];
+                // }
                 setTimeout(() => {
                     for(let i = 0; i < this.lists.length; i++){
                         for(let j = 0; j < this.assets.length; j++){
@@ -215,7 +257,7 @@ export default {
     },
     computed:{
         title(){
-            return this.editOrDel=='edit'?'更改钱包名称':this.editOrDel=='del'?'删除钱包':this.editOrDel=='pass'?'请输入'+this.wallet.name+'密码':''
+            return this.editOrDel=='edit'?'更改钱包名称':this.editOrDel=='del'?'删除钱包':this.editOrDel=='pass'?'请输入'+this.wallet.name+'钱包密码':''
         },
         currentMain(){
             return this.$store.state.Account.currentMain;
@@ -225,6 +267,7 @@ export default {
         }
     },
     mounted(){
+        setChromeStorage('extensionStatus','').then(res=>{})
         this.getAccountLists()
         console.log(this.currentMain)
         console.log('this.currentMain')
@@ -265,11 +308,11 @@ export default {
         cursor: pointer;
     }
     >ul{
-        width: 366px;
+        width: 352px;
         height: calc(600px - 100px - 42px - 29px - 10px);
         overflow: auto;
         margin: 29px auto 0px;
-        padding: 0 17px;
+        padding: 0 10px;
         li{
             width: 332px;
             background:rgba(143,168,224,1);
@@ -353,7 +396,7 @@ export default {
             }
             &.mouseEnter{
                 background:rgba(203,216,242,1);
-                box-shadow:0px 5px 16px 5px rgba(68,116,218,0.66);
+                box-shadow:0px 3px 10px 3px rgba(68,116,218,0.66);
             }
         }
         &::-webkit-scrollbar {

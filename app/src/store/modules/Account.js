@@ -25,6 +25,7 @@ const state = {
     amt: 0.0000,
     price: 1
   },
+  // walletIsLocked:false,
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
   mainNode: [{ index: 0, url: 'http://114.55.11.139:1193', txHeight: -1, txIndex: 0, name: "BTY" }],
@@ -167,7 +168,10 @@ const mutations = {
   },
   UPDATE_CURRENCY(state,payload){
     state.currency = payload
-  }
+  },
+  // UPDATE_WALLET_LOCK(state,payload){
+  //   state.walletIsLocked = payload
+  // }
 
 
 }

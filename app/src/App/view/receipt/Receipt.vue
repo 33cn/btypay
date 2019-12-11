@@ -47,6 +47,7 @@ export default {
         }
     },
     mounted(){
+        setChromeStorage('extensionStatus','').then(res=>{})
         this.coin = this.$route.query.coin;
         let value = this.currentAccount?this.currentAccount.address:'出错了';
         new QRious({

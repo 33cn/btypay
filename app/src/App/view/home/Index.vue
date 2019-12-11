@@ -33,7 +33,7 @@ export default {
     },
     beforeRouteEnter(to, from, next){
         next(vm=>{
-            console.log('beforeRouteEnter')
+            // console.log('beforeRouteEnter')
             console.log(to)
             if(to.path != '/'){
                 vm.isHidden = false;

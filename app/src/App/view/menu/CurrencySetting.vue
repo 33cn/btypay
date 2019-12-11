@@ -35,7 +35,7 @@ export default {
         }
     },
     mounted(){
-
+        setChromeStorage('extensionStatus','').then(res=>{})
     }
 }
 </script>
