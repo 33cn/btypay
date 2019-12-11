@@ -76,6 +76,7 @@ export default {
             dialogIsShow:false,
             editOrDel:'edit',
             wallet:{},
+            assets:[]
             // accountIndex:null
         }
     },
@@ -107,8 +108,8 @@ export default {
             }
         },
         delHandle(){
-            if(this.lists[this.mouseEnterIndex] == this.$store.state.Account.currentAccount.name){
-                this.$message.error('不能删除当前钱包，请切换后在操作。')
+            if(this.lists[this.mouseEnterIndex].name == this.$store.state.Account.currentAccount.name){
+                this.$message.warning('不能删除当前钱包，请切换钱包后再操作。')
                 return
             }
             this.lists.splice(this.mouseEnterIndex,1)
@@ -178,15 +179,32 @@ export default {
                     if(res[i].name == this.$store.state.Account.currentAccount.name){
                         this.mouseEnterIndex = i
                     }
-                    res[i].assets = this.getMainBalance(res[i].address)
+                    this.getMainBalance(res[i].address,res[i].currentMainNode.url)
                     this.lists.push(res[i])
                 }
+                // console.log('this.lists')
+                // console.log(this.lists)
+                setTimeout(() => {
+                    for(let i = 0; i < this.lists.length; i++){
+                        for(let j = 0; j < this.assets.length; j++){
+                            if(this.lists[i].address == this.assets[j].addr){
+                                this.lists[i].assets = this.assets[j].balance
+                            }
+                        }
+                    }
+                    console.log('this.lists')
+                    console.log(this.lists)
+                }, 500);
             })
         },
-        getMainBalance(addr){
-            this.getAddrBalance(addr, 'coins', this.currentMain.url).then(res => {
+        getMainBalance(addr,url){
+            this.getAddrBalance(addr, 'coins', url).then(res => {
+                console.log(res)
+                console.log(res[0].balance / 1e8)
                 if(res[0].balance){
-                    res[0].balance / 1e8
+                    let balance = res[0].balance / 1e8 * this.$store.state.Account.mainAsset.price
+                    this.assets.push({addr,balance})
+                    // return res[0].balance / 1e8
                 }else{
                     return 0
                 }

@@ -330,7 +330,7 @@ export default {
           })
           this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
           reject(err)
-          console.log(err)
+          // console.log(err)
         })
       })
     },

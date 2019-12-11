@@ -31,13 +31,13 @@ export default {
     mixins: [walletAPI],
     methods:{
         tesst(){
-            setChromeStorage("AccountList", [] ).then(res=>{})
-            setChromeStorage('beforePath',{}).then(res=>{
-                // console.log(res)
-            })
-            setChromeStorage('element',{}).then(res=>{
-                // console.log(res)
-            })
+            // setChromeStorage("AccountList", [] ).then(res=>{})
+            // setChromeStorage('beforePath',{}).then(res=>{
+            //     // console.log(res)
+            // })
+            // setChromeStorage('element',{}).then(res=>{
+            //     // console.log(res)
+            // })
         }
     },
     mounted(){
