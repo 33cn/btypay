@@ -300,6 +300,25 @@
         window.postMessage({ type: 'QUERY_CURRENT_MAIN_NODE', payload: {} }, '*')
       })
     }
+
+    /**
+     * @description 获取当前平行链节点
+     * @returns {Promise<any>}
+     */
+    queryCurrentParaNode() {
+      return new Promise((resolve, reject) => {
+        const timeTicket = setTimeout(() => {
+          reject(new Error('Request Timeout'))
+        }, 1 * 60 * 1000)
+        const signAnswerHandle = ({ data: { payload } }) => {
+          clearTimeout(timeTicket)
+          resolve(payload)
+        }
+        onMessage('ANSWER_QUERY_CURRENT_PARA_NODE', signAnswerHandle, true)
+        window.postMessage({ type: 'QUERY_CURRENT_PARA_NODE', payload: {} }, '*')
+      })
+    }
+    
     // 测试
     unlockWallet() {
       return new Promise((resolve, reject) => {

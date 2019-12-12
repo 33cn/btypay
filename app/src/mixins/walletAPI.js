@@ -92,7 +92,7 @@ export default {
       })
     },
 
-    recoverAccount(name) {
+    recoverAccount(name,wa={}) {
       return new Promise((resolve,reject)=>{
         this.getWallet().then(wallet => {
           console.log('获取索引恢复账户')
@@ -104,6 +104,7 @@ export default {
             this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
             this.getBackgroundPage().then(win=>{
               win.currentAccount = account
+              win.currentWallet = wa
               resolve('success')
             })
           }else{
@@ -183,6 +184,7 @@ export default {
                   console.log('=====钱包存入AccountList里=====')
                   getChromeStorage("AccountList").then(res=>{
                     console.log('存完再拿')
+                    win.currentWallet = obj
                     console.log(res)
                   })
                 })
@@ -264,6 +266,30 @@ export default {
         })
       })
     },
+    // 获取当前钱包
+    getCurrentWallet(){
+      return new Promise((resolve,reject)=>{
+        this.getAccountList().then(list=>{
+          if(list.length == 0){
+            resolve({})
+          }else{
+            this.getCurrentWalletName().then(name=>{
+              let flag = false
+              for(let i = 0; i < list.length; i++){
+                if(list[i].name == name){
+                  flag = true
+                  resolve(list[i])
+                  break
+                }
+              }
+              if(!flag){
+                resolve({})
+              }
+            })
+          }
+        })
+      })
+    },
     getBackgroundPage() {
       return new Promise((resolve) => {
         if (isDev) {
@@ -320,7 +346,7 @@ export default {
           })
           this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
           reject(err)
-          console.log(err)
+          // console.log(err)
         })
       })
     },

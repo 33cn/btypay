@@ -126,6 +126,12 @@ function listenForProviderRequest () {
           payload: data.payload,
         })
         break
+      case 'QUERY_CURRENT_PARA_NODE':
+        chrome.runtime.sendMessage({
+          action: 'query-current-para-node',
+          payload: data.payload,
+        })
+        break
     }
   })
   // listen message from background page
@@ -154,6 +160,9 @@ function listenForProviderRequest () {
         break
       case 'answer-query-current-main-node':
         window.postMessage({ type: 'ANSWER_QUERY_CURRENT_MAIN_NODE', payload }, '*')
+        break
+      case 'answer-query-current-para-node':
+        window.postMessage({ type: 'ANSWER_QUERY_CURRENT_PARA_NODE', payload }, '*')
         break
       case 'answer-para-coins-dice':
         window.postMessage({ type: 'ANSWER_PARA_COINS_DICE', payload }, '*')

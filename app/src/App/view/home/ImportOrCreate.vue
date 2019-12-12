@@ -3,7 +3,7 @@
         <p v-if="extensionStatus=='add'" style="margin-left:37px" @click="$router.push('account')">
             <img src="../../../assets/images/back.png" alt="">
         </p>
-        <p v-else>您是新用户吗?</p>
+        <p v-else @click="tesst">您是新用户吗?</p>
         <ul>
             <li>
                 <p class="desc" v-if="extensionStatus!='add'">不是，我已经有比特元钱包了。</p>
@@ -29,6 +29,7 @@
 
 <script>
 import {setChromeStorage,getChromeStorage} from '@/libs/chromeUtil.js'
+import {parseExpire} from '@/libs/sign.js'
 import walletAPI from "@/mixins/walletAPI.js";
 export default {
     mixins: [walletAPI],
@@ -39,13 +40,14 @@ export default {
     },
     methods:{
         tesst(){
-            setChromeStorage("AccountList", [] ).then(res=>{})
-            setChromeStorage('beforePath',{}).then(res=>{
-                // console.log(res)
-            })
-            setChromeStorage('element',{}).then(res=>{
-                // console.log(res)
-            })
+            console.log(parseExpire('987687685'))
+            // setChromeStorage("AccountList", [] ).then(res=>{})
+            // setChromeStorage('beforePath',{}).then(res=>{
+            //     // console.log(res)
+            // })
+            // setChromeStorage('element',{}).then(res=>{
+            //     // console.log(res)
+            // })
         }
     },
     mounted(){

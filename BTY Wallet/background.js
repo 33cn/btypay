@@ -329,12 +329,20 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       break;
     case 'query-parallel-node':
       if (isWalletUnlock()) {
-        window.chrome.storage.local.get('parallelNodeList', (result) => {
+        getCurrentWallet().then(wallet=>{
           sendMessage({
             action: 'answer-query-parallel-node',
             payload: {
               error: null,
-              result
+              result:wallet.parallelNodeList
+            },
+          })
+        }).catch(error=>{
+          sendMessage({
+            action: 'answer-query-parallel-node',
+            payload: {
+              error,
+              result: null
             },
           })
         })
@@ -350,12 +358,20 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
       break
     case 'query-current-main-node':
       if (isWalletUnlock()) {
-        window.chrome.storage.local.get('mainNode', (result) => {
+        getCurrentWallet().then(wallet=>{
           sendMessage({
             action: 'answer-query-current-main-node',
             payload: {
               error: null,
-              result:result.mainNode
+              result:wallet.currentMainNode
+            },
+          })
+        }).catch(error=>{
+          sendMessage({
+            action: 'answer-query-current-main-node',
+            payload: {
+              error,
+              result:null
             },
           })
         })
@@ -368,13 +384,69 @@ chrome.runtime.onMessage.addListener(({action = '', payload}, sender) => {
           },
         })
       }
-      
+      break
+    case 'query-current-para-node':
+      if (isWalletUnlock()) {
+        getCurrentWallet().then(wallet=>{
+          sendMessage({
+            action: 'answer-query-current-para-node',
+            payload: {
+              error: null,
+              result:wallet.currentParaNode
+            },
+          })
+        }).catch(error=>{
+          sendMessage({
+            action: 'answer-query-current-para-node',
+            payload: {
+              error,
+              result:null
+            },
+          })
+        })
+      } else {
+        sendMessage({
+          action: 'answer-query-current-para-node',
+          payload: {
+            error: 'walletIsLocked',
+            result: null
+          },
+        })
+      }
       break
     default:
       
   }
   return true;
 })
+
+function getCurrentWallet(){
+  return new Promise((resolve,reject)=>{
+    window.chrome.storage.local.get('AccountList', (list) => {
+      if(list.AccountList && list.AccountList.length > 0){
+        window.chrome.storage.local.get('CurrentAccountName', (name) => {
+          if(name.CurrentAccountName){
+            let pa = {}
+            let flag = false
+            for(let i = 0; i < list.AccountList.length; i++){
+              pa = JSON.parse(list.AccountList[i])
+              if(pa.name == name.CurrentAccountName){
+                flag = true
+                resolve(pa)
+                break
+              }
+            }
+            if(!flag){
+              reject('ErrInWallet')
+            }
+          }
+        })
+      }else{
+        reject('ErrNoWallet')
+      }
+    })
+  })
+}
 
 function createNewWindow(route, payload, width = 416, height = 636) {
   if(window.navigator.userAgent.indexOf('Windows') > -1){
@@ -395,6 +467,7 @@ function createNewWindow(route, payload, width = 416, height = 636) {
     // }, 15000);
   })
 };
+
 function closeWindow(id){
   chrome.windows.remove(id, function(res){
     // console.log('chrome.windows.remove')
@@ -429,36 +502,3 @@ function sendMessage (message, query = {}) {
 function isWalletUnlock() {
   return Boolean(window.myChain33WalletInstance)
 }
-
-// function isGetVoteHash(){
-//   console.log(voteHash)
-//   if(voteHash){
-//     sendMessage({
-//       action: 'answer-para-coins-dice',
-//       payload: {
-//         error: null,
-//         result: voteHash
-//       },
-//     })
-//   }else{
-//     setTimeout(() => {
-//       isGetVoteHash()
-//     }, 100);
-//   }
-// }
-// function isSignTx(){
-//   console.log(signTx)
-//   if(voteHash){
-//     sendMessage({
-//       action: 'answer-sign-tx',
-//       payload: {
-//         error: null,
-//         result: signTx
-//       },
-//     })
-//   }else{
-//     setTimeout(() => {
-//       isSignTx()
-//     }, 100);
-//   }
-// }

@@ -31,12 +31,12 @@ map.set("h",Hour);
 //TxHeightFlag 标记是一个时间还是一个 TxHeight
 const TxHeightFlag  = Long.fromInt(1).shiftLeft(62)
 
-function parseExpire(expire) {
+export function parseExpire(expire) {
 	if (expire.length == 0) {
         throw new Error('ErrInvalidParam');
 	}
-	if (expire.indexof("H") == 0 && expire.indexof(":")==1) {
-		let = txHeight = parseInt(expire.substring(2))
+	if (expire.indexOf("H") == 0 && expire.indexOf(":")==1) {
+		let txHeight = parseInt(expire.substring(2))
 	
 		if (txHeight <= 0) {
             throw new Error('ErrHeightLessZero');
@@ -60,7 +60,9 @@ function parseExpire(expire) {
         }
     }
     let blockHeight = parseInt(expire)
-
+    if(ExpireBound < blockHeight){
+        throw new Error('ErrBlockHeightOverflow');
+    }
 	return blockHeight
 }
 
@@ -75,7 +77,7 @@ function setExpire(tx,expire) {
         return tx
 	} 
         //小于则设置逾期高度
-		tx.Expire = int64(expire)
+		tx.Expire = parseInt(expire)
 	return tx
 }
 
@@ -127,6 +129,12 @@ function signTxDataAndSetExpire(txData,expire,priKeyStr) {
         signature: signature,
     };
     return txData
+}
+
+export function signRawTxAndSetExpire(tx, expire, privateKey){
+    let txData = protobufDecode(Transaction, fromHexString(tx))
+    let signedTxData = signTxDataAndSetExpire(txData, expire, privateKey)
+    return Buffer.from(protobufEncode(Transaction, signedTxData)).toString('hex')
 }
 
 export function signRawTx(tx, privateKey){
