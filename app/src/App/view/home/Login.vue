@@ -91,7 +91,7 @@ export default {
               return;
             }
             let myWallet = this.createHDWallet(mnemonic);//创建钱包并赋值给window
-            this.recoverAccount(this.wallet.name).then(res=>{
+            this.recoverAccount(this.wallet.name,wallet).then(res=>{
               if(res == 'success'){
                 setChromeStorage("CurrentAccountName", this.wallet.name).then(res=>{
                   console.log('=====钱包名称存储成功=====')

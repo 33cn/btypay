@@ -318,7 +318,7 @@
         window.postMessage({ type: 'QUERY_CURRENT_PARA_NODE', payload: {} }, '*')
       })
     }
-
+    
     // 测试
     unlockWallet() {
       return new Promise((resolve, reject) => {

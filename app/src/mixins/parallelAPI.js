@@ -1,6 +1,7 @@
 import chain33API from '@/mixins/chain33API'
+// import walletAPI from "@/mixins/walletAPI.js";
 import { createNamespacedHelpers } from 'vuex'
-import { signRawTx, signGroupTx } from '@/libs/sign.js'
+import { signRawTx, signGroupTx ,signGroupTxAndSetExpire,signRawTxAndSetExpire} from '@/libs/sign.js'
 import Long from 'long'
 
 const { mapState } = createNamespacedHelpers('Account')
@@ -10,10 +11,10 @@ export default {
     computed: {
         ...mapState(['accountMap', 'currentAccount', 'currentMain', 'currentParallel']),
         paraAddr() {
-            return this.currentParallel.paraAddr
+            return this.currentParaNode.paraAddr
         },
         tradeAddr() {
-            return this.currentParallel.tradeAddr
+            return this.currentParaNode.tradeAddr
         },
         // paraExecer() {
         //     return "user.p." + "issuance" + ".paracross"
@@ -25,13 +26,13 @@ export default {
         //     return "user.p." + "issuance" + ".wasm.dice"
         // },
         paraExecer() {
-            return "user.p." + this.currentParallel.name + ".paracross"
+            return "user.p." + this.currentParaNode.name + ".paracross"
         },
         tradeExecer() {
-            return "user.p." + this.currentParallel.name + ".trade"
+            return "user.p." + this.currentParaNode.name + ".trade"
         },
         diceExecer() {
-            return "user.p." + this.currentParallel.name + ".wasm.dice"
+            return "user.p." + this.currentParaNode.name + ".wasm.dice"
         },
     },
     data() {
@@ -63,6 +64,7 @@ export default {
                 maxAmt: 0,
                 pricePerBoardlot: 1
             },
+            currentParaNode:{},
             tokenSymbol:'coins.bty'
         }
     },
@@ -70,7 +72,7 @@ export default {
         // 主链bty从coins执行器转移到paracross执行器
         mainCoins2Paracross(privateKey, amount, url,type='') {
             let params = {
-                to: this.paraAddr,
+                to: this.paraAddr,//"1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe",//this.paraAddr,
                 execName: "paracross",
                 amount: amount
             }
@@ -83,9 +85,11 @@ export default {
             console.log(params)
             return this.createRawTransaction(params, url)
                 .then(tx => {
+                    // return signRawTxAndSetExpire(tx, '10000000',privateKey)
                     return signRawTx(tx, privateKey)
                 })
                 .then(signedTx => {
+                    // console.log(signedTx)
                     return this.sendTransaction(signedTx, url)
                 })
         },
@@ -302,17 +306,18 @@ export default {
                     to = this.currentAccount.address
                 }
                 // let to = this.currentAccount.address
-                console.log('地址to=='+to)
-                console.log(to)
                 if(to){
                 }else{
                     alert('钱包地址为空')
                     return
                 }
-                let mainUrl = this.currentMain.url
-                // let paraUrl = 'http://114.55.11.139:1217'
-                let paraUrl = this.currentParallel.url
-    
+                // let mainUrl = this.currentMain.url
+                // let paraUrl = this.currentParallel.url
+                this.currentParaNode = win.currentWallet.currentParaNode
+                let mainUrl = win.currentWallet.currentMainNode.url
+                let paraUrl = win.currentWallet.currentParaNode.url
+                this.BUY_ID = 'c0b1cb149ed8ca362975ea68bcc36be634d2527cd2ec099538bfd833b6372c47'
+                this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','coins.bty',paraUrl)
                 if (privateKey === void 0) {
                     callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                     return
@@ -365,10 +370,9 @@ export default {
                 })
             })
 
-            // this.parallel2Main(privateKey, to, amt, paraUrl).then(hash => {
-            //     console.log(hash)
-            // })
-            // this.mainParacross2Coins(privateKey, amt, mainUrl).then(hash => {
+            // let mainUrl = 'http://114.55.11.139:1193'
+            // this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash => {
+            //     console.log('hash')
             //     console.log(hash)
             // })
         },
@@ -606,9 +610,13 @@ export default {
                 }
                 // let to = this.currentAccount.address
                 console.log(to)
-                let mainUrl = this.currentMain.url
-                let paraUrl = this.currentParallel.url
-    
+                // let mainUrl = this.currentMain.url
+                // let paraUrl = this.currentParallel.url
+                this.currentParaNode = win.currentWallet.currentParaNode
+                let mainUrl = win.currentWallet.currentMainNode.url
+                let paraUrl = win.currentWallet.currentParaNode.url
+                this.BUY_ID = '1a8b6f5cfab8ebe4208a58be4a33768d20122ac750715fb4229951c624a8819e'
+                this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','para',paraUrl)
                 if (privateKey === void 0) {
                     callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                     return
@@ -632,7 +640,7 @@ export default {
                         this.parallel2Main(privateKey, to, amt, paraUrl).then(hash2 => {
                             console.log('hash2')
                             console.log(hash2)
-                            this.mainParaBalanceCheckTask('',to, (paraAmt, err2) => {
+                            this.mainParaBalanceCheckTask('',to,mainUrl, (paraAmt, err2) => {
                                 if(err2 && err2 == 'no times'){
                                     callback(JSON.stringify({desc:'主链paracross余额为'+paraAmt,msg:'paraAmt'}))
                                     return
@@ -702,7 +710,7 @@ export default {
             }, 5000);
         },
 
-        mainParaBalanceCheckTask(type='',addr, callback, times) {
+        mainParaBalanceCheckTask(type='',addr, url, callback, times) {
             console.log('检查主链paracross余额')
             let execer = 'paracross'
             let asset_exec = 'coins'
@@ -713,7 +721,7 @@ export default {
                     asset_exec = 'token'
                     asset_symbol = 'CCNY'
                 }
-                this.getAddrBalance(addr, execer, this.currentMain.url,asset_exec,asset_symbol).then(res => {
+                this.getAddrBalance(addr, execer, url,asset_exec,asset_symbol).then(res => {
                     console.log(res)
                     if (res[0].balance) {
                         clearTimeout(inter)
@@ -727,7 +735,7 @@ export default {
                         //     callback(1*1e8)
                         //     return
                         // }
-                        this.mainParaBalanceCheckTask(type,addr, callback, ++times)
+                        this.mainParaBalanceCheckTask(type,addr,url, callback, ++times)
                     }else{
                         callback(0, 'no times')
                     }
@@ -737,19 +745,8 @@ export default {
             }, 5000);
         },
         // 获取买卖单
-        getOrder(to){
-            let url = this.currentParallel.url
-            let params = {
-                "status" : 1,
-                "addr" : to,
-                "direction": 1,
-                "count" : 10,
-                "fromKey" : ""
-            }
-            return this.GetOnesOrderWithStatus(params,url)
-        },
-        getOrders(to,tokenSymbol){
-            let url = this.currentParallel.url
+        getOrders(to,tokenSymbol,url){
+            // let url = this.currentParallel.url
             let params = {
                 "status" : 1,
                 "addr" : to,
@@ -769,14 +766,10 @@ export default {
         },
         // BTY主链向平行链
         btyMain2parallel(privateKey, amt, callback){
-            this.BUY_ID = '31cb55e4aec9939e3e43e3911e41b8f8811ac0d693948b332acbfd59a1ab2657'
-            this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','coins.bty')
             this.transferBTY2GameCoin(privateKey, amt, callback)
         },
         // BTY平行链向主链
         btyParallel2Main(privateKey, amt, callback){
-            this.BUY_ID = '814b6ae46ec4e5ab0ef86d0a45f87fac8db512e29173d4f57557028d70680c9c'
-            this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','para')
             this.transferGameCoin2BTY(privateKey, amt, callback)
         },
         // CCNY主链向平行链
@@ -792,12 +785,13 @@ export default {
                     to = this.currentAccount.address
                 }
                 // let to = this.currentAccount.address
-                this.BUY_ID = 'fc1385b733208093afea7f00adfb4bd2766d266203bc5ca2a1507763dfd60fad'
-                this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','token.CCNY')
-                // let to = this.currentAccount.address
-                let mainUrl = this.currentMain.url
-                let paraUrl = this.currentParallel.url
-    
+                // let mainUrl = this.currentMain.url
+                // let paraUrl = this.currentParallel.url
+                this.currentParaNode = win.currentWallet.currentParaNode
+                let mainUrl = win.currentWallet.currentMainNode.url
+                let paraUrl = win.currentWallet.currentParaNode.url
+                this.BUY_ID = '39a7d4d7f171c2be87985e7689d5778f9a675a0c61d02ae003824ea4b19b753c'
+                this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','token.CCNY',paraUrl)
                 if (privateKey === void 0) {
                     callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                     return
@@ -862,11 +856,13 @@ export default {
                     to = this.currentAccount.address
                 }
             // let to = this.currentAccount.address
-                this.BUY_ID = 'c1b64f931468a2e03e41eb4263fca5e04790b8ecff50771c362239a3d6b45604'
-                this.getOrders('16ui7XJ1VLM7YXcNhWwWsWS6CRC3ZA2sJ1','CCNY')
-                let mainUrl = this.currentMain.url
-                let paraUrl = this.currentParallel.url
-    
+            // let mainUrl = this.currentMain.url
+            // let paraUrl = this.currentParallel.url
+                this.currentParaNode = win.currentWallet.currentParaNode
+                let mainUrl = win.currentWallet.currentMainNode.url
+                let paraUrl = win.currentWallet.currentParaNode.url
+                this.BUY_ID = 'cf215c5e6a09f02b7049b545ddb6ea64d81fcdd0ecba5b92e973ef952e7e6489'
+                this.getOrders('12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv','CCNY',paraUrl)
                 if (privateKey === void 0) {
                     callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                     return
@@ -889,7 +885,7 @@ export default {
                         this.parallel2Main(privateKey, to, amt, paraUrl,'token').then(hash2 => {
                             console.log('hash2')
                             console.log(hash2)
-                            this.mainParaBalanceCheckTask('token',to, (paraAmt, err2) => {
+                            this.mainParaBalanceCheckTask('token',to, mainUrl,(paraAmt, err2) => {
                                 console.log(err2)
                                 if(err2 && err2 == 'no times'){
                                     callback(JSON.stringify({desc:'errBlance',msg:'主链paracross余额不对。'}))
