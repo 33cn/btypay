@@ -72,7 +72,7 @@ export default {
         // 主链bty从coins执行器转移到paracross执行器
         mainCoins2Paracross(privateKey, amount, url,type='') {
             let params = {
-                to: this.paraAddr,
+                to: this.paraAddr,//"1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe",//this.paraAddr,
                 execName: "paracross",
                 amount: amount
             }
@@ -85,10 +85,11 @@ export default {
             console.log(params)
             return this.createRawTransaction(params, url)
                 .then(tx => {
-                    // return signRawTxAndSetExpire(tx, '100000000',privateKey)
+                    // return signRawTxAndSetExpire(tx, '10000000',privateKey)
                     return signRawTx(tx, privateKey)
                 })
                 .then(signedTx => {
+                    // console.log(signedTx)
                     return this.sendTransaction(signedTx, url)
                 })
         },

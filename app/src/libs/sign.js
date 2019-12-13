@@ -77,7 +77,7 @@ function setExpire(tx,expire) {
         return tx
 	} 
         //小于则设置逾期高度
-		tx.Expire = parseInt(expire)
+	tx.Expire = parseInt(expire)
 	return tx
 }
 
@@ -249,7 +249,6 @@ export function getPayloadFromSignedTx(tx) {
     console.log(Buffer.from(txData.payload))
     return Buffer.from(txData.payload).toString()
 }
-
 
 export function protobufDecodePayload(tx){
     let txBuffer = fromHexString(tx)

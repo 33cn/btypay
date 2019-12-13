@@ -127,6 +127,8 @@ export default {
           console.log(this.currentMain)
           console.log(this.currentParallel)
           console.log('==============')
+          let currentMain = { index: 0, url: 'http://114.55.11.139:1193', txHeight: -1, txIndex: 0, name: "BTY" }
+          let currentParallel = { index: 0, name: 'gameTest', coin: "GBTY", url: "http://114.55.11.139:1200", txHeight: -1, txIndex: 0,paraAddr:'1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe',tradeAddr:'1CCHJ6ng6G6KRXmVinhK32988wAZwkbg5' }
           if(res.CreateingWallet){
             let obj = {...res.CreateingWallet,...account}
             if(!obj.address){
@@ -136,10 +138,10 @@ export default {
             // obj.account = JSON.stringify(account)
             // obj.wallet = JSON.stringify(win.myChain33WalletInstance)
             if(type == 'create'){
-              obj.currentMainNode = this.currentMain
-              obj.currentParaNode = this.currentParallel
-              obj.mainNodeList = [this.currentMain]
-              obj.parallelNodeList = [this.currentParallel]
+              obj.currentMainNode = currentMain
+              obj.currentParaNode = currentParallel
+              obj.mainNodeList = [currentMain]
+              obj.parallelNodeList = [currentParallel]
             }
             console.log('即将存入AccountList')
             console.log(obj)
@@ -162,11 +164,13 @@ export default {
                       break
                     }
                   }
+                  // 未在钱包中创建或导入过
                   if(arr.length == 0){
-                    obj.currentMainNode = this.currentMain
-                    obj.currentParaNode = this.currentParallel
-                    obj.mainNodeList = [this.currentMain]
-                    obj.parallelNodeList = [this.currentParallel]
+                    console.log('未在钱包中创建或导入过')
+                    obj.currentMainNode = currentMain
+                    obj.currentParaNode = currentParallel
+                    obj.mainNodeList = [currentMain]
+                    obj.parallelNodeList = [currentParallel]
                     // arr.push(JSON.stringify(obj))
                     arr = res.AccountList.concat([JSON.stringify(obj)])
                   }

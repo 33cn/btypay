@@ -40,7 +40,6 @@ export default {
     },
     methods:{
         tesst(){
-            console.log(parseExpire('987687685'))
             // setChromeStorage("AccountList", [] ).then(res=>{})
             // setChromeStorage('beforePath',{}).then(res=>{
             //     // console.log(res)

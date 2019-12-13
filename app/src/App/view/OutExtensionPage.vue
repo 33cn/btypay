@@ -232,7 +232,7 @@ export default {
               }else{
                 this.msg = '交易组签名中...'
                 return Promise.resolve().then(()=>{
-                  console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
+                  // console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
                   if(win.currentAccount.hexPrivateKey){
                     return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
                   }else{
