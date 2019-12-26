@@ -156,6 +156,7 @@ export default {
     }
   },
   mounted() {
+    let payload = {}
     window.chrome.runtime.getBackgroundPage(win => {
     console.log('-=-=-=-=-=-=-=-=-=-=-='+win.txType+'=-=-=-=-=-=')
       this.win = win
@@ -183,13 +184,9 @@ export default {
             action:'reply-background-sign-tx',
             payload,
           })
-          // setTimeout(() => {
-            this.successed = "yes";
-            this.msg = '签名完成。'
-            // setTimeout(() => {
-              win.closeWindow(win.windowId);
-          //   }, 500);
-          // }, 100);
+          this.successed = "yes";
+          this.msg = '签名完成。'
+          win.closeWindow(win.windowId);
           // return Promise.resolve({signedTx})
           // return this.sendTransaction(signedTx, win.txObj.url);
         })
@@ -236,51 +233,60 @@ export default {
                   if(win.currentAccount.hexPrivateKey){
                     return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
                   }else{
-                    alert('钱包私钥找不到')
+                    payload = {result:null,error:'ErrNoHexPrivateKey'}
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-sign-group-tx',
+                      payload,
+                    })
                     return
                   }
                 }).then(signedTx=>{
+                  this.msg = '交易组签名完成。'
                   console.log('signGroupTx==')
                   console.log(signedTx)
                   console.log(win.txObj.url)
-                  return this.sendTransaction(signedTx, win.txObj.url);
-                }).then(res=>{
-                  console.log('交易组签名完成。')
-                  console.log(res)
-                  setTimeout(() => {
-                    this.successed = "yes";
-                    this.msg = '交易组签名完成。'
-                    this.checking = '交易检测中...'
-                    // let payload = {hash:res}
-                    let payload = {}
-                    this.txStateCheckTask(res,win.txObj.url,error=>{
-                      console.log('===error===')
-                      console.log(error)
-                      this.checking = ''
-                      if (error) {
-                        this.checking = error
-                        payload = {error,result:res}
-                        window.chrome.runtime.sendMessage({
-                          action:'reply-background-sign-group-tx',
-                          payload,
-                        })
-                        // return
-                      }else{
-                        if(res.substr(0,2) == '0x'){
-                          payload = {result:res,error:null}
-                          window.chrome.runtime.sendMessage({
-                            action:'reply-background-sign-group-tx',
-                            payload,
-                          })
-                          win.closeWindow(win.windowId);
-                        }
-                      }
-                      // window.chrome.runtime.sendMessage({
-                      //   action:'reply-background-sign-group-tx',
-                      //   payload,
-                      // })
+                  if(!win.txObj.isSend){
+                    payload = {result:signedTx,error:null}
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-sign-group-tx',
+                      payload,
                     })
-                  }, 0);
+                    win.closeWindow(win.windowId);
+                    return
+                  }else{
+                    return this.sendTransaction(signedTx, win.txObj.url).then(res=>{
+                      console.log('交易组签名完成。')
+                      console.log(res)
+                      setTimeout(() => {
+                        this.successed = "yes";
+                        this.msg = '交易组签名完成。'
+                        this.checking = '交易检测中...'
+                        this.txStateCheckTask(res,win.txObj.url,error=>{
+                          console.log('===error===')
+                          console.log(error)
+                          this.checking = ''
+                          if (error) {
+                            this.checking = error
+                            payload = {error,result:res}
+                            window.chrome.runtime.sendMessage({
+                              action:'reply-background-sign-group-tx',
+                              payload,
+                            })
+                            // return
+                          }else{
+                            if(res.substr(0,2) == '0x'){
+                              payload = {result:res,error:null}
+                              window.chrome.runtime.sendMessage({
+                                action:'reply-background-sign-group-tx',
+                                payload,
+                              })
+                              win.closeWindow(win.windowId);
+                            }
+                          }
+                        })
+                      }, 0);
+                    })
+                  }
                 }).catch(err=>{
                   console.log('捕获异常')
                   console.log(err)
@@ -481,7 +487,13 @@ export default {
 };
 </script>
 <style lang='scss'>
+html,body,#app{
+  width: 100vw;
+  height: 100vh;
+}
 .out_extension_page {
+  width:100%;
+  height:100%;
   > div {
     width: 100%;
     text-align: center;

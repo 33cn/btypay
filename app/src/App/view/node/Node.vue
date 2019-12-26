@@ -406,6 +406,7 @@ export default {
     },
     setNode(val, target) {
       let arr = []
+      let index = null
       console.log('设置节点')
       console.log(val)
       this.isEnterCurrent = true
@@ -420,6 +421,7 @@ export default {
       }
       for(let i = 0; i < this.wallets.length; i++){
         if(this.wallets[i].name == this.walletName){
+          index = i
           if (target == "main"){
             this.wallets[i].currentMainNode = val
             this.$store.commit('Account/UPDATE_CURRENT_MAIN', val)
@@ -434,6 +436,11 @@ export default {
         if (res == "success") {
           this.$message.success("默认节点设置成功");
           this.getCurrentWallet()//更新视图
+          if(index){
+            this.getBackgroundPage().then(win=>{
+              win.currentWallet = this.wallets[i]
+            })
+          }
         }
       })
     },
@@ -488,6 +495,9 @@ export default {
           for(let i = 0; i < res.length; i++){
             if(res[i].name == this.walletName){
               this.wallet = res[i]
+              this.getBackgroundPage().then(win=>{
+                win.currentWallet = this.wallet
+              })
               console.log(this.wallet)
               console.log('this.wallet')
               this.refreshMainAsset();
