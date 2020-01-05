@@ -89,8 +89,8 @@
     }
 
     /**
-     * @description 交易组签名并发送
-     * @param {*} payload {tx: 未签名的交易字符串}
+     * @description 交易组签名
+     * @param {*} payload {tx: 未签名的交易字符串,url,isSend}
      * @returns {Promise<any>}
      */
     signGroupTx(payload) {
@@ -318,7 +318,7 @@
         window.postMessage({ type: 'QUERY_CURRENT_PARA_NODE', payload: {} }, '*')
       })
     }
-
+    
     // 测试
     unlockWallet() {
       return new Promise((resolve, reject) => {

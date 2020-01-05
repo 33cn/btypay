@@ -129,12 +129,12 @@ export default {
                 this.newAccount("钱包一",'create');
               }
             }else{
-              this.$message.error("无AccountList");
+              // this.$message.error("无AccountList");
             }
           })
 
         }else{
-          this.$message.error("无CreateingWallet1");
+          // this.$message.error("无CreateingWallet1");
         }
       })
       // this.newAccount("创世地址");

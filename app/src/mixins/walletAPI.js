@@ -92,7 +92,7 @@ export default {
       })
     },
 
-    recoverAccount(name) {
+    recoverAccount(name,wa={}) {
       return new Promise((resolve,reject)=>{
         this.getWallet().then(wallet => {
           console.log('获取索引恢复账户')
@@ -104,6 +104,7 @@ export default {
             this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
             this.getBackgroundPage().then(win=>{
               win.currentAccount = account
+              win.currentWallet = wa
               resolve('success')
             })
           }else{
@@ -126,6 +127,8 @@ export default {
           console.log(this.currentMain)
           console.log(this.currentParallel)
           console.log('==============')
+          let currentMain = { index: 0, url: 'http://114.55.11.139:1193', txHeight: -1, txIndex: 0, name: "BTY" }
+          let currentParallel = { index: 0, name: 'gameTest', coin: "GBTY", url: "http://114.55.11.139:1200", txHeight: -1, txIndex: 0,paraAddr:'1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe',tradeAddr:'1CCHJ6ng6G6KRXmVinhK32988wAZwkbg5' }
           if(res.CreateingWallet){
             let obj = {...res.CreateingWallet,...account}
             if(!obj.address){
@@ -135,10 +138,10 @@ export default {
             // obj.account = JSON.stringify(account)
             // obj.wallet = JSON.stringify(win.myChain33WalletInstance)
             if(type == 'create'){
-              obj.currentMainNode = this.currentMain
-              obj.currentParaNode = this.currentParallel
-              obj.mainNodeList = [this.currentMain]
-              obj.parallelNodeList = [this.currentParallel]
+              obj.currentMainNode = currentMain
+              obj.currentParaNode = currentParallel
+              obj.mainNodeList = [currentMain]
+              obj.parallelNodeList = [currentParallel]
             }
             console.log('即将存入AccountList')
             console.log(obj)
@@ -161,11 +164,13 @@ export default {
                       break
                     }
                   }
+                  // 未在钱包中创建或导入过
                   if(arr.length == 0){
-                    obj.currentMainNode = this.currentMain
-                    obj.currentParaNode = this.currentParallel
-                    obj.mainNodeList = [this.currentMain]
-                    obj.parallelNodeList = [this.currentParallel]
+                    console.log('未在钱包中创建或导入过')
+                    obj.currentMainNode = currentMain
+                    obj.currentParaNode = currentParallel
+                    obj.mainNodeList = [currentMain]
+                    obj.parallelNodeList = [currentParallel]
                     // arr.push(JSON.stringify(obj))
                     arr = res.AccountList.concat([JSON.stringify(obj)])
                   }
@@ -183,15 +188,16 @@ export default {
                   console.log('=====钱包存入AccountList里=====')
                   getChromeStorage("AccountList").then(res=>{
                     console.log('存完再拿')
+                    win.currentWallet = obj
                     console.log(res)
                   })
                 })
               }else{
-                this.$message.error("无AccountList2");
+                // this.$message.error("无AccountList2");
               }
             })
           }else{
-            this.$message.error("无CreateingWallet2");
+            // this.$message.error("无CreateingWallet2");
           }
         })
         return account
@@ -223,15 +229,30 @@ export default {
     getAccountList(){
       return new Promise((resolve, reject) => {
         getChromeStorage("AccountList").then(res=>{
+          // console.log('+++++++++++++++++++++++')
+          // console.log(res.AccountList)
+          // console.log(res.AccountList.length)
+          // console.log('+++++++++++++++++++++++')
           if(res.AccountList){
             let arr = []
-            for(let i = 0; i < res.AccountList.length; i++){
-              arr.push(JSON.parse(res.AccountList[i]))
+            if(res.AccountList.length > 0){
+              let pa = {}
+              let index = null
+              for(let i = 0; i < res.AccountList.length; i++){
+                pa = JSON.parse(res.AccountList[i])
+                if(pa.name == this.$store.state.Account.currentAccount.name){
+                  index = i
+                }
+                arr.push(pa)
+              }
+              if(index != 0){
+                arr[0] = arr.splice(index, 1, arr[0])[0];
+              }
             }
             resolve(arr)
           }else{
             reject('没有找到钱包')
-            this.$message.error("无AccountList");
+            // this.$message.error("无AccountList");
           }
         })
 
@@ -245,6 +266,30 @@ export default {
           }else{
             reject()
             reject('error')
+          }
+        })
+      })
+    },
+    // 获取当前钱包
+    getCurrentWallet(){
+      return new Promise((resolve,reject)=>{
+        this.getAccountList().then(list=>{
+          if(list.length == 0){
+            resolve({})
+          }else{
+            this.getCurrentWalletName().then(name=>{
+              let flag = false
+              for(let i = 0; i < list.length; i++){
+                if(list[i].name == name){
+                  flag = true
+                  resolve(list[i])
+                  break
+                }
+              }
+              if(!flag){
+                resolve({})
+              }
+            })
           }
         })
       })
@@ -305,7 +350,7 @@ export default {
           })
           this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
           reject(err)
-          console.log(err)
+          // console.log(err)
         })
       })
     },
@@ -491,7 +536,8 @@ export default {
   },
   filters: {
     numFilter(val, num) {
-      if (val || val == 0) {
+      // console.log(val)
+      if (val) {
         let f = parseFloat(val),
           result = null;
         if (num == 4) {
@@ -500,6 +546,8 @@ export default {
           result = Math.floor(f * 100) / 100;
         }
         return parseFloat(result).toFixed(num)
+      }else{
+        return 0
       }
     },
     longFilter(val, num){

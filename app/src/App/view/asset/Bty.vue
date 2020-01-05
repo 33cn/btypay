@@ -83,6 +83,7 @@ import All from "@/App/view/asset/record/All.vue";
 import Transfer from "@/App/view/asset/record/Transfer.vue";
 import Receipt from "@/App/view/asset/record/Receipt.vue";
 import Convert from "@/App/view/asset/record/Convert.vue";
+import { setChromeStorage,getChromeStorage } from "@/libs/chromeUtil.js";
 import { clip } from "@/libs/clip.js";
 import walletAPI from "@/mixins/walletAPI.js";
 import chain33API from "@/mixins/chain33API.js";
@@ -218,6 +219,7 @@ export default {
     }
   },
   mounted() {
+    setChromeStorage('extensionStatus','').then(res=>{})
     this.shortAddress = this.currentAccount.address.substr(0,13)+'…'+this.currentAccount.address.substr(-4,4)
     // let addr = '12evczYyX9ZKPYvwSEvRkRyTjpSrJuLudg'
     // console.log('HHHHHHHHHHHHHHHHHHHHHHH')

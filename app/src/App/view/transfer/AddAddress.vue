@@ -82,6 +82,9 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }
+  },
+  mounted(){
+    setChromeStorage('extensionStatus','').then(res=>{})
   }
 };
 </script>

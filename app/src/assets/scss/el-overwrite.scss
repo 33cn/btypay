@@ -217,7 +217,10 @@ ul.el-dropdown-menu.el-popper{
   border-radius:4px;
   left: 54px!important;
   &.loginPage{
-    left: 85px!important;
+    left: 65px!important;
+  }
+  &.walletIndex{
+    left: 34px!important;
   }
   li{
     width: 100%;

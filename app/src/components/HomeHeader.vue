@@ -39,7 +39,7 @@ export default {
                 {name:'节点设置',img:'nodeSetIcon',path:'node'},
                 {name:'我的钱包',img:'exportIcon',path:'account'},
                 {name:'货币设置',img:'currencyIcon',path:'currencySet'},
-                {name:'关于我们',img:'aboutIcon',path:'about'},
+                // {name:'关于我们',img:'aboutIcon',path:'about'},
                 // {name:'退出登录',img:'logoutIcon',path:'ImportOrCreate'},
             ],
             WalletIndex:false
@@ -47,18 +47,19 @@ export default {
     },
     methods:{
         tojys(){
-            chrome.tabs.create({url:'https://m.zhaobi.xyz/index'});
+            chrome.tabs.create({url:'https://zhaobi.com'});
         },
         // 锁定
         lockHandle(){
-            this.getBackgroundPage().then(win => {
+            // this.getBackgroundPage().then(win => {
                 // win.myChain33WalletInstance = null
                 setChromeStorage('beforePath',{}).then(res=>{})
                 setChromeStorage('element',{}).then(res=>{})
+                setChromeStorage('extensionStatus','lock').then(res=>{})
                 setTimeout(() => {
                     this.$router.push({name:'login'})
                 }, 100);
-            })
+            // })
             // this.$router.push({name:'login'})
 
         },
@@ -119,17 +120,6 @@ export default {
                 this.$router.push({name})
             // }
         },
-        // getBackgroundPage(){
-        //     return new Promise((resolve) => {
-        //         if (isDev) {
-        //           resolve(window)
-        //         } else {
-        //           window.chrome.runtime.getBackgroundPage(win => {
-        //             resolve(win)
-        //           })
-        //         }
-        //     })
-        // }
     },
     mounted(){
         this.WalletIndex = window.location.href.indexOf('WalletIndex') == -1
@@ -221,18 +211,19 @@ export default {
                 color:rgba(255,255,255,1);
             }
             &:nth-of-type(3){
+                margin-bottom: 0px;
                 img{
                     width: 13px;
                     height: 12px;
                 }
             }
-            &:nth-of-type(4){
-                margin-bottom: 0px;
-                img{
-                    width: 12px;
-                    height: 12px;
-                }
-            }
+            // &:nth-of-type(4){
+            //     margin-bottom: 0px;
+            //     img{
+            //         width: 12px;
+            //         height: 12px;
+            //     }
+            // }
             // &:nth-of-type(5){
             //     img{
             //         width: 13px;

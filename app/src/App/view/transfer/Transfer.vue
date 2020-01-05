@@ -148,6 +148,7 @@ export default {
     ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset",'currentMain','currentParallel']),
   },
   mounted(){
+    setChromeStorage('extensionStatus','').then(res=>{})
     if(this.$route.query.coin){
       this.coin = this.$route.query.coin;
       // console.log(this.coin)

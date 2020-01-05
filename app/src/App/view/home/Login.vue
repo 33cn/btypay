@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       accountList:[
-        {name:'钱包一'},{name:'钱包二'},{name:'钱包三'},{name:'钱包四'},{name:'钱包五'}
+        // {name:'钱包一'},{name:'钱包二'},{name:'钱包三'},{name:'钱包四'},{name:'钱包五'}
       ],
       wallet:{},
       // winWallet:{},
@@ -91,12 +91,13 @@ export default {
               return;
             }
             let myWallet = this.createHDWallet(mnemonic);//创建钱包并赋值给window
-            this.recoverAccount(this.wallet.name).then(res=>{
+            this.recoverAccount(this.wallet.name,wallet).then(res=>{
               if(res == 'success'){
                 setChromeStorage("CurrentAccountName", this.wallet.name).then(res=>{
                   console.log('=====钱包名称存储成功=====')
                   this.isLogining = false;
                   this.$message.success("登录成功");
+                  setChromeStorage('extensionStatus','').then(res=>{})
                   this.$store.commit("Account/UPDATE_PASSWORD", this.form.pwd);
                   this.$router.push("/WalletIndex");
                 })
@@ -177,9 +178,9 @@ export default {
       this.accountList = res
       // this.getWinCurrentAccount()
       this.getWallet().then(wallet=>{
-        console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
+        console.log('11_+_+_+_+_+_+_+_+_+_+_+_+_')
         console.log(wallet)
-        console.log('_+_+_+_+_+_+_+_+_+_+_+_+_')
+        console.log('11_+_+_+_+_+_+_+_+_+_+_+_+_')
         if(wallet){
           this.update_store()
           // 已创建/导入钱包(钱包锁定)
@@ -242,7 +243,7 @@ export default {
       })
     }).catch(err=>{
       this.$router.push("/ImportOrCreate");
-      console.log(err)
+      // console.log(err)
     })
     // this.$refs["pwdInput"] && this.$refs["pwdInput"].focus();
   }

@@ -96,6 +96,7 @@ export default {
         }
     },
     mounted(){
+        setChromeStorage('extensionStatus','').then(res=>{})
         this.walletName = this.$route.query.name;
         console.log(this.walletName)
         this.getSeed()

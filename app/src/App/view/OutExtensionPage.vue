@@ -15,8 +15,9 @@ import parallelAPI from "@/mixins/parallelAPI.js"
 import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("Account");
 import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil";
+import walletAPI from "@/mixins/walletAPI.js";
 export default {
-  mixins:[parallelAPI],
+  mixins:[walletAPI,parallelAPI],
     computed: {
       ...mapState(["parallelNode"])
     },
@@ -155,6 +156,7 @@ export default {
     }
   },
   mounted() {
+    let payload = {}
     window.chrome.runtime.getBackgroundPage(win => {
     console.log('-=-=-=-=-=-=-=-=-=-=-='+win.txType+'=-=-=-=-=-=')
       this.win = win
@@ -167,33 +169,24 @@ export default {
         }
       }, 100000);
       if(win.txType == 'sign-tx'){
-        // return new Promise((resolve,reject)=>{
-        //   return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
-        // }).then(signedTx=>{
-        //   resolve(signedTx)
-        // })
-        console.log('signRawTx')
-        console.log(win.txObj.tx)
+        // console.log('signRawTx')
+        // console.log(win.txObj.tx)
         return Promise.resolve()
         .then(() => {
           return signRawTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
         })
         .then(signedTx => {
-          console.log(win.txObj.tx)
-          console.log(signedTx)
+          // console.log(win.txObj.tx)
+          // console.log(signedTx)
           win.signedTx = signedTx
           let payload = {signedTx}
           window.chrome.runtime.sendMessage({
             action:'reply-background-sign-tx',
             payload,
           })
-          // setTimeout(() => {
-            this.successed = "yes";
-            this.msg = '签名完成。'
-            // setTimeout(() => {
-              win.closeWindow(win.windowId);
-          //   }, 500);
-          // }, 100);
+          this.successed = "yes";
+          this.msg = '签名完成。'
+          win.closeWindow(win.windowId);
           // return Promise.resolve({signedTx})
           // return this.sendTransaction(signedTx, win.txObj.url);
         })
@@ -218,10 +211,8 @@ export default {
           }, 300);
         });
       }else if(win.txType == 'sign-group-tx'){
-        console.log('==================sign-group-tx')
-        getChromeStorage("parallelNodeList").then(res=>{
-          console.log(res)
-          if (res.parallelNodeList) {
+        this.getCurrentWallet().then(res=>{
+          if(res&&res.parallelNodeList){
             for(let i = 0; i < res.parallelNodeList.length; i++){
               if(res.parallelNodeList[i].url == win.txObj.url){
                 this.name = res.parallelNodeList[i].name;
@@ -238,55 +229,64 @@ export default {
               }else{
                 this.msg = '交易组签名中...'
                 return Promise.resolve().then(()=>{
-                  console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
+                  // console.log('钱包私钥：'+win.currentAccount.hexPrivateKey)
                   if(win.currentAccount.hexPrivateKey){
                     return signGroupTx(win.txObj.tx, win.currentAccount.hexPrivateKey);
                   }else{
-                    alert('钱包私钥找不到')
+                    payload = {result:null,error:'ErrNoHexPrivateKey'}
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-sign-group-tx',
+                      payload,
+                    })
                     return
                   }
                 }).then(signedTx=>{
+                  this.msg = '交易组签名完成。'
                   console.log('signGroupTx==')
                   console.log(signedTx)
                   console.log(win.txObj.url)
-                  return this.sendTransaction(signedTx, win.txObj.url);
-                }).then(res=>{
-                  console.log('交易组签名完成。')
-                  console.log(res)
-                  setTimeout(() => {
-                    this.successed = "yes";
-                    this.msg = '交易组签名完成。'
-                    this.checking = '交易检测中...'
-                    // let payload = {hash:res}
-                    let payload = {}
-                    this.txStateCheckTask(res,win.txObj.url,error=>{
-                      console.log('===error===')
-                      console.log(error)
-                      this.checking = ''
-                      if (error) {
-                        this.checking = error
-                        payload = {error,result:res}
-                        window.chrome.runtime.sendMessage({
-                          action:'reply-background-sign-group-tx',
-                          payload,
-                        })
-                        // return
-                      }else{
-                        if(res.substr(0,2) == '0x'){
-                          payload = {result:res,error:null}
-                          window.chrome.runtime.sendMessage({
-                            action:'reply-background-sign-group-tx',
-                            payload,
-                          })
-                          win.closeWindow(win.windowId);
-                        }
-                      }
-                      // window.chrome.runtime.sendMessage({
-                      //   action:'reply-background-sign-group-tx',
-                      //   payload,
-                      // })
+                  if(!win.txObj.isSend){
+                    payload = {result:signedTx,error:null}
+                    window.chrome.runtime.sendMessage({
+                      action:'reply-background-sign-group-tx',
+                      payload,
                     })
-                  }, 0);
+                    win.closeWindow(win.windowId);
+                    return
+                  }else{
+                    return this.sendTransaction(signedTx, win.txObj.url).then(res=>{
+                      console.log('交易组签名完成。')
+                      console.log(res)
+                      setTimeout(() => {
+                        this.successed = "yes";
+                        this.msg = '交易组签名完成。'
+                        this.checking = '交易检测中...'
+                        this.txStateCheckTask(res,win.txObj.url,error=>{
+                          console.log('===error===')
+                          console.log(error)
+                          this.checking = ''
+                          if (error) {
+                            this.checking = error
+                            payload = {error,result:res}
+                            window.chrome.runtime.sendMessage({
+                              action:'reply-background-sign-group-tx',
+                              payload,
+                            })
+                            // return
+                          }else{
+                            if(res.substr(0,2) == '0x'){
+                              payload = {result:res,error:null}
+                              window.chrome.runtime.sendMessage({
+                                action:'reply-background-sign-group-tx',
+                                payload,
+                              })
+                              win.closeWindow(win.windowId);
+                            }
+                          }
+                        })
+                      }, 0);
+                    })
+                  }
                 }).catch(err=>{
                   console.log('捕获异常')
                   console.log(err)
@@ -375,7 +375,7 @@ export default {
             this.msg = err
         })
       }else if(win.txType == 'para-coins-dice'){
-        getChromeStorage("parallelNodeList").then(res => {
+        this.getCurrentWallet().then(res => {
           console.log(res)
           console.log(win.txObj.url)
           if (res.parallelNodeList) {
@@ -450,7 +450,7 @@ export default {
         });
         // 借贷跨链
       }else if(win.txType == 'bty-main-parallel' || win.txType == 'bty-parallel-main'||win.txType == 'ccny-main-parallel' || win.txType == 'ccny-parallel-main'){
-        getChromeStorage("parallelNodeList").then(res=>{
+        this.getCurrentWallet().then(res=>{
           console.log(res)
           if (res.parallelNodeList) {
             for(let i = 0; i < res.parallelNodeList.length; i++){
@@ -487,7 +487,13 @@ export default {
 };
 </script>
 <style lang='scss'>
+html,body,#app{
+  width: 100vw;
+  height: 100vh;
+}
 .out_extension_page {
+  width:100%;
+  height:100%;
   > div {
     width: 100%;
     text-align: center;

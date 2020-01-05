@@ -38,7 +38,8 @@ export default {
         }
     },
     mounted(){
-        console.log(window.location.href)//chrome-extension://geanmggnnmmcgfgpdbibmkbjnphcblld/dist/index.html#/dapps
+        setChromeStorage('extensionStatus','').then(res=>{})
+        // console.log(window.location.href)//chrome-extension://geanmggnnmmcgfgpdbibmkbjnphcblld/dist/index.html#/dapps
     }
 }
 </script>

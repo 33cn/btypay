@@ -40,24 +40,29 @@ export default {
                         if(!account.password || !account.ciphertext){
                             account = { ...obj }
                         }
-                        console.log(account)
                         if (!account.name) {
                             let name = ''
+                            let num = 0
                             console.log('error：导入钱包找不到wallet')
                             for (let i = 0; i < length; i++){
                                 let pA = JSON.parse(res.AccountList[i])
                                 if(pA.name.indexOf('钱包') > -1){
                                     name = pA.name
+                                    if(zhDigit_To_Arabic(name.substr(2,name.length-2)) > num){
+                                        num = zhDigit_To_Arabic(name.substr(2,name.length-2))
+                                    }
                                 }
                             }
                             if(name){
-                                let num = zhDigit_To_Arabic(name.substr(2,name.length-2))+1
-                                account.name = '钱包'+Arabia_To_zhDigit(num)
+                                console.log(name)
+                                let nums = num+1
+                                account.name = '钱包'+Arabia_To_zhDigit(nums)
                                 
                             }else{
                                 account.name = "钱包一"
                             }
                         }
+                        console.log(account)
                         setChromeStorage("CreateingWallet", account).then(res => {
                             console.log('=====钱包账户存储成功=====')
                             const walletObj = this.createHDWallet(seedString)
@@ -65,7 +70,7 @@ export default {
                             resolve('success')
                         })
                     } else {
-                        this.$message.error("无AccountList3");
+                        // this.$message.error("无AccountList3");
                         reject('error')
                     }
                 })
